@@ -9,17 +9,38 @@ $$ LANGUAGE SQL IMMUTABLE STRICT;
 
 -- The classes for highways are derived from the classes used in ClearTables
 -- https://github.com/ClearTables/ClearTables/blob/master/transportation.lua
-CREATE OR REPLACE FUNCTION highway_class(highway TEXT, public_transport TEXT) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION highway_class(highway TEXT, public_transport TEXT, tags HSTORE = null) RETURNS TEXT AS $$
     SELECT CASE
+        WHEN tags->'icn' IN ('yes') THEN 'cycleway'
+        WHEN tags->'ncn' IN ('yes') THEN 'cycleway'
+        WHEN tags->'rcn' IN ('yes') THEN 'cycleway'
+        WHEN tags->'lcn' IN ('yes') THEN 'cycleway'
+        WHEN tags->'bicycle' IN ('designated', 'mtb') THEN 'cycleway'
+        WHEN tags->'bicycle' IN ('yes', 'permissive') AND highway IN ('pedestrian', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') THEN 'cycleway'
+        WHEN tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'shared_lane', 'share_bussway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
+        WHEN tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'shared_lane', 'share_bussway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
+        WHEN tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'shared_lane', 'share_bussway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
+        WHEN tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'shared_lane', 'share_bussway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
+        WHEN highway IN ('service', 'track', 'cycleway') THEN highway
         WHEN highway IN ('motorway', 'motorway_link') THEN 'motorway'
         WHEN highway IN ('trunk', 'trunk_link') THEN 'trunk'
         WHEN highway IN ('primary', 'primary_link') THEN 'primary'
         WHEN highway IN ('secondary', 'secondary_link') THEN 'secondary'
         WHEN highway IN ('tertiary', 'tertiary_link') THEN 'tertiary'
         WHEN highway IN ('unclassified', 'residential', 'living_street', 'road') THEN 'minor'
-        WHEN highway IN ('service', 'track') THEN highway
-        WHEN highway IN ('pedestrian', 'path', 'footway', 'cycleway', 'steps', 'bridleway', 'corridor') OR public_transport IN ('platform') THEN 'path'
+        WHEN highway IN ('pedestrian', 'path', 'footway', 'steps', 'bridleway', 'corridor') OR public_transport IN ('platform') THEN 'path'
         WHEN highway = 'raceway' THEN 'raceway'
+        ELSE NULL
+    END;
+$$ LANGUAGE SQL IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION cycleway_subclass(highway TEXT, tags HSTORE = null) RETURNS TEXT AS $$
+    SELECT CASE
+        WHEN tags->'surface' IN ('unpaved', 'compacted', 'fine_gravel', 'gravel', 'pebblestone', 'dirt', 'earth', 'grass', 'gravel_turf', 'ground', 'mud', 'sand', 'woodchips', 'snow', 'ice') THEN 'unpaved'
+        WHEN tags->'surface' IN ('paved', 'asphalt', 'concrete', 'concrete:lanes', 'concrete:plates', 'paving_stones', 'sett', 'metal', 'wood') THEN 'paved'
+        WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
+        WHEN tags->'hiking' IN ('yes', 'designated', 'permissive') THEN 'unpaved'
+        WHEN highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'service', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'raceway', 'road', 'steps', 'cycleway') THEN 'paved'
         ELSE NULL
     END;
 $$ LANGUAGE SQL IMMUTABLE;

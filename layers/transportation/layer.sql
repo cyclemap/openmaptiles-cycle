@@ -12,7 +12,7 @@ indoor INT, surface TEXT) AS $$
     SELECT
         osm_id, geometry,
         CASE
-            WHEN NULLIF(highway, '') IS NOT NULL OR NULLIF(public_transport, '') IS NOT NULL THEN highway_class(highway, public_transport)
+            WHEN NULLIF(highway, '') IS NOT NULL OR NULLIF(public_transport, '') IS NOT NULL THEN highway_class(highway, public_transport, tags)
             WHEN NULLIF(railway, '') IS NOT NULL THEN railway_class(railway)
             WHEN NULLIF(aerialway, '') IS NOT NULL THEN aerialway
             WHEN NULLIF(shipway, '') IS NOT NULL THEN shipway
@@ -21,8 +21,8 @@ indoor INT, surface TEXT) AS $$
         CASE
             WHEN railway IS NOT NULL THEN railway
             WHEN (highway IS NOT NULL OR public_transport IS NOT NULL)
-                AND highway_class(highway, public_transport) = 'path'
-                THEN COALESCE(NULLIF(public_transport, ''), highway)
+                AND highway_class(highway, public_transport, tags) = 'cycleway'
+                THEN COALESCE(NULLIF(public_transport, ''), cycleway_subclass(highway, tags))
             ELSE NULL
         END AS subclass,
         -- All links are considered as ramps as well
@@ -41,6 +41,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             highway, NULL AS railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, NULL AS service,
+            NULL::hstore as tags,
             NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
             NULL::boolean AS is_ford,
             NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
@@ -56,6 +57,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             highway, NULL AS railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, NULL AS service,
+            NULL::hstore as tags,
             NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
             NULL::boolean AS is_ford,
             NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
@@ -70,6 +72,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             highway, NULL AS railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, NULL AS service,
+            NULL::hstore as tags,
             NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
             NULL::boolean AS is_ford,
             NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
@@ -84,6 +87,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             highway, NULL AS railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, NULL AS service,
+            NULL::hstore as tags,
             NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
             NULL::boolean AS is_ford,
             NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
@@ -98,6 +102,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             highway, NULL AS railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, NULL AS service,
+            NULL::hstore as tags,
             NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
             NULL::boolean AS is_ford,
             NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
@@ -113,6 +118,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             highway, NULL AS railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, NULL AS service,
+            tags,
             NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
             NULL::boolean AS is_ford,
             NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
@@ -128,6 +134,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             highway, NULL AS railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, NULL AS service,
+            tags,
             NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
             NULL::boolean AS is_ford,
             NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
@@ -145,6 +152,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             highway, NULL AS railway, NULL AS aerialway, NULL AS shipway,
             public_transport, service_value(service) AS service,
+            tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, man_made,
             layer,
             CASE WHEN highway IN ('footway', 'steps') THEN "level"
@@ -157,13 +165,11 @@ indoor INT, surface TEXT) AS $$
             z_order
         FROM osm_highway_linestring
         WHERE NOT is_area AND (
-            zoom_level = 12 AND (
-                highway_class(highway, public_transport) NOT IN ('track', 'path', 'minor')
-                OR highway IN ('unclassified', 'residential')
-            ) AND man_made <> 'pier'
+            zoom_level = 12
+                AND man_made <> 'pier'
             OR zoom_level = 13
                 AND (
-                    highway_class(highway, public_transport) NOT IN ('track', 'path') AND man_made <> 'pier'
+                    man_made <> 'pier'
                 OR
                     man_made = 'pier' AND NOT ST_IsClosed(geometry)
                 )
@@ -181,6 +187,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
             NULL::boolean AS is_ford,
             NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
@@ -196,6 +203,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
             NULL::boolean AS is_ford,
             NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
@@ -211,6 +219,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL AS surface, z_order
@@ -224,6 +233,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL as surface, z_order
@@ -237,6 +247,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL as surface, z_order
@@ -251,6 +262,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, railway, NULL AS aerialway, NULL AS shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL as surface, z_order
@@ -265,6 +277,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, NULL as railway, aerialway, NULL AS shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL AS surface, z_order
@@ -278,6 +291,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, NULL as railway, aerialway, NULL AS shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL AS surface, z_order
@@ -290,6 +304,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, NULL AS railway, NULL AS aerialway, shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL AS surface, z_order
@@ -302,6 +317,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, NULL AS railway, NULL AS aerialway, shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL AS surface, z_order
@@ -315,6 +331,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             NULL AS highway, NULL AS railway, NULL AS aerialway, shipway,
             NULL AS public_transport, service_value(service) AS service,
+            NULL::hstore as tags,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL AS surface, z_order
@@ -332,6 +349,7 @@ indoor INT, surface TEXT) AS $$
             osm_id, geometry,
             highway, NULL AS railway, NULL AS aerialway, NULL AS shipway,
             public_transport, NULL AS service,
+            NULL::hstore as tags,
             CASE WHEN man_made IN ('bridge') THEN TRUE
                 ELSE FALSE
             END AS is_bridge, FALSE AS is_tunnel, FALSE AS is_ford,

@@ -10,11 +10,13 @@ help:
 	@echo "  "
 	@echo "Hints for designers:"
 	@echo "  make start-postserve                 # start Postserver + Maputnik Editor [ see localhost:8088 ] "
-	@echo "  make start-tileserver                # start klokantech/tileserver-gl [ see localhost:8080 ] "
+	@echo "  make start-tileserver                # start klokantech/tileserver-gl [ see localhost:8082 ] "
+	@echo "  make start-tileserver-restart        # start klokantech/tileserver-gl in the background and start on boot [ see localhost:8082 ] "
 	@echo "  "
 	@echo "Hints for developers:"
 	@echo "  make                                 # build source code"
 	@echo "  make download-geofabrik area=albania # download OSM data from geofabrik, and create config file"
+	@echo "  make update-pbf-config area=albania  # you need this if you download your own pbf file:  create the data/docker-compose-config.xml for your area"
 	@echo "  make psql                            # start PostgreSQL console"
 	@echo "  make psql-list-tables                # list all PostgreSQL tables"
 	@echo "  make psql-vacuum-analyze             # PostgreSQL: VACUUM ANALYZE"
@@ -73,6 +75,10 @@ download-geofabrik:
 	cat ./data/docker-compose-config.yml
 	@echo " "
 
+#hacks out the deleting and downloading from the download-geofabrik scripts
+update-pbf-config:
+	docker-compose run --rm import-osm bash -c "sed -i -e 's/^rm.*//' -e 's/^download-geofabrik.*//' download-geofabrik.sh && ./download-geofabrik.sh $(area)"
+	
 psql: db-start
 	docker-compose run --rm import-osm /usr/src/app/psql.sh
 
@@ -111,11 +117,18 @@ start-tileserver:
 	@echo "***********************************************************"
 	@echo "* "
 	@echo "* Start klokantech/tileserver-gl "
-	@echo "*       ----------------------------> check localhost:8080 "
+	@echo "*       ----------------------------> check localhost:8082 "
 	@echo "* "
 	@echo "***********************************************************"
 	@echo " "
-	docker run -it --rm --name tileserver-gl -v $$(pwd)/data:/data -p 8080:80 klokantech/tileserver-gl
+	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer.tmpl data-tileserver
+	docker run -it --rm --name tileserver-gl -v $$(pwd)/data-tileserver:/data -p 8082:80 klokantech/tileserver-gl -c /data/tileserver-gl.json --public_url https://tileserver.cyclemap.us/
+
+#this version will restart with the computer
+start-tileserver-restart:
+	docker pull klokantech/tileserver-gl
+	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer.tmpl data-tileserver
+	docker run --restart=always --detach=true --name tileserver-gl-restart -v $$(pwd)/data-tileserver:/data -p 8082:80 klokantech/tileserver-gl -c /data/tileserver-gl.json --public_url https://tileserver.cyclemap.us/
 
 start-postserve:
 	@echo " "
