@@ -10,8 +10,7 @@ help:
 	@echo "  "
 	@echo "Hints for designers:"
 	@echo "  make start-postserve                 # start Postserver + Maputnik Editor [ see localhost:8088 ] "
-	@echo "  make start-tileserver                # start klokantech/tileserver-gl [ see localhost:8082 ] "
-	@echo "  make start-tileserver-restart        # start klokantech/tileserver-gl in the background and start on boot [ see localhost:8082 ] "
+	@echo "  make start-tileserver                # start klokantech/tileserver-gl [ see localhost:8082 ].  tileserver will start on boot. "
 	@echo "  "
 	@echo "Hints for developers:"
 	@echo "  make                                 # build source code"
@@ -118,17 +117,14 @@ start-tileserver:
 	@echo "* "
 	@echo "* Start klokantech/tileserver-gl "
 	@echo "*       ----------------------------> check localhost:8082 "
+	@echo "*       ----------------------------> this will restart on boot "
+	@echo "*       ----------------------------> to see logs run:  docker logs -f tileserver-gl "
+	@echo "*       ----------------------------> to restart:  docker restart tileserver-gl "
 	@echo "* "
 	@echo "***********************************************************"
 	@echo " "
 	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer.tmpl data-tileserver
-	docker run -it --rm --name tileserver-gl -v $$(pwd)/data-tileserver:/data -p 8082:80 klokantech/tileserver-gl -c /data/tileserver-gl.json --public_url https://tileserver.cyclemap.us/
-
-#this version will restart with the computer
-start-tileserver-restart:
-	docker pull klokantech/tileserver-gl
-	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer.tmpl data-tileserver
-	docker run --restart=always --detach=true --name tileserver-gl-restart -v $$(pwd)/data-tileserver:/data -p 8082:80 klokantech/tileserver-gl -c /data/tileserver-gl.json --public_url https://tileserver.cyclemap.us/
+	docker run --restart=always --detach=true --name tileserver-gl -v $$(pwd)/data-tileserver:/data -p 8082:80 klokantech/tileserver-gl --verbose -c /data/tileserver-gl.json --public_url https://tileserver.cyclemap.us/
 
 start-postserve:
 	@echo " "

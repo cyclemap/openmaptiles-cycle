@@ -5,6 +5,7 @@
 #for area in $AREAS; do make download-geofabrik area=$area && docker-compose run --rm import-osm osmconvert /import/$area.osm.pbf -o=/import/$area.o5m; done
 #docker-compose run --rm import-osm osmconvert $(for area in $AREAS; do echo -n "/import/$area.o5m "; done) -o=/import/$NAME.osm.pbf
 #rm --force data/*.o5m
+#to fix an incorrect max zoom level:  sqlite3 tiles.mbtiles 'update metadata set value="13" where name="maxzoom";' && sqlite3 tiles.mbtiles 'select value from metadata where name="maxzoom";'
 
 #time ./quickstart.sh $NAME
 

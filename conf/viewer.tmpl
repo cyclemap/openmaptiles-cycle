@@ -9,29 +9,56 @@
 	<link rel="stylesheet" type="text/css" href="{{public_url}}mapbox.css" />
 	<script src="{{public_url}}mapbox.js"></script>
 	<style>
-		body { margin:0; padding:0; }
-		#map { position:absolute; top:0; bottom:0; width:100%; }
-		#about { position: absolute; background-color: rgba(255,255,255,.5); z-index: 50; }
-		#key { position: absolute; bottom:0; background-color: rgba(255,255,255,.5); z-index: 50; }
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+		#about {
+			position: absolute;
+			top: 0;
+			height: 20px;
+			padding: 1px;
+			background-color: rgba(255,255,255,.5);
+			z-index: 50;
+			text-size: larger;
+		}
+		#key {
+			position: absolute;
+			bottom: 10px; left: 108px;
+			height: 20px;
+			padding: 1px;
+			background-color: rgba(255,255,255,.5);
+			z-index: 50;
+			text-size: larger;
+		}
 	</style>
 </head>
 <body>
+	<div id='about'>cyclemap - <a href="about.html">about</a></div>
 	<div id='map'>
-		<div id='about'>cyclemap - <a href="{{public_url}}about.html">about</a></div>
 	</div>
 	<script>
 		mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
 		var map = new mapboxgl.Map({
 			container: 'map',
 			style: '{{public_url}}styles/klokantech-basic-cycle/style.json',
+			center: [-77, 39],
+			zoom: 9,
 			hash: true
 		});
 		map.addControl(new mapboxgl.NavigationControl());
+		map.addControl(new mapboxgl.ScaleControl());
 	</script>
 	<div id='key'>
 		<span style="color: hsla(120, 60%, 30%, 100%); font-weight: bold;">█</span> cycling
-		<span style="color: hsla(30, 60%, 40%, 100%); font-weight: bold;">█</span> probably unpaved
-		<span style="color: hsla(0, 0%, 94%, 100%); font-weight: bold;">█</span> footpath
+		<span style="color: hsla(30, 60%, 40%, 100%); font-weight: bold;">█</span> unpaved
+		<span style="color: hsla(0, 0%, 94%, 100%); font-weight: bold;">█</span> foot
 	</div>
 </body>
 </html>
