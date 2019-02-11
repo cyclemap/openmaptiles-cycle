@@ -38,6 +38,7 @@ CREATE OR REPLACE FUNCTION cycleway_subclass(highway TEXT, tags HSTORE = null) R
     SELECT CASE
         WHEN tags->'surface' IN ('unpaved', 'compacted', 'fine_gravel', 'gravel', 'pebblestone', 'dirt', 'earth', 'grass', 'gravel_turf', 'ground', 'mud', 'sand', 'woodchips', 'snow', 'ice') THEN 'unpaved'
         WHEN tags->'surface' IN ('paved', 'asphalt', 'concrete', 'concrete:lanes', 'concrete:plates', 'paving_stones', 'sett', 'metal', 'wood') THEN 'paved'
+        WHEN tags->'footway' IN ('crossing') THEN 'paved'
         WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
         WHEN tags->'hiking' IN ('yes', 'designated', 'permissive') THEN 'unpaved'
         WHEN highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'service', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'raceway', 'road', 'steps', 'cycleway') THEN 'paved'
