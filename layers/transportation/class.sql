@@ -16,7 +16,7 @@ CREATE OR REPLACE FUNCTION highway_class(highway TEXT, public_transport TEXT, ta
         WHEN tags->'rcn' IN ('yes') THEN 'cycleway'
         WHEN tags->'lcn' IN ('yes') THEN 'cycleway'
         WHEN tags->'bicycle' IN ('designated', 'mtb') THEN 'cycleway'
-        WHEN tags->'bicycle' IN ('yes', 'permissive') AND highway IN ('pedestrian', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') THEN 'cycleway'
+        WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND highway IN ('pedestrian', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') THEN 'cycleway'
         WHEN tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_bussway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
         WHEN tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_bussway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
         WHEN tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_bussway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
