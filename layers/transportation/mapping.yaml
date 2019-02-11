@@ -146,6 +146,10 @@ surface_field: &surface
   key: surface
   name: surface
   type: string
+footway_field: &footway
+  key: footway
+  name: footway
+  type: string
 hiking_field: &hiking
   key: hiking
   name: hiking
@@ -213,6 +217,7 @@ tables:
     - *cycleway_both
     - *bicycle
     - *surface
+    - *footway
     - *hiking
     - name: tags
       type: hstore_tags
