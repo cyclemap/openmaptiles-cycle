@@ -21,9 +21,9 @@ tileset:
   id: openmaptiles
   description: "A tileset showcasing all layers in OpenMapTiles. https://openmaptiles.org"
   attribution: 'made with klokantech styles and tileserver gl, postgresql, postgis, natural earth, osmborder, omniscale, mapbox, and maputnik. <a href="https://www.openmaptiles.org/" target="_blank">&copy;openmaptiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy;openstreetmap contributors</a>'
-  center: [-12.2168, 28.6135, 4]
-  bounds: [-180.0,-85.0511,180.0,85.0511]
-  maxzoom: 13
+  center: [-96, 40, 5]
+  bounds: [-125,25,-66,49]
+  maxzoom: 14
   minzoom: 0
   pixel_scale: 256
   languages:
