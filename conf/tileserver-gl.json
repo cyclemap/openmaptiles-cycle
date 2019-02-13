@@ -1,6 +1,6 @@
 {
 	"options": {
-	"frontPage": "/data/viewer.tmpl",
+	"frontPage": "/usr/src/app/public/resources/viewer/viewer.tmpl",
 		"paths": {
 			"root": "/usr/src/app/node_modules/tileserver-gl-styles",
 			"fonts": "fonts",

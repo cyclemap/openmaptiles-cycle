@@ -123,8 +123,8 @@ start-tileserver:
 	@echo "* "
 	@echo "***********************************************************"
 	@echo " "
-	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer.tmpl data-tileserver
-	docker run --restart=always --detach=true --name tileserver-gl -v $$(pwd)/data-tileserver:/data -p 8082:80 klokantech/tileserver-gl --verbose -c /data/tileserver-gl.json --public_url https://tileserver.cyclemap.us/
+	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver
+	docker run --restart=always --detach=true --name tileserver-gl -v $$(pwd)/data-tileserver:/data -v $$(pwd)/data-tileserver/viewer:/usr/src/app/public/resources/viewer -p 8082:80 klokantech/tileserver-gl --verbose -c /data/tileserver-gl.json --public_url https://tileserver.cyclemap.us/
 
 start-postserve:
 	@echo " "

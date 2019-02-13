@@ -8,6 +8,7 @@
 	<script src="{{public_url}}mapbox-gl.js"></script>
 	<link rel="stylesheet" type="text/css" href="{{public_url}}mapbox.css" />
 	<script src="{{public_url}}mapbox.js"></script>
+	<script src="{{public_url}}viewer/js.cookie.min.js"></script>
 	<style>
 		body {
 			margin: 0;
@@ -48,12 +49,16 @@
 		var map = new mapboxgl.Map({
 			container: 'map',
 			style: '{{public_url}}styles/klokantech-basic-cycle/style.json',
-			center: [-77, 39],
-			zoom: 9,
+			center: [-96, 40],
+			zoom: 5,
 			hash: true
 		});
 		map.addControl(new mapboxgl.NavigationControl());
 		map.addControl(new mapboxgl.ScaleControl());
+		map.addControl(new mapboxgl.GeolocateControl({
+			positionOptions: {enableHighAccuracy: true},
+			trackUserLocation: true
+		}));
 	</script>
 	<div id='key'>
 		<span style="color: hsla(120, 60%, 30%, 100%); font-weight: bold;">█</span> cycling
