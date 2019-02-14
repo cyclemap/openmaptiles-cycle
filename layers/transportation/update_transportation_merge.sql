@@ -90,7 +90,7 @@ CREATE INDEX IF NOT EXISTS osm_transportation_merge_linestring_gen5_highway_part
 CREATE MATERIALIZED VIEW osm_transportation_merge_linestring_gen6 AS (
     SELECT ST_Simplify(geometry, 1000) AS geometry, osm_id, highway, z_order
     FROM osm_transportation_merge_linestring_gen5
-    WHERE highway IN ('cycleway', 'motorway','trunk')
+    WHERE highway IN ('cycleway', 'motorway')
     AND ST_Length(geometry) > 2000
 );
 CREATE INDEX IF NOT EXISTS osm_transportation_merge_linestring_gen6_geometry_idx
