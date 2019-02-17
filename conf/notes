@@ -7,6 +7,25 @@ $ du -sm data/tiles.mbtiles
 347	data/tiles.mbtiles
 
 
+TODO
+	wtf:  access=yes, bicycle=nothing, should count as yes.
+
+	fix paths
+		change color of paths, (orange?)
+		make them come it at the same zoom level as tertiary roads,
+		make tertiary roads wider
+		put tertiary roads in front of paths
+
+	remove city boundaries?
+
+	make scale wider
+	make key go even further right than you think it should?
+
+TIMING
+	see timing.sh
+		basically https is the real thing making stuff slow.  no need to make tile server cache yet.
+	exceptions:  docker logs tileserver-gl 2>/dev/null |egrep ' [0-9]{3,}\.'
+
 BOTH
 	 14 dc only vanilla on p6:  1m5s in tiling, 13m16s total, 8.9mb file
 	 14 dc only master on p6:  1m6s in tiling, 13m22s total, 9.1mb file
