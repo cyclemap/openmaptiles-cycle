@@ -862,7 +862,7 @@
       "text-size": 11,
       "visibility": "visible"
     },
-    "minzoom": 14,
+    "minzoom": 15,
     "paint": {
       "text-color": "#666",
       "text-halo-blur": 1,
@@ -872,6 +872,105 @@
     "source": "openmaptiles",
     "source-layer": "poi",
     "type": "symbol"
+  }, {
+    "id": "poi-biking",
+    "type": "symbol",
+    "metadata": {},
+    "source": "openmaptiles",
+    "source-layer": "poi",
+    "minzoom": 14,
+    "filter": [
+      "all",
+      [ "==", "$type", "Point" ],
+      [ "in", "class", "bicycle" ]
+    ],
+    "layout": {
+      "icon-image": "{class}_11",
+      "text-anchor": "top",
+      "text-field": "{name}",
+      "text-font": [
+        "Roboto Condensed Italic"
+      ],
+      "text-max-width": 9,
+      "text-offset": [
+        0,
+        0.6
+      ],
+      "text-padding": 2,
+      "text-size": 12
+    },
+    "paint": {
+      "text-color": "#666",
+      "text-halo-blur": 0.5,
+      "text-halo-color": "#ffffff",
+      "text-halo-width": 1
+    }
+  }, {
+    "id": "poi-biking-class-text-15",
+    "type": "symbol",
+    "metadata": {},
+    "source": "openmaptiles",
+    "source-layer": "poi",
+    "minzoom": 15,
+    "filter": [
+      "all",
+      [ "==", "$type", "Point" ],
+      [ "in", "class", "bicycle_rental", "bicycle_parking", "drinking_water", "toilets" ]
+    ],
+    "layout": {
+      "icon-image": "{class}_11",
+      "text-anchor": "top",
+      "text-field": "{class}",
+      "text-font": [
+        "Roboto Condensed Italic"
+      ],
+      "text-max-width": 9,
+      "text-offset": [
+        0,
+        0.6
+      ],
+      "text-padding": 2,
+      "text-size": 12
+    },
+    "paint": {
+      "text-color": "#666",
+      "text-halo-blur": 0.5,
+      "text-halo-color": "#ffffff",
+      "text-halo-width": 1
+    }
+  }, {
+    "id": "poi-biking-class-text-16",
+    "type": "symbol",
+    "metadata": {},
+    "source": "openmaptiles",
+    "source-layer": "poi",
+    "minzoom": 16,
+    "filter": [
+      "all",
+      [ "==", "$type", "Point" ],
+      [ "in", "class", "shelter" ]
+    ],
+    "layout": {
+      "icon-image": "{class}_11",
+      "text-anchor": "top",
+      "text-field": "{class}",
+      "text-font": [
+        "Roboto Condensed Italic"
+      ],
+      "text-max-width": 9,
+      "text-offset": [
+        0,
+        0.6
+      ],
+      "text-padding": 2,
+      "text-size": 12
+    },
+    "paint": {
+      "text-color": "#666",
+      "text-halo-blur": 0.5,
+      "text-halo-color": "#ffffff",
+      "text-halo-width": 1
+    }
   }, {
     "filter": ["all", ["has", "iata"]],
     "id": "airport-label",
