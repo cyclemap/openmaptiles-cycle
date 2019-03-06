@@ -889,7 +889,7 @@
       "text-anchor": "top",
       "text-field": "{name}",
       "text-font": [
-        "Roboto Condensed Italic"
+        "Open Sans Italic"
       ],
       "text-max-width": 9,
       "text-offset": [
@@ -922,7 +922,7 @@
       "text-anchor": "top",
       "text-field": "{class}",
       "text-font": [
-        "Roboto Condensed Italic"
+        "Open Sans Italic"
       ],
       "text-max-width": 9,
       "text-offset": [
@@ -955,7 +955,7 @@
       "text-anchor": "top",
       "text-field": "{class}",
       "text-font": [
-        "Roboto Condensed Italic"
+        "Open Sans Italic"
       ],
       "text-max-width": 9,
       "text-offset": [
