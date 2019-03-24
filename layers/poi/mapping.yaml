@@ -14,6 +14,7 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - bbq
   - bicycle_parking
   - bicycle_rental
+  - bicycle_repair_station
   - biergarten
   - bus_station
   - cafe
