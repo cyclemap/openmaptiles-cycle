@@ -11,8 +11,6 @@ quickstart.log
 # imput / output data
 data/*
 data-tileserver/*
-/updates/
-/update-state.conf
 /update.log
 
 # input wikidata
