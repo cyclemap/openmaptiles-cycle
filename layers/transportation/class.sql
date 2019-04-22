@@ -36,7 +36,7 @@ $$ LANGUAGE SQL IMMUTABLE;
 
 CREATE OR REPLACE FUNCTION cycleway_subclass(highway TEXT, tags HSTORE = null) RETURNS TEXT AS $$
     SELECT CASE
-        WHEN tags->'surface' IN ('unpaved', 'compacted', 'fine_gravel', 'gravel', 'pebblestone', 'dirt', 'earth', 'grass', 'gravel_turf', 'ground', 'mud', 'sand', 'woodchips', 'snow', 'ice') THEN 'unpaved'
+        WHEN tags->'surface' IN ('unpaved', 'compacted', 'fine_gravel', 'gravel', 'pebblestone', 'dirt', 'earth', 'grass', 'gravel_turf', 'ground', 'mud', 'sand', 'woodchips', 'snow', 'ice', 'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass', 'asphalt;sand', 'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel') THEN 'unpaved'
         WHEN tags->'surface' IN ('paved', 'asphalt', 'concrete', 'concrete:lanes', 'concrete:plates', 'paving_stones', 'sett', 'metal', 'wood') THEN 'paved'
         WHEN tags->'footway' IN ('crossing') THEN 'paved'
         WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
