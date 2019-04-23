@@ -538,13 +538,6 @@
     "x": 170,
     "y": 246
   },
-  "shelter_11": {
-    "height": 34,
-    "pixelRatio": 2,
-    "width": 34,
-    "x": 170,
-    "y": 280
-  },
   "shop_11": {
     "height": 34,
     "pixelRatio": 2,
@@ -601,7 +594,14 @@
     "x": 136,
     "y": 280
   },
-  "triangle_stroked_11": {
+  "shelter_11": {
+    "height": 34,
+    "pixelRatio": 2,
+    "width": 34,
+    "x": 170,
+    "y": 280
+  },
+  "ford_11": {
     "height": 34,
     "pixelRatio": 2,
     "width": 34,

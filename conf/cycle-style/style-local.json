@@ -915,7 +915,7 @@
     "filter": [
       "all",
       [ "==", "$type", "Point" ],
-      [ "in", "class", "bicycle_rental", "bicycle_repair_station", "bicycle_parking", "drinking_water", "toilets" ]
+      [ "in", "class", "bicycle_rental", "bicycle_repair_station", "bicycle_parking", "drinking_water", "toilets", "ford" ]
     ],
     "layout": {
       "icon-image": "{class}_11",
