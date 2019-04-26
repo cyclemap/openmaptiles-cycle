@@ -3,24 +3,22 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>cyclemap - tileserver gl</title>
+	<title>cyclemap</title>
 	<link rel="stylesheet" type="text/css" href="{{public_url}}mapbox-gl.css" />
 	<script src="{{public_url}}mapbox-gl.js"></script>
-	<link rel="stylesheet" type="text/css" href="{{public_url}}mapbox.css" />
-	<script src="{{public_url}}mapbox.js"></script>
 	<script src="{{public_url}}viewer/js.cookie.min.js"></script>
 	<style>
 		body {
 			margin: 0;
 			padding: 0;
 		}
-		#map {
+		.map {
 			position: absolute;
 			top: 0;
 			bottom: 0;
 			width: 100%;
 		}
-		#about {
+		.about {
 			position: absolute;
 			top: 0;
 			height: 20px;
@@ -29,26 +27,49 @@
 			z-index: 50;
 			text-size: larger;
 		}
-		#key {
+		.legend {
 			position: absolute;
 			bottom: 10px; left: 108px;
 			height: 20px;
+		}
+		.legendInner {
 			padding: 1px;
 			background-color: rgba(255,255,255,.5);
 			z-index: 50;
 			text-size: larger;
+			transition: opacity 2s;
+		}
+		#highZoomLegend {
+			opacity: 0;
+		}
+		#lowZoomLegend {
+			position: absolute; top: 0; left: 0;
+		}
+		.legendItem {
+			text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 		}
 	</style>
 </head>
 <body>
-	<div id='about'>cyclemap - <a href="about.html">about</a></div>
-	<div id='map'>
+	<div class='about'>cyclemap - <a href="about.html">about</a></div>
+	<div id='map' class='map'>
+	</div>
+	<div class='legend'>
+		<div class='legendInner' id="lowZoomLegend">
+			<span style="color: hsla(120, 60%, 30%, 100%);" class="legendItem">█</span> cycle
+		</div>
+		<div class='legendInner' id="highZoomLegend">
+			<span style="color: hsla(120, 60%, 30%, 100%);" class="legendItem">█</span> paved?
+			<span style="color: hsla(25, 60%, 45%, 100%);" class="legendItem">█</span> not paved
+			<span style="color: hsla(0, 0%, 94%, 100%);" class="legendItem">█</span> foot
+		</div>
 	</div>
 	<script>
-		mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
+		//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
 		var defaultLatitude = 40;
 		var defaultLongitude = -96;
 		var defaultZoom = 5;
+		var highZoom = 9;
 
 		var latitude = Cookies.get('latitude') || defaultLatitude;
 		var longitude = Cookies.get('longitude') || defaultLongitude;
@@ -73,11 +94,13 @@
 			Cookies.set('longitude', map.getCenter().lng, cookieOptions);
 			Cookies.set('zoom', map.getZoom(), cookieOptions);
 		});
+		map.on('zoom', checkZoom);
+		checkZoom();
+		function checkZoom() {
+			var highZoomEnabled = map.getZoom() >= highZoom;
+			document.getElementById('lowZoomLegend').style.opacity = highZoomEnabled ? 0 : 1;
+			document.getElementById('highZoomLegend').style.opacity = highZoomEnabled ? 1 : 0;
+		}
 	</script>
-	<div id='key'>
-		<span style="color: hsla(120, 60%, 30%, 100%); font-weight: bold;">█</span> cycling
-		<span style="color: hsla(30, 60%, 40%, 100%); font-weight: bold;">█</span> unpaved
-		<span style="color: hsla(0, 0%, 94%, 100%); font-weight: bold;">█</span> foot
-	</div>
 </body>
 </html>
