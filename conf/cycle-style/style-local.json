@@ -643,7 +643,7 @@
       "line-join": "bevel"
     },
     "paint": {
-      "line-color": "hsl(30, 60%, 40%)",
+      "line-color": "hsl(25, 60%, 45%)",
       "line-width": {
         "base": 1,
         "stops": [
