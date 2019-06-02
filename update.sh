@@ -12,16 +12,20 @@ exec &> >(tee --append "update.log")
 echo updating:  started at $(date)
 
 rm --force data/north-america-new.osm.pbf
-docker-compose run --rm import-osm osmupdate /import/north-america.osm.pbf /import/north-america-new.osm.pbf
+docker-compose run --rm import-osm osmupdate --verbose /import/north-america.osm.pbf /import/north-america-new.osm.pbf
 mv --force data/north-america-new.osm.pbf data/north-america.osm.pbf
 
+echo updating:  done at $(date)
+echo "====================================================================="
+
 echo quickstart:  started at $(date)
+
 time ./quickstart.sh north-america
 
-echo done at $(date)
+echo quickstart:  done at $(date)
 echo "====================================================================="
 
 date=$(date +%Y-%m-%d)
 file="tiles-$date-northamerica-14.mbtiles"
-echo "mv data/tiles.mbtiles data-tileserver/$file && ln -sf $file data-tileserver/tiles.mbtiles && docker restart tileserver-gl"
+mv data/tiles.mbtiles data-tileserver/$file && ln -sf $file data-tileserver/tiles.mbtiles && docker restart tileserver-gl
 
