@@ -142,10 +142,6 @@ bicycle_field: &bicycle
   key: bicycle
   name: bicycle
   type: string
-surface_field: &surface
-  key: surface
-  name: surface
-  type: string
 footway_field: &footway
   key: footway
   name: footway
@@ -216,7 +212,6 @@ tables:
     - *cycleway_left
     - *cycleway_both
     - *bicycle
-    - *surface
     - *footway
     - *hiking
     - name: tags
