@@ -1,5 +1,10 @@
 #!/bin/bash
 
+minimumSize=9000000000
+locationName=north-america
+pbfFile=$locationName.osm.pbf
+newFile=$locationName-new.osm.pbf
+
 set -e #exit on failure
 
 exec &> >(tee --append "update.log")
@@ -11,16 +16,22 @@ exec &> >(tee --append "update.log")
 
 echo updating:  started at $(date)
 
-rm --force data/north-america-new.osm.pbf
-docker-compose run --rm import-osm osmupdate --verbose /import/north-america.osm.pbf /import/north-america-new.osm.pbf
-mv --force data/north-america-new.osm.pbf data/north-america.osm.pbf
+rm --force data/$newFile
+docker-compose run --rm import-osm osmupdate --verbose /import/$pbfFile /import/$newFile
+mv --force data/$newFile data/$pbfFile
+
+if [ $(stat --format=%s data/$pbfFile) -lt $minimumSize ]; then
+	#sometimes the file is too small because something failed.  let's stop here because this needs fixing.
+	echo $pbfFile file size too small.  expected minimum size of $minimumSize bytes.
+	false
+fi
 
 echo updating:  done at $(date)
 echo "====================================================================="
 
 echo quickstart:  started at $(date)
 
-time ./quickstart.sh north-america
+time ./quickstart.sh $locationName
 
 echo quickstart:  done at $(date)
 echo "====================================================================="
