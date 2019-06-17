@@ -1,4 +1,6 @@
 
+see update.sh
+
 to fix an incorrect max zoom level:  sqlite3 tiles.mbtiles 'update metadata set value="13" where name="maxzoom";'
 data about tiles:  sqlite3 tiles.mbtiles 'select value from metadata where name in ("maxzoom", "bounds"); select zoom_level, sum(length(tile_data)) from tiles group by zoom_level;'
 
@@ -22,8 +24,7 @@ TODO
 	make key go even further right than you think it should?
 
 TIMING
-	see timing.sh
-		basically https is the real thing making stuff slow.  no need to make tile server cache yet.
+	basically https is the real thing making stuff slow.  no need to make tile server cache yet.
 	exceptions:  docker logs tileserver-gl 2>/dev/null |egrep ' [0-9]{3,}\.'
 
 BOTH
@@ -64,7 +65,9 @@ PSQL
 	p6
 		dc metro master:  todo
 		dc metro vanilla:  todo
-	
+
+CURL
+	curl https://tileserver.cyclemap.us/data/v3/12/1112/1693.pbf |gunzip -c |vim -R -
 	
 combine change files
 	osmium cat -o all-changes.osc.gz changes/*.osc.gz
