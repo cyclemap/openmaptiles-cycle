@@ -59,12 +59,14 @@
 			<span style="color: hsla(120, 60%, 30%, 100%);" class="legendItem">█</span> cycle
 		</div>
 		<div class='legendInner' id="highZoomLegend">
-			<span style="color: hsla(120, 60%, 30%, 100%);" class="legendItem">█</span> paved?
-			<span style="color: hsla(25, 60%, 45%, 100%);" class="legendItem">█</span> not paved
+			<span style="color: hsla(120, 60%, 30%, 100%);" class="legendItem">█</span> paved
+			<span style="color: hsla(25, 60%, 45%, 100%);" class="legendItem">█</span> not paved?
 			<span style="color: hsla(0, 0%, 94%, 100%);" class="legendItem">█</span> foot
 		</div>
 	</div>
 	<script>
+		var query = new URLSearchParams(window.location.search);
+
 		//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
 		var defaultLatitude = 40;
 		var defaultLongitude = -96;
@@ -77,7 +79,7 @@
 
 		var map = new mapboxgl.Map({
 			container: 'map',
-			style: '{{public_url}}styles/klokantech-basic-cycle/style.json',
+			style: '{{public_url}}styles/klokantech-basic-cycle/' + (query.has('style') ? 'style-' + query.get('style') + '.json' : 'style.json'),
 			center: new mapboxgl.LngLat(longitude, latitude),
 			zoom: zoom,
 			hash: true
