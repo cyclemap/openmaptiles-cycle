@@ -66,20 +66,25 @@
 	</div>
 	<script>
 		var query = new URLSearchParams(window.location.search);
+		var cookieOptions = { expires: 365 };
 
 		//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
 		var defaultLatitude = 40;
 		var defaultLongitude = -96;
 		var defaultZoom = 5;
 		var highZoom = 9;
+		var styleRoot = '{{public_url}}styles/klokantech-basic-cycle/';
 
 		var latitude = Cookies.get('latitude') || defaultLatitude;
 		var longitude = Cookies.get('longitude') || defaultLongitude;
 		var zoom = Cookies.get('zoom') || defaultZoom;
+		var defaultStyle = Cookies.get('style') != null ? Cookies.get('style') : 'style.json';
+		var style = query.has('style') ? 'style-' + query.get('style') + '.json' : defaultStyle;
+		Cookies.set('style', style, cookieOptions);
 
 		var map = new mapboxgl.Map({
 			container: 'map',
-			style: '{{public_url}}styles/klokantech-basic-cycle/' + (query.has('style') ? 'style-' + query.get('style') + '.json' : 'style.json'),
+			style: styleRoot + style,
 			center: new mapboxgl.LngLat(longitude, latitude),
 			zoom: zoom,
 			hash: true
@@ -91,7 +96,6 @@
 			trackUserLocation: true
 		}));
 		map.on('moveend', function(move) {
-			var cookieOptions = { expires: 365 };
 			Cookies.set('latitude', map.getCenter().lat, cookieOptions);
 			Cookies.set('longitude', map.getCenter().lng, cookieOptions);
 			Cookies.set('zoom', map.getZoom(), cookieOptions);
