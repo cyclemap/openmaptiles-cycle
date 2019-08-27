@@ -1,4 +1,12 @@
 
+speed:
+	COPY_CONCURRENCY=10		UV_THREADPOOL_SIZE=4
+		between 5.7 and 7.0 days?
+	COPY_CONCURRENCY=20		UV_THREADPOOL_SIZE=8
+		4.0 days
+
+
+
 see update.sh
 
 to fix an incorrect max zoom level:  sqlite3 tiles.mbtiles 'update metadata set value="13" where name="maxzoom";'
@@ -25,7 +33,7 @@ TODO
 
 TIMING
 	basically https is the real thing making stuff slow.  no need to make tile server cache yet.
-	exceptions:  docker logs tileserver-gl 2>/dev/null |egrep ' [0-9]{3,}\.'
+	exceptions:  (timing information isn't in logs anymore) grep ... logs/access.log
 
 BOTH
 	 14 dc only vanilla on p6:  1m5s in tiling, 13m16s total, 8.9mb file
