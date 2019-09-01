@@ -12,6 +12,7 @@ quickstart.log
 data/*
 data-tileserver/*
 /update.log
+/.update.exclusivelock
 
 # input wikidata
 wikidata/*
