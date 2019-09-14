@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#these won't do what we want because docker is doing all of the real work
+#renice +20 -p $$ >/dev/null
+#ionice -c3 -p $$
+
 minimumSize=9000000000
 locationName=north-america
 pbfFile=$locationName.osm.pbf
@@ -38,5 +42,7 @@ echo "====================================================================="
 
 date=$(date +%Y-%m-%d)
 file="tiles-$date-northamerica-14.mbtiles"
-mv data/tiles.mbtiles data-tileserver/$file && ln -sf $file data-tileserver/tiles.mbtiles && docker restart tileserver-gl
+mv data/tiles.mbtiles data-tileserver/$file && ln -sf $file data-tileserver/tiles.mbtiles &&
+	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver &&
+	docker restart tileserver-gl
 
