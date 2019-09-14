@@ -1,11 +1,4 @@
 
-speed:
-	COPY_CONCURRENCY=10		UV_THREADPOOL_SIZE=4
-		between 5.7 and 7.0 days?
-	COPY_CONCURRENCY=20		UV_THREADPOOL_SIZE=8
-		4.0 days
-
-
 
 see update.sh
 
