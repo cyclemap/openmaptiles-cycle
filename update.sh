@@ -7,7 +7,7 @@
 minimumSize=9000000000
 locationName=north-america
 pbfFile=$locationName.osm.pbf
-newFile=$locationName-new.osm.pbf
+#newFile=$locationName-new.osm.pbf
 
 set -e #exit on failure
 
@@ -18,11 +18,15 @@ exec &> >(tee --append "update.log")
 #you can create a "change file" (osc file) and use Osmosis or osm2pgsql to get that change file into postgres.
 #we have to stop using quickstart.sh for that to work.
 
-echo updating:  started at $(date)
-
-rm --force data/$newFile
-docker-compose run --rm import-osm osmupdate --verbose /import/$pbfFile /import/$newFile
-mv --force data/$newFile data/$pbfFile
+#THIS IS NOW BROKEN.  not sure what happened, but osmupdate now breaks other downstream products.
+#specifically this:  make import-borders
+#gives this error:  terminate called after throwing an instance of 'osmium::not_found'
+#what():  location for one or more nodes not found in node location index
+#echo updating:  started at $(date)
+#
+#rm --force data/$newFile
+#docker-compose run --rm import-osm osmupdate --verbose /import/$pbfFile /import/$newFile
+#mv --force data/$newFile data/$pbfFile
 
 if [ $(stat --format=%s data/$pbfFile) -lt $minimumSize ]; then
 	#sometimes the file is too small because something failed.  let's stop here because this needs fixing.
