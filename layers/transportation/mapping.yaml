@@ -45,13 +45,13 @@ generalized_tables:
 # etldoc: imposm3 -> osm_highway_linestring_gen2
   highway_linestring_gen2:
     source: highway_linestring_gen1
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link')) AND NOT is_area
+    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'cycleway') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR tags->'icn' is not null OR tags->'ncn' is not null OR tags->'rcn' is not null OR tags->'lcn' is not null OR tags->'bicycle' is not null OR tags->'cycleway' is not null OR tags->'cycleway:left' is not null OR tags->'cycleway:right' is not null OR tags->'cycleway:both' is not null) AND NOT is_area
     tolerance: ZRES11
 
 # etldoc: imposm3 -> osm_highway_linestring_gen1
   highway_linestring_gen1:
     source: highway_linestring
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link')) AND NOT is_area AND ST_IsValid(geometry)
+    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'cycleway') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR tags->'icn' is not null OR tags->'ncn' is not null OR tags->'rcn' is not null OR tags->'lcn' is not null OR tags->'bicycle' is not null OR tags->'cycleway' is not null OR tags->'cycleway:left' is not null OR tags->'cycleway:right' is not null OR tags->'cycleway:both' is not null) AND NOT is_area AND ST_IsValid(geometry)
     tolerance: ZRES12
 
 name_field: &name
@@ -106,6 +106,50 @@ public_transport_field: &public_transport
   key: public_transport
   name: public_transport
   type: string
+icn_field: &icn
+  key: icn
+  name: icn
+  type: string
+ncn_field: &ncn
+  key: ncn
+  name: ncn
+  type: string
+rcn_field: &rcn
+  key: rcn
+  name: rcn
+  type: string
+lcn_field: &lcn
+  key: lcn
+  name: lcn
+  type: string
+cycleway_field: &cycleway
+  key: cycleway
+  name: cycleway
+  type: string
+cycleway_right_field: &cycleway_right
+  key: cycleway:right
+  name: cycleway_right
+  type: string
+cycleway_left_field: &cycleway_left
+  key: cycleway:left
+  name: cycleway_left
+  type: string
+cycleway_both_field: &cycleway_both
+  key: cycleway:both
+  name: cycleway_both
+  type: string
+bicycle_field: &bicycle
+  key: bicycle
+  name: bicycle
+  type: string
+footway_field: &footway
+  key: footway
+  name: footway
+  type: string
+hiking_field: &hiking
+  key: hiking
+  name: hiking
+  type: string
 ref_field: &ref
   key: ref
   name: ref
@@ -133,10 +177,6 @@ man_made_field: &man_made
 z_order_field: &z_order
   name: z_order
   type: wayzorder
-bicycle_field: &bicycle
-  key: bicycle
-  name: bicycle
-  type: string
 foot_field: &foot
   key: foot
   name: foot
@@ -179,6 +219,16 @@ tables:
     - *name
     - *name_en
     - *name_de
+    - *icn
+    - *ncn
+    - *rcn
+    - *lcn
+    - *cycleway
+    - *cycleway_right
+    - *cycleway_left
+    - *cycleway_both
+    - *footway
+    - *hiking
     - name: tags
       type: hstore_tags
     - *short_name

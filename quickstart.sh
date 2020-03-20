@@ -142,7 +142,7 @@ if [ !  -f "./data/${testdata}" ]; then
     echo " "
     echo "-------------------------------------------------------------------------------------"
     echo "====> : Downloading testdata $testdata"
-    rm -f ./data/*
+    rm --force --recursive ./data/*
     #wget $testdataurl  -P ./data
     make download-geofabrik "area=${osm_area}"
     echo " "
