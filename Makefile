@@ -170,7 +170,25 @@ start-tileserver: init-dirs
 	@echo "***********************************************************"
 	@echo " "
 	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver
-	docker run --restart=always --detach=true --name tileserver-gl -v $$(pwd)/data-tileserver:/data -v $$(pwd)/data-tileserver/viewer:/usr/src/app/public/resources/viewer -v $$(pwd)/logs:/var/log -p 8082:80 klokantech/tileserver-gl --verbose -c /data/tileserver-gl.json --public_url=https://tileserver.cyclemap.us/ --log_file /var/log/access.log --log_format=combined
+	docker run \
+		--restart=always \
+		--detach=true \
+		--name tileserver-gl \
+		--volume $$(pwd)/data-tileserver:/data \
+		--volume $$(pwd)/data-tileserver/viewer:/usr/src/app/public/resources/viewer \
+		--volume $$(pwd)/logs:/var/log \
+		--publish=8082:80 \
+		--env="VIRTUAL_HOST=tileserver.cyclemap.us" \
+		--env="LETSENCRYPT_HOST=tileserver.cyclemap.us" \
+		--env="LETSENCRYPT_EMAIL=adrian-1f-fz@aporter.org" \
+		--env="HTTPS_METHOD=redirect" \
+		--env="ENABLE_IPV6=false" \
+		klokantech/tileserver-gl \
+			--verbose \
+			-c /data/tileserver-gl.json \
+			--public_url=https://tileserver.cyclemap.us/ \
+			--log_file /var/log/access.log \
+			--log_format=combined
 
 .PHONY: start-postserve
 start-postserve: db-start
