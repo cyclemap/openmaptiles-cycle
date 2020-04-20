@@ -50,7 +50,7 @@ IMMUTABLE PARALLEL SAFE;
 
 CREATE OR REPLACE FUNCTION cycleway_subclass(highway TEXT, tags HSTORE = null) RETURNS TEXT AS $$
     SELECT CASE
-        WHEN tags->'surface' IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel', 'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips', 'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass', 'asphalt;sand', 'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock') THEN 'unpaved'
+        WHEN tags->'surface' IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel', 'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips', 'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass', 'asphalt;sand', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt', 'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock') THEN 'unpaved'
         WHEN tags->'surface' IN ('paved', 'asphalt', 'cobblestone', 'concrete', 'concrete:lanes', 'concrete:plates', 'metal', 'paving_stones', 'sett', 'unhewn_cobblestone', 'wood', 'cement', 'asphalt;concrete', 'concrete;asphalt') THEN 'paved'
         WHEN tags->'footway' IN ('crossing') THEN 'paved'
         WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
