@@ -4,14 +4,19 @@
 #renice +20 -p $$ >/dev/null
 #ionice -c3 -p $$
 
-minimumSize=9000000000
+minimumSize=9500000000
 locationName=north-america
+downloadFile=$locationName-latest.osm.pbf
 pbfFile=$locationName.osm.pbf
 #newFile=$locationName-new.osm.pbf
 
 set -e #exit on failure
 
 exec &> >(tee --append "update.log")
+
+rm -f $downloadFile
+wget https://download.geofabrik.de/$downloadFile
+cp -a $downloadFile data/$pbfFile
 
 #THE NEXT STEP:
 #see here:  https://wiki.openstreetmap.org/wiki/Osmupdate#Assembling_an_OSM_Change_file
@@ -45,7 +50,7 @@ echo quickstart:  done at $(date)
 echo "====================================================================="
 
 date=$(date +%Y-%m-%d)
-file="tiles-$date-northamerica-14.mbtiles"
+file="tiles-$date-$locationName-14.mbtiles"
 mv data/tiles.mbtiles data-tileserver/$file && ln -sf $file data-tileserver/tiles.mbtiles &&
 	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver &&
 	docker restart tileserver-gl
