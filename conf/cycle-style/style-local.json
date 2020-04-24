@@ -930,7 +930,8 @@
         0.6
       ],
       "text-padding": 0,
-      "text-size": 12
+      "text-size": 12,
+      "text-allow-overlap": true
     },
     "paint": {
       "text-color": "#666",
