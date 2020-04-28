@@ -56,7 +56,7 @@ CREATE OR REPLACE FUNCTION cycleway_subclass(highway TEXT, tags HSTORE = null) R
         WHEN tags->'footway' IN ('crossing') THEN 'paved'
         WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
         WHEN tags->'hiking' IN ('yes', 'designated', 'permissive') THEN 'unpaved'
-        WHEN highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'service', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'raceway', 'road', 'steps', 'cycleway') THEN 'paved'
+        WHEN highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street', 'road', 'service', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'raceway', 'steps', 'cycleway') THEN 'paved'
         ELSE NULL
     END;
 $$ LANGUAGE SQL IMMUTABLE;
