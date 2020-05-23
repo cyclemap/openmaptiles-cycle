@@ -150,6 +150,10 @@ hiking_field: &hiking
   key: hiking
   name: hiking
   type: string
+maxspeed_field: &maxspeed
+  key: maxspeed
+  name: maxspeed
+  type: string
 ref_field: &ref
   key: ref
   name: ref
@@ -229,6 +233,7 @@ tables:
     - *cycleway_both
     - *footway
     - *hiking
+    - *maxspeed
     - name: tags
       type: hstore_tags
     - *short_name
