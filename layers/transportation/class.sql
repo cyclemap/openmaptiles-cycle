@@ -19,7 +19,11 @@ SELECT CASE
         WHEN tags->'rcn' IN ('yes') THEN 'cycleway'
         WHEN tags->'lcn' IN ('yes') THEN 'cycleway'
         WHEN tags->'bicycle' IN ('designated', 'mtb') THEN 'cycleway'
-        WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND highway IN ('pedestrian', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track', 'residential', 'service', 'unclassified') THEN 'cycleway'
+        WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (
+            highway IN ('pedestrian', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track', 'residential', 'service', 'unclassified') OR
+            (tags->'maxspeed' ~ E'^\\d+ mph$' AND replace(tags->'maxspeed', ' mph', '')::integer <= 35) OR
+            (tags->'maxspeed' ~ E'^\\d+ kph$' AND replace(tags->'maxspeed', ' kph', '')::integer <= 60)
+            ) THEN 'cycleway'
         WHEN tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
         WHEN tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
         WHEN tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
