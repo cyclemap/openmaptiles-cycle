@@ -23,7 +23,7 @@ USE_PRELOADED_IMAGE ?=
 PPORT ?= 8090
 export PPORT
 # Local port to use with tileserver
-TPORT ?= 8080
+TPORT ?= 8082
 export TPORT
 
 # Allow a custom docker-compose project name
@@ -424,9 +424,33 @@ start-tileserver: init-dirs
 	@echo "* Start maptiler/tileserver-gl "
 	@echo "*       ----------------------------> check $(OMT_HOST):$(TPORT) "
 	@echo "* "
+	@echo "*       ----------------------------> this will restart on boot "
+	@echo "*       ----------------------------> to see logs run:  docker logs -f tileserver-gl "
+	@echo "*       ----------------------------> to restart:  docker restart tileserver-gl "
+	@echo "* "
 	@echo "***********************************************************"
 	@echo " "
-	docker run $(DC_OPTS) -it --name tileserver-gl -v $$(pwd)/data:/data -p $(TPORT):$(TPORT) maptiler/tileserver-gl --port $(TPORT)
+	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver
+	docker run \
+		--restart=always \
+		--detach=true \
+		--name tileserver-gl \
+		--volume $$(pwd)/data-tileserver:/data \
+		--volume $$(pwd)/data-tileserver/viewer:/usr/src/app/public/resources/viewer \
+		--volume $$(pwd)/logs:/var/log \
+		--publish=$(TPORT):$(TPORT) \
+		--env="VIRTUAL_HOST=tileserver.cyclemap.us" \
+		--env="LETSENCRYPT_HOST=tileserver.cyclemap.us" \
+		--env="LETSENCRYPT_EMAIL=adrian-1f-fz@aporter.org" \
+		--env="HTTPS_METHOD=redirect" \
+		--env="ENABLE_IPV6=false" \
+		maptiler/tileserver-gl \
+			--port $(TPORT) \
+			--verbose \
+			-c /data/tileserver-gl.json \
+			--public_url=https://tileserver.cyclemap.us/ \
+			--log_file /var/log/access.log \
+			--log_format=combined
 
 .PHONY: start-postserve
 start-postserve: start-db

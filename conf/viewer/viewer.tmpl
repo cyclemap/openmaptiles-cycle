@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>cyclemap</title>
+	<link rel="stylesheet" type="text/css" href="{{public_url}}mapbox-gl.css" />
+	<script src="{{public_url}}mapbox-gl.js"></script>
+	<script src="{{public_url}}viewer/js.cookie.min.js"></script>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		.map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+		.about {
+			position: absolute;
+			top: 0;
+			height: 20px;
+			padding: 1px;
+			background-color: rgba(255,255,255,.5);
+			z-index: 50;
+			text-size: larger;
+		}
+		.legend {
+			position: absolute;
+			bottom: 10px; left: 108px;
+			height: 20px;
+		}
+		.legendInner {
+			padding: 1px;
+			background-color: rgba(255,255,255,.5);
+			z-index: 50;
+			text-size: larger;
+			transition: opacity 2s;
+		}
+		#highZoomLegend {
+			opacity: 0;
+		}
+		#lowZoomLegend {
+			position: absolute; top: 0; left: 0;
+		}
+		.legendItem {
+			text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+		}
+	</style>
+</head>
+<body>
+	<div class='about'>cyclemap - <a href="about.html">about</a></div>
+	<div id='map' class='map'>
+	</div>
+	<div class='legend'>
+		<div class='legendInner' id="lowZoomLegend">
+			<span style="color: hsla(120, 60%, 30%, 100%);" class="legendItem">█</span> cycle
+		</div>
+		<div class='legendInner' id="highZoomLegend">
+			<span style="color: hsla(120, 60%, 30%, 100%);" class="legendItem">█</span> paved
+			<span style="color: hsla(25, 60%, 45%, 100%);" class="legendItem">█</span> not paved?
+			<span style="color: hsla(0, 0%, 94%, 100%);" class="legendItem">█</span> foot
+		</div>
+	</div>
+	<script>
+		var query = new URLSearchParams(window.location.search);
+		var cookieOptions = { expires: 365 };
+
+		//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
+		var defaultLatitude = 40;
+		var defaultLongitude = -96;
+		var defaultZoom = 5;
+		var highZoom = 9;
+		var styleRoot = '{{public_url}}styles/klokantech-basic-cycle/';
+
+		var latitude = Cookies.get('latitude') || defaultLatitude;
+		var longitude = Cookies.get('longitude') || defaultLongitude;
+		var zoom = Cookies.get('zoom') || defaultZoom;
+		var defaultStyle = Cookies.get('style') != null ? Cookies.get('style') : 'style.json';
+		var style = query.has('style') ? 'style-' + query.get('style') + '.json' : defaultStyle;
+		Cookies.set('style', style, cookieOptions);
+
+		var map = new mapboxgl.Map({
+			container: 'map',
+			style: styleRoot + style,
+			center: new mapboxgl.LngLat(longitude, latitude),
+			zoom: zoom,
+			hash: true
+		});
+		map.addControl(new mapboxgl.NavigationControl());
+		map.addControl(new mapboxgl.ScaleControl());
+		map.addControl(new mapboxgl.GeolocateControl({
+			positionOptions: {enableHighAccuracy: true},
+			trackUserLocation: true
+		}));
+		map.on('moveend', function(move) {
+			Cookies.set('latitude', map.getCenter().lat, cookieOptions);
+			Cookies.set('longitude', map.getCenter().lng, cookieOptions);
+			Cookies.set('zoom', map.getZoom(), cookieOptions);
+		});
+		map.on('zoom', checkZoom);
+		checkZoom();
+		function checkZoom() {
+			var highZoomEnabled = map.getZoom() >= highZoom;
+			document.getElementById('lowZoomLegend').style.opacity = highZoomEnabled ? 0 : 1;
+			document.getElementById('highZoomLegend').style.opacity = highZoomEnabled ? 1 : 0;
+		}
+	</script>
+</body>
+</html>
