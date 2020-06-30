@@ -612,29 +612,6 @@
   }, {
     "filter": ["all", ["==", "$type", "LineString"],
       ["in", "class", "cycleway"],
-      ["in", "subclass", "paved"]
-    ],
-    "id": "cycleway-paved",
-    "layout": {
-      "line-cap": "square",
-      "line-join": "bevel"
-    },
-    "paint": {
-      "line-color": "hsl(120, 60%, 30%)",
-      "line-width": {
-        "base": 1,
-        "stops": [
-          [9, 2],
-          [18, 3]
-        ]
-      }
-    },
-    "source": "openmaptiles",
-    "source-layer": "transportation",
-    "type": "line"
-  }, {
-    "filter": ["all", ["==", "$type", "LineString"],
-      ["in", "class", "cycleway"],
       ["in", "subclass", "unpaved"]
     ],
     "id": "cycleway-unpaved",
@@ -668,6 +645,29 @@
     },
     "paint": {
       "line-color": "hsl(25, 60%, 45%)",
+      "line-width": {
+        "base": 1,
+        "stops": [
+          [9, 2],
+          [18, 3]
+        ]
+      }
+    },
+    "source": "openmaptiles",
+    "source-layer": "transportation",
+    "type": "line"
+  }, {
+    "filter": ["all", ["==", "$type", "LineString"],
+      ["in", "class", "cycleway"],
+      ["in", "subclass", "paved"]
+    ],
+    "id": "cycleway-paved",
+    "layout": {
+      "line-cap": "square",
+      "line-join": "bevel"
+    },
+    "paint": {
+      "line-color": "hsl(120, 60%, 30%)",
       "line-width": {
         "base": 1,
         "stops": [
