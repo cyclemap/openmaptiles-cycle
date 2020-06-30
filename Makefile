@@ -440,6 +440,7 @@ start-tileserver: init-dirs
 		--volume $$(pwd)/logs:/var/log \
 		--publish=$(TPORT):$(TPORT) \
 		--env="VIRTUAL_HOST=tileserver.cyclemap.us" \
+		--env="VIRTUAL_PORT=$(TPORT)" \
 		--env="LETSENCRYPT_HOST=tileserver.cyclemap.us" \
 		--env="LETSENCRYPT_EMAIL=adrian-1f-fz@aporter.org" \
 		--env="HTTPS_METHOD=redirect" \
