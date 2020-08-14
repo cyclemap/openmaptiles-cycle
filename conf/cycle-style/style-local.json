@@ -872,122 +872,22 @@
     "source-layer": "boundary",
     "type": "line"
   }, {
-    "filter": ["all", ["==", "$type", "Point"],
-      ["==", "rank", 1]
-    ],
-    "id": "poi_label",
-    "layout": {
-      "icon-size": 1,
-      "text-anchor": "top",
-      "text-field": "{name:latin}\n{name:nonlatin}",
-      "text-font": ["Noto Sans Regular"],
-      "text-max-width": 8,
-      "text-offset": [0, 0.5],
-      "text-size": 11,
-      "visibility": "visible"
-    },
-    "minzoom": 15,
-    "paint": {
-      "text-color": "#666",
-      "text-halo-blur": 1,
-      "text-halo-color": "rgba(255,255,255,0.75)",
-      "text-halo-width": 1
-    },
-    "source": "openmaptiles",
-    "source-layer": "poi",
-    "type": "symbol"
-  }, {
-    "id": "poi-biking",
+    "id": "poi-rank-one",
     "type": "symbol",
     "metadata": {},
     "source": "openmaptiles",
     "source-layer": "poi",
-    "minzoom": 14,
-    "filter": [
-      "all",
-      [ "==", "$type", "Point" ],
-      [ "in", "class", "bicycle" ]
+    "minzoom": 12,
+    "filter": [ "all",
+        [ "==", "$type", "Point" ],
+        ["==", "rank", 1]
     ],
     "layout": {
-      "icon-image": "{class}_11",
       "text-anchor": "top",
       "text-field": "{name}",
-      "text-font": [
-        "Noto Sans Italic"
-      ],
+      "text-font": ["Noto Sans Regular"],
       "text-max-width": 9,
-      "text-offset": [
-        0,
-        0.6
-      ],
-      "text-padding": 2,
-      "text-size": 12
-    },
-    "paint": {
-      "text-color": "#666",
-      "text-halo-blur": 0.5,
-      "text-halo-color": "#ffffff",
-      "text-halo-width": 1
-    }
-  }, {
-    "id": "poi-biking-class-text-15",
-    "type": "symbol",
-    "metadata": {},
-    "source": "openmaptiles",
-    "source-layer": "poi",
-    "minzoom": 15,
-    "filter": [
-      "all",
-      [ "==", "$type", "Point" ],
-      [ "in", "class", "bicycle_rental", "bicycle_repair_station", "bicycle_parking", "drinking_water", "toilets", "ford" ]
-    ],
-    "layout": {
-      "icon-image": "{class}_11",
-      "text-anchor": "top",
-      "text-field": "{class}",
-      "text-font": [
-        "Noto Sans Italic"
-      ],
-      "text-max-width": 9,
-      "text-offset": [
-        0,
-        0.6
-      ],
-      "text-padding": 0,
-      "text-size": 12,
-      "text-allow-overlap": true
-    },
-    "paint": {
-      "text-color": "#666",
-      "text-halo-blur": 0.5,
-      "text-halo-color": "#ffffff",
-      "text-halo-width": 1
-    }
-  }, {
-    "id": "poi-biking-class-text-16",
-    "type": "symbol",
-    "metadata": {},
-    "source": "openmaptiles",
-    "source-layer": "poi",
-    "minzoom": 16,
-    "filter": [
-      "all",
-      [ "==", "$type", "Point" ],
-      [ "in", "class", "shelter" ]
-    ],
-    "layout": {
-      "icon-image": "{class}_11",
-      "text-anchor": "top",
-      "text-field": "{class}",
-      "text-font": [
-        "Noto Sans Italic"
-      ],
-      "text-max-width": 9,
-      "text-offset": [
-        0,
-        0.6
-      ],
-      "text-padding": 2,
+      "text-offset": [0, 0.6],
       "text-size": 12
     },
     "paint": {
@@ -1127,6 +1027,117 @@
     "source": "openmaptiles",
     "source-layer": "place",
     "type": "symbol"
+  }, {
+    "id": "poi-biking-class-text-16",
+    "type": "symbol",
+    "metadata": {},
+    "source": "openmaptiles",
+    "source-layer": "poi",
+    "minzoom": 16,
+    "filter": [
+      "all",
+      [ "==", "$type", "Point" ],
+      [ "in", "class", "shelter" ]
+    ],
+    "layout": {
+      "icon-image": "{class}_11",
+      "text-anchor": "top",
+      "text-field": "{class}",
+      "text-font": ["Noto Sans Italic"],
+      "text-max-width": 9,
+      "text-offset": [0, 0.6],
+      "text-padding": 2,
+      "text-size": 12
+    },
+    "paint": {
+      "text-color": "#666",
+      "text-halo-blur": 0.5,
+      "text-halo-color": "#ffffff",
+      "text-halo-width": 1
+    }
+  }, {
+    "id": "poi-biking-class-text-14",
+    "type": "symbol",
+    "metadata": {},
+    "source": "openmaptiles",
+    "source-layer": "poi",
+    "minzoom": 14,
+    "filter": [
+      "all",
+      [ "==", "$type", "Point" ],
+      [ "in", "class", "bicycle_parking", "drinking_water", "toilets", "ford" ]
+    ],
+    "layout": {
+      "icon-image": "{class}_11",
+      "text-anchor": "top",
+      "text-field": "{class}",
+      "text-font": ["Noto Sans Italic"],
+      "text-max-width": 9,
+      "text-offset": [0, 0.6],
+      "text-padding": 0,
+      "text-size": 12
+    },
+    "paint": {
+      "text-color": "#666",
+      "text-halo-blur": 0.5,
+      "text-halo-color": "#ffffff",
+      "text-halo-width": 1
+    }
+  }, {
+    "id": "poi-biking-class-text-13",
+    "type": "symbol",
+    "metadata": {},
+    "source": "openmaptiles",
+    "source-layer": "poi",
+    "minzoom": 13,
+    "filter": [
+      "all",
+      [ "==", "$type", "Point" ],
+      [ "in", "class", "bicycle_rental", "bicycle_repair_station"]
+    ],
+    "layout": {
+      "icon-image": "{class}_11",
+      "text-anchor": "top",
+      "text-field": "{class}",
+      "text-font": ["Noto Sans Italic"],
+      "text-max-width": 9,
+      "text-offset": [0, 0.6],
+      "text-padding": 0,
+      "text-size": 12
+    },
+    "paint": {
+      "text-color": "#666",
+      "text-halo-blur": 0.5,
+      "text-halo-color": "#ffffff",
+      "text-halo-width": 1
+    }
+  }, {
+    "id": "poi-biking",
+    "type": "symbol",
+    "metadata": {},
+    "source": "openmaptiles",
+    "source-layer": "poi",
+    "minzoom": 12,
+    "filter": [ "all",
+        [ "==", "$type", "Point" ],
+        [ "in", "class", "bicycle" ]
+    ],
+    "layout": {
+      "icon-image": "{class}_11",
+      "text-anchor": "top",
+      "text-field": "{name}",
+      "text-font": ["Noto Sans Italic"],
+      "text-max-width": 9,
+      "text-offset": [0, 0.6],
+      "text-padding": 2,
+      "text-size": 12
+    },
+    "paint": {
+      "text-color": "#666",
+      "text-halo-blur": 0.5,
+      "text-halo-color": "#ffffff",
+      "text-halo-width": 1
+    }
   }, {
     "filter": ["all", ["==", "$type", "Point"],
       ["==", "class", "country"],
