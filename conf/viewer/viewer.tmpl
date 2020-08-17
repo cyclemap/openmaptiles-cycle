@@ -23,7 +23,7 @@
 			top: 0;
 			height: 20px;
 			padding: 1px;
-			background-color: rgba(255,255,255,.5);
+			background: hsla(0, 0%, 100%, 50%);
 			z-index: 50;
 			text-size: larger;
 		}
@@ -34,19 +34,31 @@
 		}
 		.legendInner {
 			padding: 1px;
-			background-color: rgba(255,255,255,.5);
+			background: hsla(0, 0%, 100%, 50%);
 			z-index: 50;
-			text-size: larger;
 			transition: opacity 2s;
 		}
 		#highZoomLegend {
 			opacity: 0;
+			text-size: larger;
 		}
 		#lowZoomLegend {
 			position: absolute; top: 0; left: 0;
+			text-size: larger;
 		}
 		.legendItem {
 			text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+		}
+		.iconLegend {
+			position: absolute;
+			bottom: 2px; left: 320px;
+			background: hsla(0, 0%, 100%, 50%);
+		}
+		.iconLegend img {
+			object-fit: none;
+			width: 34px;
+			height: 30px;
+			vertical-align: middle;
 		}
 	</style>
 </head>
@@ -56,13 +68,25 @@
 	</div>
 	<div class='legend'>
 		<div class='legendInner' id="lowZoomLegend">
-			<span style="color: hsla(120, 60%, 30%, 100%);" class="legendItem">█</span> cycle
+			<span style="color: hsl(120, 60%, 30%);" class="legendItem">█</span> cycle
 		</div>
 		<div class='legendInner' id="highZoomLegend">
-			<span style="color: hsla(120, 60%, 30%, 100%);" class="legendItem">█</span> paved
-			<span style="color: hsla(25, 60%, 45%, 100%);" class="legendItem">█</span> not paved?
-			<span style="color: hsla(0, 0%, 94%, 100%);" class="legendItem">█</span> foot
+			<span style="color: hsl(120, 60%, 30%);" class="legendItem">█</span> paved
+			<span style="color: hsl(25, 60%, 45%);" class="legendItem">█</span> not paved?
+			<span style="color: hsl(0, 0%, 94%);" class="legendItem">█</span> foot
 		</div>
+	</div>
+	<div class="iconLegend">
+		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: 0 -112px;">
+			shop
+		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: 0 -248px;">
+			station
+		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: -34px -248px;">
+			parking
+		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: -68px -248px;">
+			rental
+		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: -204px -112px;">
+			water
 	</div>
 	<script>
 		var query = new URLSearchParams(window.location.search);
@@ -80,6 +104,7 @@
 		var zoom = Cookies.get('zoom') || defaultZoom;
 		var defaultStyle = Cookies.get('style') != null ? Cookies.get('style') : 'style.json';
 		var style = query.has('style') ? 'style-' + query.get('style') + '.json' : defaultStyle;
+		style = 'style.json'; //tileserver only has this style
 		Cookies.set('style', style, cookieOptions);
 
 		var map = new mapboxgl.Map({

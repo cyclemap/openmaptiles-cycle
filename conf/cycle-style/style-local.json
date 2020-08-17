@@ -1056,7 +1056,7 @@
       "text-halo-width": 1
     }
   }, {
-    "id": "poi-biking-class-text-14",
+    "id": "poi-biking-class-no-text-14",
     "type": "symbol",
     "metadata": {},
     "source": "openmaptiles",
@@ -1070,7 +1070,6 @@
     "layout": {
       "icon-image": "{class}_11",
       "text-anchor": "top",
-      "text-field": "{class}",
       "text-font": ["Noto Sans Italic"],
       "text-max-width": 9,
       "text-offset": [0, 0.6],
@@ -1084,7 +1083,7 @@
       "text-halo-width": 1
     }
   }, {
-    "id": "poi-biking-class-text-13",
+    "id": "poi-biking-class-no-text-13",
     "type": "symbol",
     "metadata": {},
     "source": "openmaptiles",
@@ -1098,7 +1097,6 @@
     "layout": {
       "icon-image": "{class}_11",
       "text-anchor": "top",
-      "text-field": "{class}",
       "text-font": ["Noto Sans Italic"],
       "text-max-width": 9,
       "text-offset": [0, 0.6],

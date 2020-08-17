@@ -83,27 +83,6 @@
     "x": 0,
     "y": 55
   },
-  "bicycle_parking_11": {
-    "height": 17,
-    "pixelRatio": 1,
-    "width": 17,
-    "x": 17,
-    "y": 55
-  },
-  "bicycle_repair_station_11": {
-    "height": 17,
-    "pixelRatio": 1,
-    "width": 17,
-    "x": 17,
-    "y": 55
-  },
-  "bicycle_rental_11": {
-    "height": 17,
-    "pixelRatio": 1,
-    "width": 17,
-    "x": 17,
-    "y": 55
-  },
   "bus_11": {
     "height": 17,
     "pixelRatio": 1,
@@ -454,21 +433,21 @@
     "x": 136,
     "y": 106
   },
-  "religious_christian_11": {
+  "bicycle_repair_station_11": {
     "height": 17,
     "pixelRatio": 1,
     "width": 17,
     "x": 0,
     "y": 123
   },
-  "religious_jewish_11": {
+  "bicycle_parking_11": {
     "height": 17,
     "pixelRatio": 1,
     "width": 17,
     "x": 17,
     "y": 123
   },
-  "religious_muslim_11": {
+  "bicycle_rental_11": {
     "height": 17,
     "pixelRatio": 1,
     "width": 17,
