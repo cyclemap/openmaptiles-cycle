@@ -13,7 +13,7 @@ set -e #exit on failure
 exec &> >(tee --append "update.log")
 
 #rm --force $pbfFile
-#wget --progress=bar:force:noscroll https://download.geofabrik.de/$pbfFile
+#wget --progress=bar:force:noscroll --output-document $pbfFile https://download.geofabrik.de/$locationName-latest.osm.pbf
 #mv --force $pbfFile data/$pbfFile
 
 #THE NEXT STEP:
