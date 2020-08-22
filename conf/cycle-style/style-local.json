@@ -681,6 +681,30 @@
     "type": "line"
   }, {
     "filter": ["all", ["==", "$type", "LineString"],
+      ["in", "class", "motorway", "trunk", "primary", "secondary", "tertiary", "minor", "service"],
+      ["in", "surface", "unpaved"],
+      ["==", "true", "false"]
+    ],
+    "id": "road-unpaved",
+    "layout": {
+      "line-cap": "square",
+      "line-join": "bevel"
+    },
+    "paint": {
+      "line-color": "hsl(0, 0%, 50%)",
+      "line-width": {
+        "base": 1,
+        "stops": [
+          [9, 2],
+          [18, 3]
+        ]
+      }
+    },
+    "source": "openmaptiles",
+    "source-layer": "transportation",
+    "type": "line"
+  }, {
+    "filter": ["all", ["==", "$type", "LineString"],
       ["==", "brunnel", "bridge"]
     ],
     "id": "waterway-bridge-case",
