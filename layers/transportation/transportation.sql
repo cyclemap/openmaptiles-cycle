@@ -75,7 +75,7 @@ FROM (
                 NULL AS shipway,
                 NULL AS public_transport,
                 NULL AS service,
-                NULL::hstore AS tags,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -89,7 +89,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen7
          WHERE zoom_level = 4
@@ -105,7 +105,7 @@ FROM (
                 NULL AS shipway,
                 NULL AS public_transport,
                 NULL AS service,
-                NULL::hstore AS tags,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -119,7 +119,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen6
          WHERE zoom_level = 5
@@ -135,7 +135,7 @@ FROM (
                 NULL AS shipway,
                 NULL AS public_transport,
                 NULL AS service,
-                NULL::hstore AS tags,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -149,7 +149,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen5
          WHERE zoom_level = 6
@@ -165,7 +165,7 @@ FROM (
                 NULL AS shipway,
                 NULL AS public_transport,
                 NULL AS service,
-                NULL::hstore AS tags,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -179,7 +179,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen4
          WHERE zoom_level = 7
@@ -195,7 +195,7 @@ FROM (
                 NULL AS shipway,
                 NULL AS public_transport,
                 NULL AS service,
-                NULL::hstore AS tags,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -209,7 +209,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen3
          WHERE zoom_level = 8

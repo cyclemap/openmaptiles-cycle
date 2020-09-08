@@ -18,75 +18,75 @@
 			bottom: 0;
 			width: 100%;
 		}
+		.mapboxgl-ctrl-scale {
+			pointer-events: none;
+		}
 		.about {
 			position: absolute;
 			top: 0;
 			height: 20px;
 			padding: 1px;
 			background: hsla(0, 0%, 100%, 50%);
-			z-index: 50;
-			text-size: larger;
+			font-size: larger;
+			z-index: 2;
 		}
 		.legend {
 			position: absolute;
-			bottom: 10px; left: 108px;
-			height: 20px;
+			display: inline-block;
+			left: 110px;
+			bottom: 2px;
+			pointer-events: none;
+			font-size: small;
+			z-index: 2;
 		}
-		.legendInner {
+		.pathLegend {
+			display: inline-block;
 			padding: 1px;
-			background: hsla(0, 0%, 100%, 50%);
-			z-index: 50;
-			transition: opacity 2s;
+			background: hsla(0, 0%, 100%, 75%);
 		}
-		#highZoomLegend {
-			opacity: 0;
-			text-size: larger;
-		}
-		#lowZoomLegend {
-			position: absolute; top: 0; left: 0;
-			text-size: larger;
-		}
-		.legendItem {
+		.pathLegendColor {
+			display: inline-block;
 			text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 		}
-		.iconLegend {
-			position: absolute;
-			bottom: 2px; left: 320px;
-			background: hsla(0, 0%, 100%, 50%);
+		.legendItem {
+			display: inline-block;
 		}
-		.iconLegend img {
-			object-fit: none;
+		#footLegend {
+			display: inline-block;
+			transition: opacity 2s;
+		}
+		.iconLegend {
+			display: inline-block;
+			bottom: 0px;
+			background: hsla(0, 0%, 100%, 75%);
+		}
+		.icon {
+			display: inline-block;
+			background: url(/styles/klokantech-basic-cycle/sprite@2x.png) no-repeat;
 			width: 34px;
-			height: 30px;
+			height: 28px;
 			vertical-align: middle;
+			transform: scale(.75);
 		}
 	</style>
 </head>
 <body>
-	<div class='about'>cyclemap - <a href="about.html">about</a></div>
-	<div id='map' class='map'>
+	<div class="about">cyclemap - <a href="about.html">about</a></div>
+	<div id="map" class="map">
 	</div>
-	<div class='legend'>
-		<div class='legendInner' id="lowZoomLegend">
-			<span style="color: hsl(120, 60%, 30%);" class="legendItem">█</span> cycle
+	<div class="legend">
+		<div class="pathLegend">
+			<div class="legendItem"><div style="color: hsl(120, 60%, 30%);" class="pathLegendColor">█</div> paved</div>
+			<div class="legendItem"><div style="color: hsl(25, 60%, 45%);" class="pathLegendColor">█</div> not paved?</div>
+			<div class="legendItem" id="footLegend"><div style="color: hsl(0, 0%, 94%);" class="pathLegendColor">█</div> foot</div>
 		</div>
-		<div class='legendInner' id="highZoomLegend">
-			<span style="color: hsl(120, 60%, 30%);" class="legendItem">█</span> paved
-			<span style="color: hsl(25, 60%, 45%);" class="legendItem">█</span> not paved?
-			<span style="color: hsl(0, 0%, 94%);" class="legendItem">█</span> foot
+		<div class="iconLegend">
+			<div class="legendItem"><div class="icon" style="background-position: 0 -112px;"></div> shop</div>
+			<div class="legendItem"><div class="icon" style="background-position: 0 -248px;"></div> station</div>
+			<div class="legendItem"><div class="icon" style="background-position: -34px -248px;"></div> parking</div>
+			<div class="legendItem"><div class="icon" style="background-position: -68px -248px;"></div> rental</div>
+			<div class="legendItem"><div class="icon" style="background-position: -204px -112px;"></div> water</div>
 		</div>
-	</div>
-	<div class="iconLegend">
-		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: 0 -112px;">
-			shop
-		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: 0 -248px;">
-			station
-		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: -34px -248px;">
-			parking
-		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: -68px -248px;">
-			rental
-		<img src="/styles/klokantech-basic-cycle/sprite@2x.png" style="object-position: -204px -112px;">
-			water
 	</div>
 	<script>
 		var query = new URLSearchParams(window.location.search);
@@ -96,7 +96,7 @@
 		var defaultLatitude = 40;
 		var defaultLongitude = -96;
 		var defaultZoom = 5;
-		var highZoom = 9;
+		var highZoom = 12;
 		var styleRoot = '{{public_url}}styles/klokantech-basic-cycle/';
 
 		var latitude = Cookies.get('latitude') || defaultLatitude;
@@ -129,8 +129,7 @@
 		checkZoom();
 		function checkZoom() {
 			var highZoomEnabled = map.getZoom() >= highZoom;
-			document.getElementById('lowZoomLegend').style.opacity = highZoomEnabled ? 0 : 1;
-			document.getElementById('highZoomLegend').style.opacity = highZoomEnabled ? 1 : 0;
+			document.getElementById('footLegend').style.opacity = highZoomEnabled ? 1 : 0;
 		}
 	</script>
 </body>
