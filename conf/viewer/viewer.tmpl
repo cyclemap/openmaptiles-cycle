@@ -71,7 +71,7 @@
 	</style>
 </head>
 <body>
-	<div class="about">cyclemap - <a href="about.html">about</a></div>
+	<div class="about">cyclemap - <a class="about-link" href="about.html">about</a></div>
 	<div id="map" class="map">
 	</div>
 	<div class="legend">
@@ -120,10 +120,16 @@
 			positionOptions: {enableHighAccuracy: true},
 			trackUserLocation: true
 		}));
-		map.on('moveend', function(move) {
-			Cookies.set('latitude', map.getCenter().lat, cookieOptions);
-			Cookies.set('longitude', map.getCenter().lng, cookieOptions);
-			Cookies.set('zoom', map.getZoom(), cookieOptions);
+		map.on('moveend', (move) => {
+			var latitude = map.getCenter().lat, longitude = map.getCenter().lng, zoom = map.getZoom();
+
+			Cookies.set('latitude', latitude, cookieOptions);
+			Cookies.set('longitude', longitude, cookieOptions);
+			Cookies.set('zoom', zoom, cookieOptions);
+
+			//pass any location information to about
+			var aboutUrl = `about.html#map=${(zoom+1).toFixed(0)}/${latitude.toFixed(5)}/${longitude.toFixed(5)}`;
+			document.querySelectorAll('.about-link').forEach((element) => element.href = aboutUrl);
 		});
 		map.on('zoom', checkZoom);
 		checkZoom();
