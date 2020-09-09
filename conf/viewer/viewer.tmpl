@@ -120,7 +120,10 @@
 			positionOptions: {enableHighAccuracy: true},
 			trackUserLocation: true
 		}));
-		map.on('moveend', (move) => {
+		
+		map.on('moveend', checkMove);
+		checkMove();
+		function checkMove() {
 			var latitude = map.getCenter().lat, longitude = map.getCenter().lng, zoom = map.getZoom();
 
 			Cookies.set('latitude', latitude, cookieOptions);
@@ -130,7 +133,8 @@
 			//pass any location information to about
 			var aboutUrl = `about.html#map=${(zoom+1).toFixed(0)}/${latitude.toFixed(5)}/${longitude.toFixed(5)}`;
 			document.querySelectorAll('.about-link').forEach((element) => element.href = aboutUrl);
-		});
+		}
+		
 		map.on('zoom', checkZoom);
 		checkZoom();
 		function checkZoom() {
