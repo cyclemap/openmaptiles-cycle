@@ -53,18 +53,6 @@ END;
 $$ LANGUAGE SQL IMMUTABLE
                 PARALLEL SAFE;
 
-CREATE OR REPLACE FUNCTION cycleway_subclass(highway TEXT, tags HSTORE = null) RETURNS TEXT AS $$
-    SELECT CASE
-        WHEN tags->'surface' IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel', 'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips', 'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass', 'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt', 'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock') THEN 'unpaved'
-        WHEN tags->'surface' IN ('paved', 'asphalt', 'cobblestone', 'concrete', 'concrete:lanes', 'concrete:plates', 'metal', 'paving_stones', 'sett', 'unhewn_cobblestone', 'wood', 'cement', 'asphalt;concrete', 'concrete;asphalt') THEN 'paved'
-        WHEN tags->'footway' IN ('crossing') THEN 'paved'
-        WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
-        WHEN tags->'hiking' IN ('yes', 'designated', 'permissive') THEN 'unpaved'
-        WHEN highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street', 'road', 'service', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'raceway', 'steps', 'cycleway') THEN 'paved'
-        ELSE NULL
-    END;
-$$ LANGUAGE SQL IMMUTABLE;
-
 -- The classes for railways are derived from the classes used in ClearTables
 -- https://github.com/ClearTables/ClearTables/blob/master/transportation.lua
 CREATE OR REPLACE FUNCTION railway_class(railway text) RETURNS text AS
@@ -90,14 +78,23 @@ $$ LANGUAGE SQL IMMUTABLE
 
 -- Limit surface to only the most important values to ensure
 -- we always know the values of surface
-CREATE OR REPLACE FUNCTION surface_value(surface text) RETURNS text AS
+CREATE OR REPLACE FUNCTION surface_value(surface text, highway TEXT, tags HSTORE = null) RETURNS text AS
 $$
 SELECT CASE
            WHEN surface IN ('paved', 'asphalt', 'cobblestone', 'concrete', 'concrete:lanes', 'concrete:plates', 'metal',
-                            'paving_stones', 'sett', 'unhewn_cobblestone', 'wood') THEN 'paved'
+                            'paving_stones', 'sett', 'unhewn_cobblestone', 'wood',
+                            'cement', 'asphalt;concrete', 'concrete;asphalt') THEN 'paved'
            WHEN surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
-                            'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips')
+                            'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
+                            'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
+                            'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
+                            'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
                THEN 'unpaved'
+           WHEN tags->'footway' IN ('crossing') THEN 'paved'
+           WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
+           WHEN highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street', 'road', 'service', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'raceway', 'steps', 'cycleway') THEN 'paved'
+           WHEN tags->'hiking' IN ('yes', 'designated', 'permissive') THEN 'unpaved'
+           ELSE NULL
            END;
 $$ LANGUAGE SQL IMMUTABLE
                 STRICT

@@ -612,7 +612,7 @@
   }, {
     "filter": ["all", ["==", "$type", "LineString"],
       ["in", "class", "cycleway"],
-      ["in", "subclass", "unpaved"]
+      ["in", "surface", "unpaved"]
     ],
     "id": "cycleway-unpaved",
     "layout": {
@@ -635,8 +635,8 @@
   }, {
     "filter": ["all", ["==", "$type", "LineString"],
       ["in", "class", "cycleway"],
-      ["!in", "subclass", "paved"],
-      ["!in", "subclass", "unpaved"]
+      ["!in", "surface", "paved"],
+      ["!in", "surface", "unpaved"]
     ],
     "id": "cycleway-unknown",
     "layout": {
@@ -659,7 +659,7 @@
   }, {
     "filter": ["all", ["==", "$type", "LineString"],
       ["in", "class", "cycleway"],
-      ["in", "subclass", "paved"]
+      ["in", "surface", "paved"]
     ],
     "id": "cycleway-paved",
     "layout": {

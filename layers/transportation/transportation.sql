@@ -43,8 +43,8 @@ SELECT osm_id,
        CASE
            WHEN railway IS NOT NULL THEN railway
            WHEN (highway IS NOT NULL OR public_transport IS NOT NULL)
-                AND highway_class(highway, public_transport, construction, tags) = 'cycleway'
-                THEN COALESCE(NULLIF(public_transport, ''), cycleway_subclass(highway, tags))
+               AND highway_class(highway, public_transport, construction, tags) = 'cycleway'
+               THEN COALESCE(NULLIF(public_transport, ''), cycleway_subclass(highway, tags))
            WHEN aerialway IS NOT NULL THEN aerialway
            ELSE NULL
            END AS subclass,
@@ -240,7 +240,7 @@ FROM (
                 foot,
                 horse,
                 mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_highway_linestring_gen2
          WHERE zoom_level BETWEEN 9 AND 10
@@ -271,7 +271,7 @@ FROM (
                 foot,
                 horse,
                 mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_highway_linestring_gen1
          WHERE zoom_level = 11
@@ -304,7 +304,7 @@ FROM (
                 foot,
                 horse,
                 mtb_scale,
-                surface_value(surface) AS "surface",
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_highway_linestring
          WHERE NOT is_area
