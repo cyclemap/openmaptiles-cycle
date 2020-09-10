@@ -861,7 +861,7 @@
     "source-layer": "transportation",
     "type": "line"
   }, {
-    "filter": ["in", "admin_level", 4, 6, 8],
+    "filter": ["in", "admin_level", 4, 6],
     "id": "admin_sub",
     "layout": {
       "visibility": "visible"
