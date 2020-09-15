@@ -45,13 +45,52 @@ generalized_tables:
 # etldoc: imposm3 -> osm_highway_linestring_gen2
   highway_linestring_gen2:
     source: highway_linestring_gen1
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'cycleway') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR tags->'icn' is not null OR tags->'ncn' is not null OR tags->'rcn' is not null OR tags->'lcn' is not null OR tags->'bicycle' is not null OR tags->'cycleway' is not null OR tags->'cycleway:left' is not null OR tags->'cycleway:right' is not null OR tags->'cycleway:both' is not null) AND NOT is_area
+    sql_filter: 
+      (
+      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
+      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
+      tags->'icn' IN ('yes') OR
+      tags->'ncn' IN ('yes') OR
+      tags->'rcn' IN ('yes') OR
+      tags->'lcn' IN ('yes') OR
+      tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
+      tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
+      'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
+      'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
+      'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
+      'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
+      ) AND
+      NOT is_area
     tolerance: ZRES11
 
 # etldoc: imposm3 -> osm_highway_linestring_gen1
   highway_linestring_gen1:
     source: highway_linestring
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'cycleway') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR tags->'icn' is not null OR tags->'ncn' is not null OR tags->'rcn' is not null OR tags->'lcn' is not null OR tags->'bicycle' is not null OR tags->'cycleway' is not null OR tags->'cycleway:left' is not null OR tags->'cycleway:right' is not null OR tags->'cycleway:both' is not null) AND NOT is_area AND ST_IsValid(geometry)
+    sql_filter: 
+      (
+      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR
+      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR
+      tags->'icn' IN ('yes') OR
+      tags->'ncn' IN ('yes') OR
+      tags->'rcn' IN ('yes') OR
+      tags->'lcn' IN ('yes') OR
+      tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
+      tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
+      'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
+      'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
+      'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
+      'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
+      ) AND
+      NOT is_area AND
+      ST_IsValid(geometry)
     tolerance: ZRES12
 
 name_field: &name
