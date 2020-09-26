@@ -11,15 +11,11 @@ $ du -sm data/tiles.mbtiles
 
 
 TODO
-	wtf:  access=yes, bicycle=nothing, should count as yes.
-
 	fix paths
 		change color of paths, (orange?)
 		make them come it at the same zoom level as tertiary roads,
 		make tertiary roads wider
 		put tertiary roads in front of paths
-
-	remove city boundaries?
 
 	make scale wider
 	make key go even further right than you think it should?
@@ -48,24 +44,16 @@ TILES
 	147|316|88882
 	146|315|88785
 
-	beemah:  north america tiles.  13.  second attempt.  todo
-
 
 PSQL
 	make psql <<< "select count(*) from osm_highway_linestring;"
 	beemah:
 		north america:  27m
-	p6
-		dc metro master:  todo
-		dc metro vanilla:  todo
 	
 
 	docker system df -v |grep openmaptiles_pgdata
 	beemah:
 		94gb (after all the sql has run)
-	p6
-		dc metro master:  todo
-		dc metro vanilla:  todo
 
 CURL
 	curl https://tileserver.cyclemap.us/data/v3/12/1112/1693.pbf |gunzip -c |vim -R -
