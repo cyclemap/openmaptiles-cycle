@@ -12,13 +12,13 @@
 		"klokantech-basic-cycle": {
 			"style": "/data/cycle-style/style-local.json",
 			"tilejson": {
-				"bounds": [-125, 25, -66, 49]
+				"bounds": [-140,10,-50,55]
 			}
 		},
 		"osm-bright": {
 			"style": "osm-bright/style.json",
 			"tilejson": {
-				"bounds": [-125, 25, -66, 49]
+				"bounds": [-140,10,-50,55]
 			}
 		}
 	},

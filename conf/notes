@@ -37,6 +37,18 @@ NUMBER OF TILES
 		original north american bounds:  75m
 		-125, 25, -66, 48:  5m.  wtf, why
 
+TIME
+	-140,10,-50,55
+		50 hours
+		13gb
+	-130,20,-60,55
+		37 hours
+		12gb
+	-125,25,-66,49
+		24 hours
+		9gb
+
+
 TILES
 	sqlite3 tiles.mbtiles 'select tile_column, tile_row, length(tile_data) as length from tiles WHERE zoom_level=9 ORDER BY length DESC LIMIT 3;'
 	both:  north american tiles.  13.  messed up?
