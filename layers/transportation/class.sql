@@ -19,6 +19,8 @@ SELECT CASE
         WHEN tags->'rcn' IN ('yes') THEN 'cycleway'
         WHEN tags->'lcn' IN ('yes') THEN 'cycleway'
         WHEN tags->'bicycle' IN ('designated', 'mtb') THEN 'cycleway'
+        WHEN tags->'mtb:scale' NOT IN ('6') THEN 'cycleway'
+        WHEN tags->'mtb:scale:imba' IS NOT NULL THEN 'cycleway'
         WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (
             highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track', 'residential', 'service', 'unclassified') OR
             (tags->'maxspeed' ~ E'^\\d+ mph$' AND replace(tags->'maxspeed', ' mph', '')::integer <= 35) OR
@@ -92,6 +94,8 @@ SELECT CASE
                THEN 'unpaved'
            WHEN tags->'footway' IN ('crossing') THEN 'paved'
            WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
+           WHEN tags->'mtb:scale' IS NOT NULL THEN 'unpaved'
+           WHEN tags->'mtb:scale:imba' IS NOT NULL THEN 'unpaved'
            WHEN highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street', 'road', 'service', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'raceway', 'steps', 'cycleway') THEN 'paved'
            WHEN tags->'hiking' IN ('yes', 'designated', 'permissive') THEN 'unpaved'
            ELSE NULL
