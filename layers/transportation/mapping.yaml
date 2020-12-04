@@ -45,19 +45,77 @@ generalized_tables:
 # etldoc: osm_highway_linestring_gen_z10 -> osm_highway_linestring_gen_z9
   highway_linestring_gen_z9:
     source: highway_linestring_gen_z10
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link')) AND NOT is_area
+    sql_filter: 
+      (
+      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
+      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
+      tags->'icn' IN ('yes') OR
+      tags->'ncn' IN ('yes') OR
+      tags->'rcn' IN ('yes') OR
+      tags->'lcn' IN ('yes') OR
+      tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
+      tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
+      'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
+      'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
+      'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
+      'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
+      ) AND
+      NOT is_area
     tolerance: ZRES10
 
 # etldoc: osm_highway_linestring_gen_z11 -> osm_highway_linestring_gen_z10
   highway_linestring_gen_z10:
     source: highway_linestring_gen_z11
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link')) AND NOT is_area
+    sql_filter: 
+      (
+      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
+      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
+      tags->'icn' IN ('yes') OR
+      tags->'ncn' IN ('yes') OR
+      tags->'rcn' IN ('yes') OR
+      tags->'lcn' IN ('yes') OR
+      tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
+      tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
+      'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
+      'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
+      'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
+      'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
+      ) AND
+      NOT is_area
     tolerance: ZRES11
 
 # etldoc: osm_highway_linestring -> osm_highway_linestring_gen_z11
   highway_linestring_gen_z11:
     source: highway_linestring
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link')) AND NOT is_area AND ST_IsValid(geometry)
+    sql_filter: 
+      (
+      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR
+      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR
+      tags->'icn' IN ('yes') OR
+      tags->'ncn' IN ('yes') OR
+      tags->'rcn' IN ('yes') OR
+      tags->'lcn' IN ('yes') OR
+      tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
+      tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
+      'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
+      'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
+      'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
+      'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
+      ) AND
+      NOT is_area AND
+      ST_IsValid(geometry)
     tolerance: ZRES12
 
 name_field: &name
@@ -112,6 +170,54 @@ public_transport_field: &public_transport
   key: public_transport
   name: public_transport
   type: string
+icn_field: &icn
+  key: icn
+  name: icn
+  type: string
+ncn_field: &ncn
+  key: ncn
+  name: ncn
+  type: string
+rcn_field: &rcn
+  key: rcn
+  name: rcn
+  type: string
+lcn_field: &lcn
+  key: lcn
+  name: lcn
+  type: string
+cycleway_field: &cycleway
+  key: cycleway
+  name: cycleway
+  type: string
+cycleway_right_field: &cycleway_right
+  key: cycleway:right
+  name: cycleway_right
+  type: string
+cycleway_left_field: &cycleway_left
+  key: cycleway:left
+  name: cycleway_left
+  type: string
+cycleway_both_field: &cycleway_both
+  key: cycleway:both
+  name: cycleway_both
+  type: string
+bicycle_field: &bicycle
+  key: bicycle
+  name: bicycle
+  type: string
+footway_field: &footway
+  key: footway
+  name: footway
+  type: string
+hiking_field: &hiking
+  key: hiking
+  name: hiking
+  type: string
+maxspeed_field: &maxspeed
+  key: maxspeed
+  name: maxspeed
+  type: string
 ref_field: &ref
   key: ref
   name: ref
@@ -139,10 +245,6 @@ man_made_field: &man_made
 z_order_field: &z_order
   name: z_order
   type: wayzorder
-bicycle_field: &bicycle
-  key: bicycle
-  name: bicycle
-  type: string
 foot_field: &foot
   key: foot
   name: foot
@@ -185,6 +287,17 @@ tables:
     - *name
     - *name_en
     - *name_de
+    - *icn
+    - *ncn
+    - *rcn
+    - *lcn
+    - *cycleway
+    - *cycleway_right
+    - *cycleway_left
+    - *cycleway_both
+    - *footway
+    - *hiking
+    - *maxspeed
     - name: tags
       type: hstore_tags
     - *short_name

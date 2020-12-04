@@ -1,0 +1,31 @@
+{
+	"options": {
+		"frontPage": "/usr/src/app/public/resources/viewer/viewer.tmpl",
+		"paths": {
+			"root": "/usr/src/app/node_modules/tileserver-gl-styles",
+			"fonts": "fonts",
+			"styles": "styles",
+			"mbtiles": "/data"
+		}
+	},
+	"styles": {
+		"klokantech-basic-cycle": {
+			"style": "/data/cycle-style/style-local.json",
+			"tilejson": {
+				"bounds": [-140,10,-50,55]
+			}
+		},
+		"osm-bright": {
+			"style": "osm-bright/style.json",
+			"tilejson": {
+				"bounds": [-140,10,-50,55]
+			}
+		}
+	},
+	"data": {
+		"v3": {
+			"mbtiles": "tiles.mbtiles"
+		}
+	}
+}
+

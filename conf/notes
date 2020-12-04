@@ -1,0 +1,80 @@
+
+https://maputnik.github.io/editor
+	change the data source to tilejson url https://tileserver.cyclemap.us/data/v3.json
+
+
+see update.sh
+
+to fix an incorrect max zoom level:  sqlite3 tiles.mbtiles 'update metadata set value="13" where name="maxzoom";'
+data about tiles:  sqlite3 tiles.mbtiles 'select value from metadata where name in ("maxzoom", "bounds"); select zoom_level, sum(length(tile_data)) from tiles group by zoom_level;'
+
+$ du -sm data/tiles.mbtiles
+338	bc63a22 level 14
+347	data/tiles.mbtiles
+
+
+TODO
+	fix paths
+		change color of paths, (orange?)
+		make them come it at the same zoom level as tertiary roads,
+		make tertiary roads wider
+		put tertiary roads in front of paths
+
+	make scale wider
+	make key go even further right than you think it should?
+
+TIMING
+	basically https is the real thing making stuff slow.  no need to make tile server cache yet.
+	exceptions:  (timing information isn't in logs anymore) grep ... logs/access.log
+
+BOTH
+	 14 dc only vanilla on p6:  1m5s in tiling, 13m16s total, 8.9mb file
+	 14 dc only master on p6:  1m6s in tiling, 13m22s total, 9.1mb file
+
+	 14 dc metro master on p6:  32m8s in tiling, 54m total, 355mb file
+
+NUMBER OF TILES
+	13
+		original north american bounds:  18m
+	14
+		original north american bounds:  75m
+		-125, 25, -66, 48:  5m.  wtf, why
+
+TIME
+	-140,10,-50,55
+		50 hours
+		13gb
+	-130,20,-60,55
+		37 hours
+		12gb
+	-125,25,-66,49
+		24 hours
+		9gb
+
+
+TILES
+	sqlite3 tiles.mbtiles 'select tile_column, tile_row, length(tile_data) as length from tiles WHERE zoom_level=9 ORDER BY length DESC LIMIT 3;'
+	both:  north american tiles.  13.  messed up?
+	146|316|270379
+	147|316|88882
+	146|315|88785
+
+
+PSQL
+	make psql <<< "select count(*) from osm_highway_linestring;"
+	beemah:
+		north america:  27m
+	
+
+	docker system df -v |grep openmaptiles_pgdata
+	beemah:
+		94gb (after all the sql has run)
+
+CURL
+	curl https://tileserver.cyclemap.us/data/v3/12/1112/1693.pbf |gunzip -c |vim -R -
+	
+combine change files
+	osmium cat -o all-changes.osc.gz changes/*.osc.gz
+look at a change file
+	osmium cat changes/154.osc.gz -f xml
+
