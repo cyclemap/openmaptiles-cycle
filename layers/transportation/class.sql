@@ -86,12 +86,46 @@ $$
 SELECT CASE
            WHEN surface IN ('paved', 'asphalt', 'cobblestone', 'concrete', 'concrete:lanes', 'concrete:plates', 'metal',
                             'paving_stones', 'sett', 'unhewn_cobblestone', 'wood',
-                            'cement', 'asphalt;concrete', 'concrete;asphalt') THEN 'paved'
+                            'acrylic',
+                            'asphalt;concrete',
+                            'brick',
+                            'bricks',
+                            'cement',
+                            'chipseal',
+                            'concrete;asphalt',
+                            'granite',
+                            'interlock',
+                            'tartan')
+                THEN 'paved'
            WHEN surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
                             'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
-                            'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
-                            'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
-                            'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
+                            'artificial_turf',
+                            'asphalt;gravel',
+                            'asphalt;ground',
+                            'asphalt;sand',
+                            'asphalt;unpaved',
+                            'clay',
+                            'crushed_limestone',
+                            'dirt;grass',
+                            'dirt;sand',
+                            'grass;dirt',
+                            'grass;earth',
+                            'grass;gravel',
+                            'grass;ground',
+                            'gravel;asphalt',
+                            'gravel;earth',
+                            'gravel;grass',
+                            'gravel;ground',
+                            'ground;asphalt',
+                            'ground;grass',
+                            'ground;gravel',
+                            'paved;unpaved',
+                            'rock',
+                            'rocky',
+                            'soil',
+                            'stone',
+                            'unpaved;asphalt',
+                            'unpaved;paved')
                THEN 'unpaved'
            WHEN tags->'footway' IN ('crossing') THEN 'paved'
            WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
