@@ -440,7 +440,7 @@ start-tileserver: init-dirs
 		--detach=true \
 		--name tileserver-gl \
 		--volume $$(pwd)/data-tileserver:/data \
-		--volume $$(pwd)/data-tileserver/viewer:/usr/src/app/public/resources/viewer \
+		--volume $$(pwd)/data-tileserver/viewer:/app/public/resources/viewer \
 		--volume $$(pwd)/logs:/var/log \
 		--publish=$(TPORT):$(TPORT) \
 		--env="VIRTUAL_HOST=tileserver.cyclemap.us" \

@@ -1,8 +1,8 @@
 {
 	"options": {
-		"frontPage": "/usr/src/app/public/resources/viewer/viewer.tmpl",
+		"frontPage": "/app/public/resources/viewer/viewer.tmpl",
 		"paths": {
-			"root": "/usr/src/app/node_modules/tileserver-gl-styles",
+			"root": "/app/node_modules/tileserver-gl-styles",
 			"fonts": "fonts",
 			"styles": "styles",
 			"mbtiles": "/data"
