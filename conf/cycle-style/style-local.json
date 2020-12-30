@@ -1089,10 +1089,11 @@
     "layout": {
       "icon-image": "{class}_11",
       "text-anchor": "top",
-      "text-field": "{class}",
+      "text-field": "",
       "text-font": ["Noto Sans Italic"],
       "text-max-width": 9,
       "text-offset": [0, 0.6],
+      "text-optional": true,
       "text-padding": 2,
       "text-size": 12
     },
@@ -1117,9 +1118,11 @@
     "layout": {
       "icon-image": "{class}_11",
       "text-anchor": "top",
+      "text-field": "",
       "text-font": ["Noto Sans Italic"],
       "text-max-width": 9,
       "text-offset": [0, 0.6],
+      "text-optional": true,
       "text-padding": 0,
       "text-size": 12
     },
@@ -1144,9 +1147,11 @@
     "layout": {
       "icon-image": "{class}_11",
       "text-anchor": "top",
+      "text-field": "",
       "text-font": ["Noto Sans Italic"],
       "text-max-width": 9,
       "text-offset": [0, 0.6],
+      "text-optional": true,
       "text-padding": 0,
       "text-size": 12
     },
@@ -1174,6 +1179,7 @@
       "text-font": ["Noto Sans Italic"],
       "text-max-width": 9,
       "text-offset": [0, 0.6],
+      "text-optional": true,
       "text-padding": 2,
       "text-size": 12
     },
