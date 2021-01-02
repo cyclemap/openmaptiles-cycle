@@ -34,7 +34,11 @@ SELECT CASE
             highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track')
             THEN 'cycleway'
         
-        WHEN tags->'bicycle' IN ('designated') THEN 'cyclefriendly'
+        WHEN tags->'bicycle' IN ('designated') OR
+            tags->'cycleway' IN ('shared_lane') OR
+            tags->'cycleway:left' IN ('shared_lane') OR
+            tags->'cycleway:right' IN ('shared_lane') OR
+            tags->'cycleway:both' IN ('shared_lane') THEN 'cyclefriendly'
         WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (
             highway IN ('residential', 'service', 'unclassified') OR
             (tags->'maxspeed' ~ E'^\\d+ mph$' AND replace(tags->'maxspeed', ' mph', '')::integer <= 35) OR
