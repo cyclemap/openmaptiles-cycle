@@ -595,8 +595,8 @@
     ],
     "id": "road-unpaved",
     "layout": {
-      "line-cap": "square",
-      "line-join": "bevel"
+      "line-cap": "round",
+      "line-join": "round"
     },
     "paint": {
       "line-color": "hsl(0, 0%, 50%)",
@@ -792,13 +792,60 @@
     "type": "line"
   }, {
     "filter": ["all", ["==", "$type", "LineString"],
+      ["in", "class", "cyclefriendly"],
+      ["!in", "surface", "unpaved"]
+    ],
+    "id": "cyclefriendly-paved-base",
+    "layout": {
+      "line-cap": "round",
+      "line-join": "round"
+    },
+    "paint": {
+      "line-color": "#fff",
+      "line-width": {
+        "base": 1.4,
+        "stops": [
+          [6, 0.3],
+          [20, 15]
+        ]
+      }
+    },
+    "source": "openmaptiles",
+    "source-layer": "transportation",
+    "type": "line"
+  }, {
+    "filter": ["all", ["==", "$type", "LineString"],
+      ["in", "class", "cyclefriendly"],
+      ["!in", "surface", "unpaved"]
+    ],
+    "id": "cyclefriendly-paved",
+    "layout": {
+      "line-cap": "round",
+      "line-join": "round"
+    },
+    "paint": {
+      "line-color": "hsl(120, 60%, 30%)",
+      "line-dasharray": [2, 2],
+      "line-width": {
+        "base": 1,
+        "stops": [
+          [9, 2],
+          [18, 3]
+        ]
+      }
+    },
+    "source": "openmaptiles",
+    "source-layer": "transportation",
+    "type": "line"
+  }, {
+    "filter": ["all", ["==", "$type", "LineString"],
       ["in", "class", "cycleway", "cyclefriendly"],
       ["in", "surface", "unpaved"]
     ],
     "id": "cycleway-unpaved",
     "layout": {
-      "line-cap": "square",
-      "line-join": "bevel"
+      "line-cap": "round",
+      "line-join": "round"
     },
     "paint": {
       "line-color": "hsl(25, 60%, 45%)",
@@ -821,8 +868,8 @@
     ],
     "id": "cycleway-unknown",
     "layout": {
-      "line-cap": "square",
-      "line-join": "bevel"
+      "line-cap": "round",
+      "line-join": "round"
     },
     "paint": {
       "line-color": "hsl(25, 60%, 45%)",
@@ -844,35 +891,11 @@
     ],
     "id": "cycleway-paved",
     "layout": {
-      "line-cap": "square",
-      "line-join": "bevel"
+      "line-cap": "round",
+      "line-join": "round"
     },
     "paint": {
       "line-color": "hsl(120, 60%, 30%)",
-      "line-width": {
-        "base": 1,
-        "stops": [
-          [9, 2],
-          [18, 3]
-        ]
-      }
-    },
-    "source": "openmaptiles",
-    "source-layer": "transportation",
-    "type": "line"
-  }, {
-    "filter": ["all", ["==", "$type", "LineString"],
-      ["in", "class", "cyclefriendly"],
-      ["!in", "surface", "unpaved"]
-    ],
-    "id": "cyclefriendly-paved",
-    "layout": {
-      "line-cap": "square",
-      "line-join": "bevel"
-    },
-    "paint": {
-      "line-color": "hsl(120, 60%, 30%)",
-      "line-dasharray": [2, 2],
       "line-width": {
         "base": 1,
         "stops": [
