@@ -9,7 +9,7 @@
 		}
 	},
 	"styles": {
-		"klokantech-basic-cycle": {
+		"maptiler-cyclemap": {
 			"style": "/data/cycle-style/style-local.json",
 			"tilejson": {
 				"bounds": [-140,10,-50,55]
