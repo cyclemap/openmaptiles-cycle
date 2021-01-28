@@ -14,11 +14,6 @@ $$ LANGUAGE SQL IMMUTABLE
 CREATE OR REPLACE FUNCTION highway_class(highway TEXT, public_transport TEXT, construction TEXT, tags HSTORE = null) RETURNS TEXT AS
 $$
 SELECT CASE
-        WHEN tags->'icn' IN ('yes') THEN 'cycleway'
-        WHEN tags->'ncn' IN ('yes') THEN 'cycleway'
-        WHEN tags->'rcn' IN ('yes') THEN 'cycleway'
-        WHEN tags->'lcn' IN ('yes') THEN 'cycleway'
-        
         WHEN tags->'mtb:scale' NOT IN ('6') THEN 'cycleway'
         WHEN tags->'mtb:scale:imba' IS NOT NULL THEN 'cycleway'
         WHEN tags->'mtb:type' IS NOT NULL THEN 'cycleway'
@@ -28,17 +23,29 @@ SELECT CASE
         WHEN tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
         WHEN tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
         WHEN tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
-
+        
         WHEN highway IN ('cycleway') THEN 'cycleway'
-        WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount', 'designated') AND
-            highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track')
+        
+        WHEN highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') AND
+            (tags->'bicycle' IN ('yes', 'permissive', 'dismount', 'designated') OR
+            tags->'icn' = 'yes' OR
+            tags->'ncn' = 'yes' OR
+            tags->'rcn' = 'yes' OR
+            tags->'lcn' = 'yes')
             THEN 'cycleway'
+        
+        WHEN tags->'icn' = 'yes' OR
+            tags->'ncn' = 'yes' OR
+            tags->'rcn' = 'yes' OR
+            tags->'lcn' = 'yes'
+            THEN 'cyclefriendly'
         
         WHEN tags->'bicycle' IN ('designated') OR
             tags->'cycleway' IN ('shared_lane') OR
             tags->'cycleway:left' IN ('shared_lane') OR
             tags->'cycleway:right' IN ('shared_lane') OR
             tags->'cycleway:both' IN ('shared_lane') THEN 'cyclefriendly'
+        
         WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (
             highway IN ('residential', 'service', 'unclassified') OR
             (tags->'maxspeed' ~ E'^\\d+ mph$' AND replace(tags->'maxspeed', ' mph', '')::integer <= 35) OR
