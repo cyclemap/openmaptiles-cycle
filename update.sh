@@ -23,7 +23,7 @@ exec &> >(tee --append "update.log")
 
 echo updating:  started at $(date)
 rm --force data/$newFile
-docker-compose run --rm openmaptiles-tools osmupdate --verbose /import/$pbfFile /import/$newFile
+docker-compose run --rm openmaptiles-tools nice osmupdate --verbose /import/$pbfFile /import/$newFile
 mv --force data/$pbfFile{,.old}
 mv --force data/$newFile data/$pbfFile
 

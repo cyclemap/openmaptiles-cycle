@@ -13,6 +13,8 @@ services:
   postgres:
     image: "${POSTGIS_IMAGE:-openmaptiles/postgis}:${TOOLS_VERSION}"
     # Use "command: postgres -c jit=off" for PostgreSQL 11+ because of slow large MVT query processing
+    entrypoint: /bin/bash
+    command: "-c 'nice /docker-entrypoint.sh postgres'"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
