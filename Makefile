@@ -363,17 +363,17 @@ endif
 .PHONY: import-osm
 import-osm: all start-db-nowait
 	@$(assert_area_is_given)
-	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools sh -c 'pgwait && import-osm $(PBF_FILE)'
+	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools nice sh -c 'pgwait && import-osm $(PBF_FILE)'
 
 .PHONY: update-osm
 update-osm: all start-db-nowait
 	@$(assert_area_is_given)
-	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools sh -c 'pgwait && import-update'
+	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools nice sh -c 'pgwait && import-update'
 
 .PHONY: import-diff
 import-diff: all start-db-nowait
 	@$(assert_area_is_given)
-	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools sh -c 'pgwait && import-diff'
+	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools nice sh -c 'pgwait && import-diff'
 
 .PHONY: import-data
 import-data: start-db
@@ -396,7 +396,7 @@ generate-tiles: all start-db
 	@$(assert_area_is_given)
 	@echo "Generating tiles into $(MBTILES_LOCAL_FILE) (will delete if already exists)..."
 	@rm -rf "$(MBTILES_LOCAL_FILE)"
-	$(DOCKER_COMPOSE) run $(DC_OPTS) generate-vectortiles
+	$(DOCKER_COMPOSE) run $(DC_OPTS) generate-vectortiles nice /usr/src/app/export-local.sh
 	@echo "Updating generated tile metadata ..."
 	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools \
 			mbtiles-tools meta-generate "$(MBTILES_LOCAL_FILE)" $(TILESET_FILE) --auto-minmax --show-ranges
