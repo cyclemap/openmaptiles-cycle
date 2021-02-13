@@ -89,58 +89,164 @@
 		</div>
 	</div>
 	<script>
-		var query = new URLSearchParams(window.location.search);
-		var cookieOptions = { expires: 365 };
 
-		//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
-		var defaultLatitude = 40;
-		var defaultLongitude = -96;
-		var defaultZoom = 5;
-		var highZoom = 12;
-		var styleRoot = '{{public_url}}styles/maptiler-cyclemap/';
+var highZoom = 12;
 
-		var latitude = Cookies.get('latitude') || defaultLatitude;
-		var longitude = Cookies.get('longitude') || defaultLongitude;
-		var zoom = Cookies.get('zoom') || defaultZoom;
-		var defaultStyle = Cookies.get('style') != null ? Cookies.get('style') : 'style.json';
-		var style = query.has('style') ? 'style-' + query.get('style') + '.json' : defaultStyle;
-		style = 'style.json'; //tileserver only has this style
-		Cookies.set('style', style, cookieOptions);
+var query = new URLSearchParams(window.location.search);
+var cookieOptions = { expires: 365 };
 
-		var map = new mapboxgl.Map({
-			container: 'map',
-			style: styleRoot + style,
-			center: new mapboxgl.LngLat(longitude, latitude),
-			zoom: zoom,
-			hash: true
-		});
-		map.addControl(new mapboxgl.NavigationControl());
-		map.addControl(new mapboxgl.ScaleControl());
-		map.addControl(new mapboxgl.GeolocateControl({
-			positionOptions: {enableHighAccuracy: true},
-			trackUserLocation: true
-		}));
+var map = setupMap();
+addMoveListener();
+checkAddGeoJsonLayer();
+
+function setupMap() {
+	//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
+	var defaultLatitude = 40;
+	var defaultLongitude = -96;
+	var defaultZoom = 5;
+	var styleRoot = '{{public_url}}styles/maptiler-cyclemap/';
+
+	var latitude = Cookies.get('latitude') || defaultLatitude;
+	var longitude = Cookies.get('longitude') || defaultLongitude;
+	var zoom = Cookies.get('zoom') || defaultZoom;
+	
+	var defaultStyle = Cookies.get('style') != null ? Cookies.get('style') : 'style.json';
+	var style = query.has('style') ? 'style-' + query.get('style') + '.json' : defaultStyle;
+	style = 'style.json'; //tileserver only has this style
+	Cookies.set('style', style, cookieOptions);
+
+	var map = new mapboxgl.Map({
+		container: 'map',
+		style: styleRoot + style,
+		center: new mapboxgl.LngLat(longitude, latitude),
+		zoom: zoom,
+		hash: true,
+		dragRotate: false
+	});
+	map.addControl(new mapboxgl.NavigationControl());
+	map.addControl(new mapboxgl.ScaleControl());
+	map.addControl(new mapboxgl.GeolocateControl({
+		positionOptions: {enableHighAccuracy: true},
+		trackUserLocation: true
+	}));
+	map.on("contextmenu", e => {});
+	return map;
+}
+
+function addMoveListener() {
+	map.on('moveend', checkMove);
+	checkMove();
+	function checkMove() {
+		var latitude = map.getCenter().lat, longitude = map.getCenter().lng, zoom = map.getZoom();
+
+		Cookies.set('latitude', latitude, cookieOptions);
+		Cookies.set('longitude', longitude, cookieOptions);
+		Cookies.set('zoom', zoom, cookieOptions);
+
+		//pass any location information to about
+		var aboutUrl = `about.html#map=${(zoom+1).toFixed(0)}/${latitude.toFixed(5)}/${longitude.toFixed(5)}`;
+		document.querySelectorAll('.about-link').forEach((element) => element.href = aboutUrl);
+	}
+	
+	map.on('zoom', checkZoom);
+	checkZoom();
+	function checkZoom() {
+		var highZoomEnabled = map.getZoom() >= highZoom;
+		document.getElementById('footLegend').style.opacity = highZoomEnabled ? 1 : 0;
+	}
+}
+
+function addGeoJsonLayer(id, type, data) {
+	if(map.getSource(id) != null) {
+		map.getSource(id).setData(data);
+		return;
+	}
+	
+	map.addSource(id, {
+		type: 'geojson',
+		data: data,
+		attribution: 'external resource loaded'
+	});
+	map.addLayer({
+		'id': id,
+		'type': type,
+		'source': id,
+		...getOptions(type),
+	});
+
+	/*
+	geojson.features.forEach(function (marker) {
+		new mapboxgl.Marker()
+			.setLngLat(marker.geometry.coordinates)
+			.setPopup(new mapboxgl.Popup({ offset: 25 })
+			.setHTML('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'))
+			.addTo(map);
+	});
+	*/
+}
+
+function checkAddGeoJsonLayer() {
+	var geoJsonData = query.get('geo'), type = query.get('type') != null ? query.get('type') : 'symbol';
+	if(geoJsonData !== null) {
+		map.on('load', function() {addGeoJsonLayer('geoJsonData', type, geoJsonData);});
+	}
+	map.on("mouseup", e => {
+		var event = e.originalEvent;
 		
-		map.on('moveend', checkMove);
-		checkMove();
-		function checkMove() {
-			var latitude = map.getCenter().lat, longitude = map.getCenter().lng, zoom = map.getZoom();
-
-			Cookies.set('latitude', latitude, cookieOptions);
-			Cookies.set('longitude', longitude, cookieOptions);
-			Cookies.set('zoom', zoom, cookieOptions);
-
-			//pass any location information to about
-			var aboutUrl = `about.html#map=${(zoom+1).toFixed(0)}/${latitude.toFixed(5)}/${longitude.toFixed(5)}`;
-			document.querySelectorAll('.about-link').forEach((element) => element.href = aboutUrl);
+		if(event.button === 2) {
+			//right click
+			alert(e.lngLat.lat.toFixed(4) + "," + e.lngLat.lng.toFixed(4));
 		}
-		
-		map.on('zoom', checkZoom);
-		checkZoom();
-		function checkZoom() {
-			var highZoomEnabled = map.getZoom() >= highZoom;
-			document.getElementById('footLegend').style.opacity = highZoomEnabled ? 1 : 0;
-		}
+	});
+}
+
+function ajaxGet(url, callback) {
+	var xhttp = new XMLHttpRequest();
+	xhttp.addEventListener("load", function() {callback(JSON.parse(this.responseText));});
+	xhttp.addEventListener("error", function() {console.error('trouble making request.  response:  ', this.statusText);});
+	xhttp.open("GET", url, true);
+	xhttp.send();
+}
+
+
+function getOptions(type) {
+	if(type == 'symbol') {
+		return {'layout': {
+			'icon-image': '{marker-symbol}_11',
+			'icon-size': 1.5,
+			'text-field': '{title}',
+			'icon-allow-overlap': true,
+			'text-allow-overlap': true,
+			'text-anchor': 'top',
+			'text-font': ['Noto Sans Italic'],
+			'text-max-width': 9,
+			'icon-offset': [0, -3],
+			'text-offset': [0, .2],
+			'text-padding': 2,
+			'text-size': 12,
+		},
+		'paint': {
+			'text-color': '#666',
+			'text-halo-blur': 0.5,
+			'text-halo-color': 'white',
+			'text-halo-width': 2,
+		}};
+	}
+	else if(type == 'line') {
+		return {'layout': {
+			'line-join': 'round',
+		},
+		'paint': {
+			'line-color': '#00d',
+			'line-width': {
+				'stops': [[15, 8], [20, 16]],
+			},
+			'line-opacity': .5,
+		}};
+	}
+	console.error('unknown type: ', type);
+}
+
 	</script>
 </body>
 </html>
