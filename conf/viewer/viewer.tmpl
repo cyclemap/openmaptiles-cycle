@@ -68,10 +68,21 @@
 			vertical-align: middle;
 			transform: scale(.75);
 		}
+		#layerPicker button {
+			font-size: 10px;
+		}
+		#layerPicker button.active {
+			background-color: #48b;
+			color: #fff;
+		}
 	</style>
 </head>
 <body>
 	<div class="about">cyclemap - <a class="about-link" href="about.html">about</a></div>
+	<nav id="layerPicker" class="">
+		<button id="cyclemap" href="#" class="mapboxgl-ctrl mapboxgl-ctrl-group active">cyc</button>
+		<button id="satellite" href="#" class="mapboxgl-ctrl mapboxgl-ctrl-group">sat</button>
+	</nav>
 	<div id="map" class="map">
 	</div>
 	<div class="legend">
@@ -90,34 +101,65 @@
 	</div>
 	<script>
 
+mapboxgl.accessToken = null;
+openrouteAccessToken = null;
+
 var highZoom = 12;
 
 var query = new URLSearchParams(window.location.search);
 var cookieOptions = { expires: 365 };
 
 var map = setupMap();
+setupLayers();
 addMoveListener();
 checkAddGeoJsonLayer();
+
+function getStyle() {
+	var styleRoot = '{{public_url}}styles/maptiler-cyclemap/';
+	var defaultStyle = Cookies.get('style') != null ? Cookies.get('style') : 'style.json';
+	var style = query.has('style') ? 'style-' + query.get('style') + '.json' : defaultStyle;
+
+	return styleRoot + style;
+}
+
+function setupLayers() {
+	document.getElementsByClassName('mapboxgl-ctrl-top-right')[0].append(document.getElementById('layerPicker'));
+
+	var layerPicker = document.getElementById('layerPicker');
+	var layerControls = layerPicker.getElementsByTagName('button');
+
+	if(mapboxgl.accessToken == null) {
+		Array.prototype.forEach.call(layerControls, (input) => input.style.visibility = 'hidden');
+	}
+
+	Array.prototype.forEach.call(layerControls, (input) => input.onclick = (event) => {
+		var layerId = input.id;
+		Array.prototype.forEach.call(layerControls, (input) => input.classList.remove('active'));
+		input.classList.add('active');
+		var style = getStyle();
+		if(layerId=='satellite') {
+			style = 'mapbox://styles/mapbox/satellite-v9';
+		}
+		map.setStyle(style);
+	});
+}
 
 function setupMap() {
 	//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
 	var defaultLatitude = 40;
 	var defaultLongitude = -96;
 	var defaultZoom = 5;
-	var styleRoot = '{{public_url}}styles/maptiler-cyclemap/';
 
 	var latitude = Cookies.get('latitude') || defaultLatitude;
 	var longitude = Cookies.get('longitude') || defaultLongitude;
 	var zoom = Cookies.get('zoom') || defaultZoom;
-	
-	var defaultStyle = Cookies.get('style') != null ? Cookies.get('style') : 'style.json';
-	var style = query.has('style') ? 'style-' + query.get('style') + '.json' : defaultStyle;
-	style = 'style.json'; //tileserver only has this style
+
+	var style = getStyle();
 	Cookies.set('style', style, cookieOptions);
 
 	var map = new mapboxgl.Map({
 		container: 'map',
-		style: styleRoot + style,
+		style: style,
 		center: new mapboxgl.LngLat(longitude, latitude),
 		zoom: zoom,
 		hash: true,
@@ -154,6 +196,32 @@ function addMoveListener() {
 		var highZoomEnabled = map.getZoom() >= highZoom;
 		document.getElementById('footLegend').style.opacity = highZoomEnabled ? 1 : 0;
 	}
+}
+
+var startPoint = null;
+
+function pointToString(point) {return point.lng.toFixed(6) + ',' + point.lat.toFixed(6);}
+	
+function addRoutePoint(point) {
+	if(startPoint === null) {
+		startPoint = point;
+		var pointFeature = { type: 'Feature', geometry: { type: 'Point', coordinates: [point.lng, point.lat] }, properties: {'marker-symbol': 'marker', title: 'startPoint'} };
+		addGeoJsonLayer('startPoint', 'symbol', pointFeature);
+		return;
+	}
+
+	var endPoint = point;
+	var pointFeature = { type: 'Feature', geometry: { type: 'Point', coordinates: [point.lng, point.lat] }, properties: {'marker-symbol': 'marker', title: 'endPoint'} };
+	addGeoJsonLayer('endPoint', 'symbol', pointFeature);
+
+	var url = `https://api.openrouteservice.org/v2/directions/cycling-regular?api_key=${openrouteAccessToken}&start=${pointToString(startPoint)}&end=${pointToString(endPoint)}`;
+
+	ajaxGet(url, (data) => {
+		//sending in url directly here doesn't work because of somesuch header (Accept: application/json) made the server mad
+		addGeoJsonLayer('route', 'line', data);
+	});
+	
+	startPoint = null;
 }
 
 function addGeoJsonLayer(id, type, data) {
@@ -198,6 +266,16 @@ function checkAddGeoJsonLayer() {
 			alert(e.lngLat.lat.toFixed(4) + "," + e.lngLat.lng.toFixed(4));
 		}
 	});
+	if(openrouteAccessToken !== null) {
+		map.on("click", e => {
+			var event = e.originalEvent;
+			
+			if(event.button === 0) {
+				//left click
+				addRoutePoint(e.lngLat);
+			}
+		});
+	}
 }
 
 function ajaxGet(url, callback) {
