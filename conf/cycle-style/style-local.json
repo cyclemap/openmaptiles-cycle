@@ -603,7 +603,7 @@
     "type": "line"
   }, {
     "filter": ["all", ["==", "$type", "LineString"],
-      ["in", "class", "motorway", "trunk", "primary", "secondary", "tertiary", "minor", "service"],
+      ["in", "class", "motorway", "trunk", "primary", "secondary", "tertiary", "minor", "service", "unclassified", "track"],
       ["in", "surface", "unpaved"],
       ["==", "true", "false"]
     ],
