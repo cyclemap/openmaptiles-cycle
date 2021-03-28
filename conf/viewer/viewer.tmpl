@@ -294,7 +294,7 @@ function ajaxGet(url, callback) {
 function getOptions(type) {
 	if(type == 'symbol') {
 		return {'layout': {
-			'icon-image': '{marker-symbol}_11',
+			'icon-image': ["concat", ["coalesce", ["get", "marker-symbol"], "marker"], "_11"],
 			'icon-size': 1.5,
 			'text-field': '{title}',
 			'icon-allow-overlap': true,
