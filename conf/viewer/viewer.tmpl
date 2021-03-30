@@ -326,6 +326,44 @@ function getOptions(type) {
 			'line-opacity': .5,
 		}};
 	}
+	else if(type == 'heatmap') {
+		return {
+			"maxzoom": 17,
+			"minzoom": 9,
+			"paint": {
+				"heatmap-weight":
+					["*",
+						["coalesce", ["get", "count"], 1],
+						0.00001
+					]
+				,
+				"heatmap-intensity": {
+					"stops": [
+						[9, 0.1],
+						[16, 3000]
+					]
+				},
+				"heatmap-radius": {
+					"type": "exponential",
+					"stops": [
+						[9, 1],
+						[16, 20]
+					]
+				},
+				"heatmap-color": [
+					"interpolate",
+					["linear"],
+					["heatmap-density"],
+					0, "rgba(0,0,0,0)",
+					0.1, "#103",
+					0.3, "#926",
+					0.4, "#f71",
+					0.5, "#ffa"
+				],
+				"heatmap-opacity": 0.8
+			}
+		}
+	}
 	console.error('unknown type: ', type);
 }
 
