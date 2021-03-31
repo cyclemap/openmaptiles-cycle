@@ -28,16 +28,16 @@ SELECT CASE
         
         WHEN highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') AND
             (tags->'bicycle' IN ('yes', 'permissive', 'dismount', 'designated') OR
-            tags->'icn' = 'yes' OR
-            tags->'ncn' = 'yes' OR
-            tags->'rcn' = 'yes' OR
-            tags->'lcn' = 'yes')
+            tags->'icn' = 'yes' OR tags->'icn_ref' IS NOT NULL OR
+            tags->'ncn' = 'yes' OR tags->'ncn_ref' IS NOT NULL OR
+            tags->'rcn' = 'yes' OR tags->'rcn_ref' IS NOT NULL OR
+            tags->'lcn' = 'yes' OR tags->'lcn_ref' IS NOT NULL)
             THEN 'cycleway'
         
-        WHEN tags->'icn' = 'yes' OR
-            tags->'ncn' = 'yes' OR
-            tags->'rcn' = 'yes' OR
-            tags->'lcn' = 'yes'
+        WHEN tags->'icn' = 'yes' OR tags->'icn_ref' IS NOT NULL OR
+            tags->'ncn' = 'yes' OR tags->'ncn_ref' IS NOT NULL OR
+            tags->'rcn' = 'yes' OR tags->'rcn_ref' IS NOT NULL OR
+            tags->'lcn' = 'yes' OR tags->'lcn_ref' IS NOT NULL
             THEN 'cyclefriendly'
         
         WHEN tags->'bicycle' IN ('designated') OR
