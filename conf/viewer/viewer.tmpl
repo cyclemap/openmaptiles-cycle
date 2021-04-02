@@ -6,7 +6,6 @@
 	<title>cyclemap</title>
 	<link rel="stylesheet" type="text/css" href="{{public_url}}mapbox-gl.css" />
 	<script src="{{public_url}}mapbox-gl.js"></script>
-	<script src="{{public_url}}viewer/js.cookie.min.js"></script>
 	<style>
 		body {
 			margin: 0;
@@ -30,124 +29,15 @@
 			font-size: larger;
 			z-index: 2;
 		}
-		.legend {
-			position: absolute;
-			display: inline-block;
-			left: 110px;
-			bottom: 2px;
-			pointer-events: none;
-			font-size: small;
-			z-index: 2;
-		}
-		.pathLegend {
-			display: inline-block;
-			padding: 1px;
-			background: hsla(0, 0%, 100%, 75%);
-		}
-		.pathLegendColor {
-			display: inline-block;
-			text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-		}
-		.legendItem {
-			display: inline-block;
-		}
-		#footLegend {
-			display: inline-block;
-			transition: opacity 2s;
-		}
-		.iconLegend {
-			display: inline-block;
-			bottom: 0px;
-			background: hsla(0, 0%, 100%, 75%);
-		}
-		.icon {
-			display: inline-block;
-			background: url(/styles/maptiler-cyclemap/sprite@2x.png) no-repeat;
-			width: 34px;
-			height: 28px;
-			vertical-align: middle;
-			transform: scale(.75);
-		}
-		#layerPicker button {
-			font-size: 10px;
-		}
-		#layerPicker button.active {
-			background-color: #48b;
-			color: #fff;
-		}
 	</style>
 </head>
 <body>
-	<div class="about">cyclemap - <a class="about-link" href="about.html">about</a></div>
-	<nav id="layerPicker" class="">
-		<button id="cyclemap" href="#" class="mapboxgl-ctrl mapboxgl-ctrl-group active">cyc</button>
-		<button id="satellite" href="#" class="mapboxgl-ctrl mapboxgl-ctrl-group">sat</button>
-	</nav>
+	<div class="about">see main page https://cyclemap.us/</div>
 	<div id="map" class="map">
-	</div>
-	<div class="legend">
-		<div class="pathLegend">
-			<div class="legendItem"><div style="color: hsl(120, 60%, 30%);" class="pathLegendColor">█</div> paved</div>
-			<div class="legendItem"><div style="color: hsl(25, 60%, 45%);" class="pathLegendColor">█</div> not paved?</div>
-			<div class="legendItem" id="footLegend"><div style="color: hsl(0, 0%, 94%);" class="pathLegendColor">█</div> foot</div>
-		</div>
-		<div class="iconLegend">
-			<div class="legendItem"><div class="icon" style="background-position: 0 -112px;"></div> shop</div>
-			<div class="legendItem"><div class="icon" style="background-position: 0 -248px;"></div> station</div>
-			<div class="legendItem"><div class="icon" style="background-position: -34px -248px;"></div> parking</div>
-			<div class="legendItem"><div class="icon" style="background-position: -68px -248px;"></div> rental</div>
-			<div class="legendItem"><div class="icon" style="background-position: -204px -112px;"></div> water</div>
-		</div>
 	</div>
 	<script>
 
-mapboxgl.accessToken = null;
-openrouteAccessToken = null;
-
-var highZoom = 12;
-
-var query = new URLSearchParams(window.location.search);
-var cookieOptions = { expires: 365 };
-
 var map = setupMap();
-setupLayers();
-addMoveListener();
-checkAddGeoJsonLayer();
-
-function getStyle() {
-	var styleRoot = '{{public_url}}styles/maptiler-cyclemap/';
-	var defaultStyle = Cookies.get('style') != null ? Cookies.get('style') : 'style.json';
-	var style = query.has('style') ? 'style-' + query.get('style') + '.json' : defaultStyle;
-	style = 'style.json'; //tileserver only has this style
-	
-	if(style != 'style.json') {
-		Cookies.set('style', style, cookieOptions);
-	}
-
-	return styleRoot + style;
-}
-
-function setupLayers() {
-	document.getElementsByClassName('mapboxgl-ctrl-top-right')[0].append(document.getElementById('layerPicker'));
-
-	var layerPicker = document.getElementById('layerPicker');
-	var layerControls = layerPicker.getElementsByTagName('button');
-
-	if(mapboxgl.accessToken == null) {
-		Array.prototype.forEach.call(layerControls, (input) => input.style.visibility = 'hidden');
-	}
-
-	Array.prototype.forEach.call(layerControls, (input) => input.onclick = (event) => {
-		var layerId = input.id;
-		Array.prototype.forEach.call(layerControls, (input) => input.classList.remove('active'));
-		input.classList.add('active');
-		var style = getStyle();
-		if(layerId=='satellite') {
-			style = 'mapbox://styles/mapbox/satellite-v9';
-		}
-		map.setStyle(style);
-	});
-}
 
 function setupMap() {
 	//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
@@ -155,15 +45,15 @@ function setupMap() {
 	var defaultLongitude = -96;
 	var defaultZoom = 5;
 
-	var latitude = Cookies.get('latitude') || defaultLatitude;
-	var longitude = Cookies.get('longitude') || defaultLongitude;
-	var zoom = Cookies.get('zoom') || defaultZoom;
+	var latitude = defaultLatitude;
+	var longitude = defaultLongitude;
+	var zoom = defaultZoom;
 
 	var style = getStyle();
 
 	var map = new mapboxgl.Map({
 		container: 'map',
-		style: style,
+		style: '{{public_url}}styles/maptiler-cyclemap/style.json',
 		center: new mapboxgl.LngLat(longitude, latitude),
 		zoom: zoom,
 		hash: true,
@@ -178,195 +68,6 @@ function setupMap() {
 	map.on("contextmenu", e => {});
 	return map;
 }
-
-function addMoveListener() {
-	map.on('moveend', checkMove);
-	checkMove();
-	function checkMove() {
-		var latitude = map.getCenter().lat, longitude = map.getCenter().lng, zoom = map.getZoom();
-
-		Cookies.set('latitude', latitude, cookieOptions);
-		Cookies.set('longitude', longitude, cookieOptions);
-		Cookies.set('zoom', zoom, cookieOptions);
-
-		//pass any location information to about
-		var aboutUrl = `about.html#map=${(zoom+1).toFixed(0)}/${latitude.toFixed(5)}/${longitude.toFixed(5)}`;
-		document.querySelectorAll('.about-link').forEach((element) => element.href = aboutUrl);
-	}
-	
-	map.on('zoom', checkZoom);
-	checkZoom();
-	function checkZoom() {
-		var highZoomEnabled = map.getZoom() >= highZoom;
-		document.getElementById('footLegend').style.opacity = highZoomEnabled ? 1 : 0;
-	}
-}
-
-var startPoint = null;
-
-function pointToString(point) {return point.lng.toFixed(6) + ',' + point.lat.toFixed(6);}
-	
-function addRoutePoint(point) {
-	if(startPoint === null) {
-		startPoint = point;
-		var pointFeature = { type: 'Feature', geometry: { type: 'Point', coordinates: [point.lng, point.lat] }, properties: {'marker-symbol': 'marker', title: 'startPoint'} };
-		addGeoJsonLayer('startPoint', 'symbol', pointFeature);
-		return;
-	}
-
-	var endPoint = point;
-	var pointFeature = { type: 'Feature', geometry: { type: 'Point', coordinates: [point.lng, point.lat] }, properties: {'marker-symbol': 'marker', title: 'endPoint'} };
-	addGeoJsonLayer('endPoint', 'symbol', pointFeature);
-
-	var url = `https://api.openrouteservice.org/v2/directions/cycling-regular?api_key=${openrouteAccessToken}&start=${pointToString(startPoint)}&end=${pointToString(endPoint)}`;
-
-	ajaxGet(url, (data) => {
-		//sending in url directly here doesn't work because of somesuch header (Accept: application/json) made the server mad
-		addGeoJsonLayer('route', 'line', data);
-	});
-	
-	startPoint = null;
-}
-
-function addGeoJsonLayer(id, type, data) {
-	if(map.getSource(id) != null) {
-		map.getSource(id).setData(data);
-		return;
-	}
-	
-	map.addSource(id, {
-		type: 'geojson',
-		data: data,
-		attribution: 'external resource loaded'
-	});
-	map.addLayer({
-		'id': id,
-		'type': type,
-		'source': id,
-		...getOptions(type),
-	});
-
-	/*
-	geojson.features.forEach(function (marker) {
-		new mapboxgl.Marker()
-			.setLngLat(marker.geometry.coordinates)
-			.setPopup(new mapboxgl.Popup({ offset: 25 })
-			.setHTML('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'))
-			.addTo(map);
-	});
-	*/
-}
-
-function checkAddGeoJsonLayer() {
-	var geoJsonData = query.get('geo'), type = query.get('type') != null ? query.get('type') : 'symbol';
-	if(geoJsonData !== null) {
-		map.on('load', function() {addGeoJsonLayer('geoJsonData', type, geoJsonData);});
-	}
-	map.on("mouseup", e => {
-		var event = e.originalEvent;
-		
-		if(event.button === 2) {
-			//right click
-			alert(e.lngLat.lat.toFixed(4) + "," + e.lngLat.lng.toFixed(4));
-		}
-	});
-	if(openrouteAccessToken !== null) {
-		map.on("click", e => {
-			var event = e.originalEvent;
-			
-			if(event.button === 0) {
-				//left click
-				addRoutePoint(e.lngLat);
-			}
-		});
-	}
-}
-
-function ajaxGet(url, callback) {
-	var xhttp = new XMLHttpRequest();
-	xhttp.addEventListener("load", function() {callback(JSON.parse(this.responseText));});
-	xhttp.addEventListener("error", function() {console.error('trouble making request.  response:  ', this.statusText);});
-	xhttp.open("GET", url, true);
-	xhttp.send();
-}
-
-
-function getOptions(type) {
-	if(type == 'symbol') {
-		return {'layout': {
-			'icon-image': ["concat", ["coalesce", ["get", "marker-symbol"], "marker"], "_11"],
-			'icon-size': 1.5,
-			'text-field': '{title}',
-			'icon-allow-overlap': true,
-			'text-allow-overlap': true,
-			'text-anchor': 'top',
-			'text-font': ['Noto Sans Italic'],
-			'text-max-width': 9,
-			'icon-offset': [0, -3],
-			'text-offset': [0, .2],
-			'text-padding': 2,
-			'text-size': 12,
-		},
-		'paint': {
-			'text-color': '#666',
-			'text-halo-blur': 0.5,
-			'text-halo-color': 'white',
-			'text-halo-width': 2,
-		}};
-	}
-	else if(type == 'line') {
-		return {'layout': {
-			'line-join': 'round',
-		},
-		'paint': {
-			'line-color': '#00d',
-			'line-width': {
-				'stops': [[15, 8], [20, 16]],
-			},
-			'line-opacity': .5,
-		}};
-	}
-	else if(type == 'heatmap') {
-		return {
-			"maxzoom": 17,
-			"minzoom": 9,
-			"paint": {
-				"heatmap-weight":
-					["*",
-						["coalesce", ["get", "count"], 1],
-						0.00001
-					]
-				,
-				"heatmap-intensity": {
-					"stops": [
-						[9, 0.1],
-						[16, 3000]
-					]
-				},
-				"heatmap-radius": {
-					"type": "exponential",
-					"stops": [
-						[9, 1],
-						[16, 20]
-					]
-				},
-				"heatmap-color": [
-					"interpolate",
-					["linear"],
-					["heatmap-density"],
-					0, "rgba(0,0,0,0)",
-					0.1, "#103",
-					0.3, "#926",
-					0.4, "#f71",
-					0.5, "#ffa"
-				],
-				"heatmap-opacity": 0.8
-			}
-		}
-	}
-	console.error('unknown type: ', type);
-}
-
 	</script>
 </body>
 </html>
