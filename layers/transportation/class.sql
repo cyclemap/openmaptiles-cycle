@@ -9,22 +9,22 @@ $$ LANGUAGE SQL IMMUTABLE
                 STRICT
                 PARALLEL SAFE;
 
--- The classes for highways are derived from the classes used in ClearTables
--- https://github.com/ClearTables/ClearTables/blob/master/transportation.lua
-CREATE OR REPLACE FUNCTION highway_class(highway TEXT, public_transport TEXT, construction TEXT, tags HSTORE = null) RETURNS TEXT AS
+CREATE OR REPLACE FUNCTION is_cycleway(highway TEXT, tags HSTORE = null) RETURNS boolean AS
 $$
 SELECT CASE
-        WHEN tags->'mtb:scale' NOT IN ('6') THEN 'cycleway'
-        WHEN tags->'mtb:scale:imba' IS NOT NULL THEN 'cycleway'
-        WHEN tags->'mtb:type' IS NOT NULL THEN 'cycleway'
-        WHEN tags->'bicycle' IN ('mtb') THEN 'cycleway'
+        WHEN tags->'bicycle' IN ('no', 'private', 'permit') THEN false
+
+        WHEN tags->'mtb:scale' NOT IN ('6') OR
+            tags->'mtb:scale:imba' IS NOT NULL OR
+            tags->'mtb:type' IS NOT NULL OR
+            tags->'bicycle' IN ('mtb') THEN true
         
-        WHEN tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
-        WHEN tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
-        WHEN tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
-        WHEN tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
+        WHEN tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+            tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+            tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+            tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN true
         
-        WHEN highway IN ('cycleway') THEN 'cycleway'
+        WHEN highway IN ('cycleway') THEN true
         
         WHEN highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') AND
             (tags->'bicycle' IN ('yes', 'permissive', 'dismount', 'designated') OR
@@ -32,26 +32,52 @@ SELECT CASE
             tags->'ncn' = 'yes' OR tags->'ncn_ref' IS NOT NULL OR
             tags->'rcn' = 'yes' OR tags->'rcn_ref' IS NOT NULL OR
             tags->'lcn' = 'yes' OR tags->'lcn_ref' IS NOT NULL)
-            THEN 'cycleway'
+            THEN true
+
+        ELSE false
+END;
+$$ LANGUAGE SQL IMMUTABLE
+                PARALLEL SAFE;
+
+
+CREATE OR REPLACE FUNCTION is_cyclefriendly(highway TEXT, tags HSTORE = null) RETURNS boolean AS
+$$
+SELECT CASE
+        WHEN tags->'bicycle' IN ('no', 'private', 'permit') THEN false
+
+        WHEN tags->'bicycle' IN ('designated') OR
+            tags->'cycleway' IN ('shared_lane') OR
+            tags->'cycleway:left' IN ('shared_lane') OR
+            tags->'cycleway:right' IN ('shared_lane') OR
+            tags->'cycleway:both' IN ('shared_lane') THEN true
+
+        WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (
+            highway IN ('residential', 'service', 'unclassified') OR
+            (tags->'maxspeed' ~ E'^\\d+ mph$' AND replace(tags->'maxspeed', ' mph', '')::integer <= 35) OR
+            (tags->'maxspeed' ~ E'^\\d+ kph$' AND replace(tags->'maxspeed', ' kph', '')::integer <= 60)
+            ) THEN true
         
         WHEN tags->'icn' = 'yes' OR tags->'icn_ref' IS NOT NULL OR
             tags->'ncn' = 'yes' OR tags->'ncn_ref' IS NOT NULL OR
             tags->'rcn' = 'yes' OR tags->'rcn_ref' IS NOT NULL OR
             tags->'lcn' = 'yes' OR tags->'lcn_ref' IS NOT NULL
-            THEN 'cyclefriendly'
+            THEN true
         
-        WHEN tags->'bicycle' IN ('designated') OR
-            tags->'cycleway' IN ('shared_lane') OR
-            tags->'cycleway:left' IN ('shared_lane') OR
-            tags->'cycleway:right' IN ('shared_lane') OR
-            tags->'cycleway:both' IN ('shared_lane') THEN 'cyclefriendly'
-        
-        WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (
-            highway IN ('residential', 'service', 'unclassified') OR
-            (tags->'maxspeed' ~ E'^\\d+ mph$' AND replace(tags->'maxspeed', ' mph', '')::integer <= 35) OR
-            (tags->'maxspeed' ~ E'^\\d+ kph$' AND replace(tags->'maxspeed', ' kph', '')::integer <= 60)
-            ) THEN 'cyclefriendly'
-        
+        ELSE false
+END;
+$$ LANGUAGE SQL IMMUTABLE
+                PARALLEL SAFE;
+
+
+
+-- The classes for highways are derived from the classes used in ClearTables
+-- https://github.com/ClearTables/ClearTables/blob/master/transportation.lua
+CREATE OR REPLACE FUNCTION highway_class(highway TEXT, public_transport TEXT, construction TEXT, tags HSTORE = null) RETURNS TEXT AS
+$$
+SELECT CASE
+        WHEN is_cycleway(highway, tags) THEN 'cycleway'
+        WHEN is_cyclefriendly(highway, tags) THEN 'cyclefriendly'
+
         WHEN highway IN ('service', 'track') THEN highway
         WHEN highway IN ('motorway', 'motorway_link') THEN 'motorway'
         WHEN highway IN ('trunk', 'trunk_link') THEN 'trunk'
