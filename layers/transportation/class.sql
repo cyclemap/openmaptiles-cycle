@@ -105,49 +105,8 @@ $$ LANGUAGE SQL IMMUTABLE
 CREATE OR REPLACE FUNCTION surface_value(surface text, highway TEXT, tags HSTORE = null) RETURNS text AS
 $$
 SELECT CASE
-           WHEN surface IN ('paved', 'asphalt', 'cobblestone', 'concrete', 'concrete:lanes', 'concrete:plates', 'metal',
-                            'paving_stones', 'sett', 'unhewn_cobblestone', 'wood',
-                            'acrylic',
-                            'asphalt;concrete',
-                            'brick',
-                            'bricks',
-                            'cement',
-                            'chipseal',
-                            'concrete;asphalt',
-                            'granite',
-                            'interlock',
-                            'tartan')
-                THEN 'paved'
-           WHEN surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
-                            'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
-                            'artificial_turf',
-                            'asphalt;gravel',
-                            'asphalt;ground',
-                            'asphalt;sand',
-                            'asphalt;unpaved',
-                            'clay',
-                            'crushed_limestone',
-                            'dirt;grass',
-                            'dirt;sand',
-                            'grass;dirt',
-                            'grass;earth',
-                            'grass;gravel',
-                            'grass;ground',
-                            'gravel;asphalt',
-                            'gravel;earth',
-                            'gravel;grass',
-                            'gravel;ground',
-                            'ground;asphalt',
-                            'ground;grass',
-                            'ground;gravel',
-                            'paved;unpaved',
-                            'rock',
-                            'rocky',
-                            'soil',
-                            'stone',
-                            'unpaved;asphalt',
-                            'unpaved;paved')
-               THEN 'unpaved'
+           WHEN surface ~ E'(;|^)(unpaved|artificial_turf|clay|compacted|crushed_limestone|dirt|earth|fine_gravel|grass|grass_paver|gravel|gravel_turf|ground|ice|mud|pebblestone|rock|rocky|salt|sand|snow|soil|stone|woodchips)(;|$)' THEN 'unpaved'
+           WHEN surface ~ E'(;|^)paved|acrylic|asphalt|brick|bricks|cement|chipseal|cobblestone|concrete|granite|interlock|metal|paving_stones|sett|tartan|unhewn_cobblestone|wood(;|$)' THEN 'paved'
            WHEN tags->'footway' IN ('crossing') THEN 'paved'
            WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
            WHEN tags->'mtb:scale' IS NOT NULL THEN 'unpaved'
