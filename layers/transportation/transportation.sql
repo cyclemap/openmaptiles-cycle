@@ -43,7 +43,7 @@ SELECT osm_id,
        CASE
            WHEN railway IS NOT NULL THEN railway
            WHEN (highway IS NOT NULL OR public_transport IS NOT NULL)
-               AND highway_class(highway, public_transport, construction, tags) = 'cycleway'
+               AND highway_class(highway, public_transport, construction, tags) = 'path'
                THEN COALESCE(NULLIF(public_transport, ''), highway)
            WHEN aerialway IS NOT NULL THEN aerialway
            ELSE NULL
