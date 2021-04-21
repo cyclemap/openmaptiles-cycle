@@ -54,6 +54,8 @@ SELECT CASE
         WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (
             highway IN ('residential', 'service', 'unclassified') OR
             (tags->'maxspeed' ~ E'^\\d+ mph$' AND replace(tags->'maxspeed', ' mph', '')::integer <= 35) OR
+            (tags->'maxspeed' ~ E'^\\d+$' AND tags->'maxspeed'::integer <= 60) OR
+            (tags->'maxspeed' ~ E'^\\d+ km/h$' AND replace(tags->'maxspeed', ' km/h', '')::integer <= 60) OR
             (tags->'maxspeed' ~ E'^\\d+ kph$' AND replace(tags->'maxspeed', ' kph', '')::integer <= 60)
             ) THEN true
         
