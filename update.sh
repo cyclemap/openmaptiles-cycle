@@ -4,6 +4,7 @@
 #renice +20 -p $$ >/dev/null
 #ionice -c3 -p $$
 
+minimumSize=9500000000
 locationName=north-america
 pbfFile=$locationName.osm.pbf
 newFile=$locationName-new.osm.pbf
@@ -27,7 +28,14 @@ docker-compose run --rm openmaptiles-tools nice osmupdate --verbose /import/$pbf
 mv --force data/$pbfFile{,.old}
 mv --force data/$newFile data/$pbfFile
 
+if [ $(stat --format=%s data/$pbfFile) -lt $minimumSize ]; then
+	#sometimes the file is too small because something failed.  let's stop here because this needs fixing.
+	echo $pbfFile file size too small.  expected minimum size of $minimumSize bytes.
+	false
+fi
+
 echo updating:  done at $(date)
+
 echo "====================================================================="
 
 echo quickstart:  started at $(date)
