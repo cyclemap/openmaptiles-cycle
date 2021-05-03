@@ -234,6 +234,18 @@ maxspeed_field: &maxspeed
   key: maxspeed
   name: maxspeed
   type: string
+width_field: &width
+  key: width
+  name: width
+  type: string
+width_carriageway_field: &width_carriageway
+  key: width:carriageway
+  name: width_carriageway
+  type: string
+lanes_field: &lanes
+  key: lanes
+  name: lanes
+  type: string
 ref_field: &ref
   key: ref
   name: ref
@@ -318,6 +330,9 @@ tables:
     - *footway
     - *hiking
     - *maxspeed
+    - *width
+    - *width_carriageway
+    - *lanes
     - name: tags
       type: hstore_tags
     - *short_name
