@@ -1,0 +1,63 @@
+diff --git a/layers/transportation/class.sql b/layers/transportation/class.sql
+index 2203142..19a54f7 100644
+--- a/layers/transportation/class.sql
++++ b/layers/transportation/class.sql
+@@ -19,10 +19,13 @@ SELECT CASE
+         WHEN tags->'rcn' IN ('yes') THEN 'cycleway'
+         WHEN tags->'lcn' IN ('yes') THEN 'cycleway'
+         WHEN tags->'bicycle' IN ('designated', 'mtb') THEN 'cycleway'
+-        WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (
+-            highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track', 'residential', 'service', 'unclassified') OR
+-            (tags->'maxspeed' ~ E'^\\d+ mph$' AND replace(tags->'maxspeed', ' mph', '')::integer <= 35) OR
+-            (tags->'maxspeed' ~ E'^\\d+ kph$' AND replace(tags->'maxspeed', ' kph', '')::integer <= 60)
++        WHEN (
++                tags->'bicycle' IN ('yes', 'permissive', 'dismount') OR
++                tags->'access' IN ('yes', 'permissive') AND (tags->'bicycle' IS NULL OR tags->'bicycle' NOT IN ('no', 'private', 'delivery'))
++            ) AND (
++                highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track', 'residential', 'service', 'unclassified') OR
++                (tags->'maxspeed' ~ E'^\\d+ mph$' AND replace(tags->'maxspeed', ' mph', '')::integer <= 35) OR
++                (tags->'maxspeed' ~ E'^\\d+ kph$' AND replace(tags->'maxspeed', ' kph', '')::integer <= 60)
+             ) THEN 'cycleway'
+         WHEN tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
+         WHEN tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN 'cycleway'
+diff --git a/layers/transportation/mapping.yaml b/layers/transportation/mapping.yaml
+index ab30300..77ac975 100644
+--- a/layers/transportation/mapping.yaml
++++ b/layers/transportation/mapping.yaml
+@@ -63,6 +63,8 @@ generalized_tables:
+       'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
+       'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
+       'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
++      AND (tags->'access' IS NULL OR tags->'access' NOT IN ('no', 'private', 'delivery'))
++      AND (tags->'bicycle' IS NULL OR tags->'bicycle' NOT IN ('no', 'private', 'delivery'))
+       ) AND
+       NOT is_area
+     tolerance: ZRES11
+@@ -88,6 +90,8 @@ generalized_tables:
+       'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
+       'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
+       'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
++      AND (tags->'access' IS NULL OR tags->'access' NOT IN ('no', 'private', 'delivery'))
++      AND (tags->'bicycle' IS NULL OR tags->'bicycle' NOT IN ('no', 'private', 'delivery'))
+       ) AND
+       NOT is_area AND
+       ST_IsValid(geometry)
+@@ -177,6 +181,10 @@ cycleway_both_field: &cycleway_both
+   key: cycleway:both
+   name: cycleway_both
+   type: string
++access_field: &access
++  key: access
++  name: access
++  type: string
+ bicycle_field: &bicycle
+   key: bicycle
+   name: bicycle
+@@ -286,6 +294,7 @@ tables:
+     - *usage
+     - *public_transport
+     - *man_made
++    - *access
+     - *bicycle
+     - *foot
+     - *horse
