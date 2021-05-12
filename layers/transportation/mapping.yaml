@@ -231,9 +231,17 @@ horse_field: &horse
   key: horse
   name: horse
   type: string
+mtb_type_field: &mtb_type
+  key: mtb:type
+  name: mtb_type
+  type: string
 mtb_scale_field: &mtb_scale
   key: mtb:scale
   name: mtb_scale
+  type: string
+mtb_scale_imba_field: &mtb_scale_imba
+  key: mtb:scale:imba
+  name: mtb_scale_imba
   type: string
 surface_field: &surface
   key: surface
@@ -299,7 +307,9 @@ tables:
     - *bicycle
     - *foot
     - *horse
+    - *mtb_type
     - *mtb_scale
+    - *mtb_scale_imba
     - *surface
     mapping:
       highway:
