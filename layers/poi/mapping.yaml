@@ -22,6 +22,7 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - clinic
   - college
   - community_centre
+  - compressed_air
   - courthouse
   - dentist
   - doctors
