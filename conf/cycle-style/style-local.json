@@ -1112,7 +1112,7 @@
 		"source-layer": "place",
 		"type": "symbol"
 	}, {
-		"id": "poi-biking-class-text-16",
+		"id": "poi-biking-class-no-text-16",
 		"type": "symbol",
 		"metadata": {},
 		"source": "openmaptiles",
@@ -1156,6 +1156,35 @@
 			"icon-image": "{class}_11",
 			"text-anchor": "top",
 			"text-field": "",
+			"text-font": ["Noto Sans Italic"],
+			"text-max-width": 9,
+			"text-offset": [0, 0.6],
+			"text-optional": true,
+			"text-padding": 0,
+			"text-size": 12
+		},
+		"paint": {
+			"text-color": "#666",
+			"text-halo-blur": 0.5,
+			"text-halo-color": "#ffffff",
+			"text-halo-width": 1
+		}
+	}, {
+		"id": "poi-biking-class-text-14",
+		"type": "symbol",
+		"metadata": {},
+		"source": "openmaptiles",
+		"source-layer": "poi",
+		"minzoom": 14,
+		"filter": [
+			"all",
+			[ "==", "$type", "Point" ],
+			[ "in", "class", "compressed_air" ]
+		],
+		"layout": {
+			"icon-image": "{class}_11",
+			"text-anchor": "top",
+			"text-field": "{class}",
 			"text-font": ["Noto Sans Italic"],
 			"text-max-width": 9,
 			"text-offset": [0, 0.6],

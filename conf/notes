@@ -1,9 +1,11 @@
 
-https://maputnik.github.io/editor
-	change the data source to tilejson url https://tileserver.cyclemap.us/data/v3.json
-
-
 see update.sh
+
+https://maputnik.github.io/editor
+	data sources -> active sources -> tilejsonurl -> https://tileserver.cyclemap.us/data/v3.json
+	view -> map dropdown.  change to inspect
+	or open -> https://cyclemap.us/style.json
+
 
 to fix an incorrect max zoom level:  sqlite3 tiles.mbtiles 'update metadata set value="13" where name="maxzoom";'
 data about tiles:  sqlite3 tiles.mbtiles 'select value from metadata where name in ("maxzoom", "bounds"); select zoom_level, sum(length(tile_data)) from tiles group by zoom_level;'
@@ -12,16 +14,6 @@ $ du -sm data/tiles.mbtiles
 338	bc63a22 level 14
 347	data/tiles.mbtiles
 
-
-TODO
-	fix paths
-		change color of paths, (orange?)
-		make them come it at the same zoom level as tertiary roads,
-		make tertiary roads wider
-		put tertiary roads in front of paths
-
-	make scale wider
-	make key go even further right than you think it should?
 
 TIMING
 	basically https is the real thing making stuff slow.  no need to make tile server cache yet.
