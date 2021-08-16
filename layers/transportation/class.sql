@@ -60,6 +60,7 @@ SELECT CASE
                         (tags->'maxspeed' ~ E'^[\\d.]+ kph$' AND replace(tags->'maxspeed', ' kph', '')::float <= 60)
                     ) AND (
                         tags->'lanes' IS NULL OR tags->'lanes' !~ E'^[\\d]+$' OR (tags->'lanes')::integer >= 3 OR
+                        tags->'oneway' = 'yes' AND (tags->'lanes')::integer >= 2 OR
                         -- 3.75m is 12.3 feet
                         ((tags->'lanes')::integer = 2 AND tags->'width:carriageway' ~ E'^[\\d.]+$' AND (tags->'width:carriageway')::float >= 7.5) OR
                         ((tags->'lanes')::integer = 2 AND tags->'width' ~ E'^[\\d.]+$' AND (tags->'width')::float >= 7.5) OR
