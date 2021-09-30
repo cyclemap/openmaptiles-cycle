@@ -38,7 +38,7 @@ SELECT osm_id,
        geometry,
        CASE
            WHEN highway <> '' OR public_transport <> ''
-               THEN highway_class(highway, public_transport, construction)
+               THEN highway_class(highway, public_transport, construction, tags)
            WHEN railway <> '' THEN railway_class(railway)
            WHEN aerialway <> '' THEN 'aerialway'
            WHEN shipway <> '' THEN shipway
@@ -47,9 +47,10 @@ SELECT osm_id,
        CASE
            WHEN railway IS NOT NULL THEN railway
            WHEN (highway IS NOT NULL OR public_transport IS NOT NULL)
-               AND highway_class(highway, public_transport, construction) = 'path'
+               AND highway_class(highway, public_transport, construction, tags) = 'path'
                THEN COALESCE(NULLIF(public_transport, ''), highway)
            WHEN aerialway IS NOT NULL THEN aerialway
+           ELSE NULL
            END AS subclass,
        NULLIF(network, '') AS network,
        -- All links are considered as ramps as well
@@ -85,6 +86,7 @@ FROM (
                 NULL AS service,
                 NULL AS access,
                 NULL::boolean AS toll,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -99,7 +101,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen_z4
          WHERE zoom_level = 4
@@ -118,6 +120,7 @@ FROM (
                 NULL AS service,
                 NULL AS access,
                 NULL::boolean AS toll,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -132,7 +135,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen_z5
          WHERE zoom_level = 5
@@ -151,6 +154,7 @@ FROM (
                 NULL AS service,
                 NULL AS access,
                 NULL::boolean AS toll,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -165,7 +169,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen_z6
          WHERE zoom_level = 6
@@ -184,6 +188,7 @@ FROM (
                 NULL AS service,
                 NULL AS access,
                 NULL::boolean AS toll,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -198,7 +203,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen_z7
          WHERE zoom_level = 7
@@ -217,6 +222,7 @@ FROM (
                 NULL AS service,
                 NULL AS access,
                 NULL::boolean AS toll,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -231,7 +237,7 @@ FROM (
                 NULL AS foot,
                 NULL AS horse,
                 NULL AS mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen_z8
          WHERE zoom_level = 8
@@ -250,6 +256,7 @@ FROM (
                 NULL AS service,
                 access,
                 toll,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -264,7 +271,7 @@ FROM (
                 foot,
                 horse,
                 mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen_z9
          WHERE zoom_level = 9
@@ -283,6 +290,7 @@ FROM (
                 NULL AS service,
                 access,
                 toll,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -297,7 +305,7 @@ FROM (
                 foot,
                 horse,
                 mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen_z10
          WHERE zoom_level = 10
@@ -316,6 +324,7 @@ FROM (
                 NULL AS service,
                 access,
                 toll,
+                tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -330,7 +339,7 @@ FROM (
                 foot,
                 horse,
                 mtb_scale,
-                NULL AS surface,
+                surface_value(surface, highway, tags) AS "surface",
                 z_order
          FROM osm_transportation_merge_linestring_gen_z11
          WHERE zoom_level = 11
@@ -354,6 +363,7 @@ FROM (
                 service_value(service) AS service,
                 CASE WHEN access IN ('private', 'no') THEN 'no' END AS access,
                 toll,
+                hl.tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -368,23 +378,19 @@ FROM (
                 foot,
                 horse,
                 mtb_scale,
-                surface_value(surface) AS "surface",
+                surface_value(hl.surface, hl.highway, hl.tags) AS "surface",
                 hl.z_order
          FROM osm_highway_linestring hl
          LEFT OUTER JOIN osm_transportation_name_network n ON hl.osm_id = n.osm_id
          WHERE NOT is_area
            AND
                CASE WHEN zoom_level = 12 THEN
-                         CASE WHEN transportation_filter_z12(hl.highway, hl.construction) THEN TRUE
+                         CASE WHEN transportation_filter_z12(hl.highway, hl.construction, hl.surface, hl.tags) THEN TRUE
                               WHEN hl.highway IN ('track', 'path') THEN n.route_rank = 1
                          END
                     WHEN zoom_level = 13 THEN
                          CASE WHEN man_made='pier' THEN NOT ST_IsClosed(hl.geometry)
-                              WHEN hl.highway IN ('track', 'path') THEN (hl.name <> ''
-                                                                   OR n.route_rank BETWEEN 1 AND 2
-                                                                   OR hl.sac_scale <> ''
-                                                                   )
-                              ELSE transportation_filter_z13(hl.highway, public_transport, hl.construction, service)
+                              ELSE transportation_filter_z13(hl.highway, public_transport, hl.construction, service, hl.surface, hl.tags)
                          END
                     WHEN zoom_level >= 14 THEN
                          CASE WHEN man_made='pier' THEN NOT ST_IsClosed(hl.geometry)
@@ -406,6 +412,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 NULL::boolean AS is_bridge,
                 NULL::boolean AS is_tunnel,
                 NULL::boolean AS is_ford,
@@ -442,6 +449,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 NULL::boolean AS is_bridge,
                 NULL::boolean AS is_tunnel,
                 NULL::boolean AS is_ford,
@@ -478,6 +486,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -513,6 +522,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -548,6 +558,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -584,6 +595,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -620,6 +632,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -654,6 +667,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -687,6 +701,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -720,6 +735,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -754,6 +770,7 @@ FROM (
                 service_value(service) AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 is_bridge,
                 is_tunnel,
                 is_ford,
@@ -792,6 +809,7 @@ FROM (
                 NULL AS service,
                 NULL::text AS access,
                 NULL::boolean AS toll,
+                NULL::hstore AS tags,
                 CASE
                     WHEN man_made IN ('bridge') THEN TRUE
                     ELSE FALSE

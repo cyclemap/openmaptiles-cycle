@@ -13,6 +13,8 @@ services:
   postgres:
     image: "${POSTGIS_IMAGE:-openmaptiles/postgis}:${TOOLS_VERSION}"
     # Use "command: postgres -c jit=off" for PostgreSQL 11+ because of slow large MVT query processing
+    entrypoint: /bin/bash
+    command: "-c 'nice /docker-entrypoint.sh postgres'"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -67,7 +69,8 @@ services:
 
   update-osm:
     <<: *openmaptiles-tools
-    command: import-update
+    entrypoint: /bin/bash
+    command: "-c 'nice import-update'"
 
   generate-changed-vectortiles:
     image: "openmaptiles/generate-vectortiles:${TOOLS_VERSION}"
@@ -128,12 +131,29 @@ services:
 
   tileserver-gl:
     image: "maptiler/tileserver-gl"
+    container_name: tileserver-gl
+    restart: always
     command:
       - --port
       - "${TPORT:-8080}"
       - --mbtiles
       - "${MBTILES_FILE}"
+      - --verbose
+      - -c
+      - /data/tileserver-gl.json
+      - --public_url=https://tileserver.cyclemap.us/
+      - --log_file /var/log/access.log
+      - --log_format=combined
+    environment:
+      VIRTUAL_HOST: tileserver.cyclemap.us
+      VIRTUAL_PORT: $(TPORT)
+      LETSENCRYPT_HOST: tileserver.cyclemap.us
+      LETSENCRYPT_EMAIL: adrian-1f-fz@aporter.org
+      HTTPS_METHOD: redirect
+      ENABLE_IPV6: "false"
     ports:
       - "${TPORT:-8080}:${TPORT:-8080}"
     volumes:
-      - ./data:/data
+      - ./data-tileserver:/data
+      - ./data-tileserver/viewer:/app/public/resources/viewer
+      - ./logs:/var/log

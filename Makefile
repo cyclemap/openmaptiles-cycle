@@ -20,7 +20,7 @@ USE_PRELOADED_IMAGE ?=
 PPORT ?= 8090
 export PPORT
 # Local port to use with tileserver
-TPORT ?= 8080
+TPORT ?= 8082
 export TPORT
 
 # Allow a custom docker-compose project name
@@ -394,7 +394,7 @@ endif
 .PHONY: import-osm
 import-osm: all start-db-nowait
 	@$(assert_area_is_given)
-	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools sh -c 'pgwait && import-osm $(PBF_FILE)'
+	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools nice sh -c 'pgwait && import-osm $(PBF_FILE)'
 
 .PHONY: start-update-osm
 start-update-osm: all start-db
@@ -408,7 +408,7 @@ stop-update-osm:
 .PHONY: import-diff
 import-diff: all start-db-nowait
 	@$(assert_area_is_given)
-	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools sh -c 'pgwait && import-diff'
+	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools nice sh -c 'pgwait && import-diff'
 
 .PHONY: import-data
 import-data: start-db
@@ -425,7 +425,7 @@ generate-tiles: all start-db
 	@echo "WARNING: This Mapnik-based method of tile generation is obsolete. Use generate-tiles-pg instead."
 	@echo "Generating tiles into $(MBTILES_LOCAL_FILE) (will delete if already exists)..."
 	@rm -rf "$(MBTILES_LOCAL_FILE)"
-	$(DOCKER_COMPOSE) run $(DC_OPTS) generate-vectortiles
+	$(DOCKER_COMPOSE) run $(DC_OPTS) generate-vectortiles nice /usr/src/app/export-local.sh
 	@echo "Updating generated tile metadata ..."
 	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools \
 			mbtiles-tools meta-generate "$(MBTILES_LOCAL_FILE)" $(TILESET_FILE) --auto-minmax --show-ranges
@@ -457,8 +457,13 @@ start-tileserver: init-dirs
 	@echo "* Start maptiler/tileserver-gl "
 	@echo "*       ----------------------------> check $(OMT_HOST):$(TPORT) "
 	@echo "* "
+	@echo "*       ----------------------------> this will restart on boot "
+	@echo "*       ----------------------------> to see logs run:  docker logs -f tileserver-gl "
+	@echo "*       ----------------------------> to restart:  docker-compose restart tileserver-gl "
+	@echo "* "
 	@echo "***********************************************************"
 	@echo " "
+	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver
 	$(DOCKER_COMPOSE) up -d tileserver-gl
 
 .PHONY: stop-tileserver

@@ -45,7 +45,26 @@ generalized_tables:
 # etldoc: osm_highway_linestring -> osm_highway_linestring_gen_z11
   highway_linestring_gen_z11:
     source: highway_linestring
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway')) AND NOT is_area AND ST_IsValid(geometry)
+    sql_filter: 
+      (
+      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway') OR
+      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway') OR
+      tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
+      tags->'icn' IN ('yes') OR tags->'icn_ref' IS NOT NULL OR
+      tags->'ncn' IN ('yes') OR tags->'ncn_ref' IS NOT NULL OR
+      tags->'rcn' IN ('yes') OR tags->'rcn_ref' IS NOT NULL OR
+      tags->'lcn' IN ('yes') OR tags->'lcn_ref' IS NOT NULL OR
+      tags->'mtb:scale' NOT IN ('6') OR
+      tags->'mtb:scale:imba' IS NOT NULL OR
+      tags->'mtb:type' IS NOT NULL OR
+      tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      surface ~ E'(;|^)(unpaved|artificial_turf|clay|compacted|crushed_limestone|dirt|earth|fine_gravel|grass|grass_paver|gravel|gravel_turf|ground|ice|mud|pebblestone|rock|rocky|salt|sand|snow|soil|stone|woodchips)(;|$)'
+      ) AND
+      NOT is_area AND
+      ST_IsValid(geometry)
     tolerance: ZRES12
 
 name_field: &name
@@ -108,6 +127,82 @@ public_transport_field: &public_transport
   key: public_transport
   name: public_transport
   type: string
+icn_field: &icn
+  key: icn
+  name: icn
+  type: string
+ncn_field: &ncn
+  key: ncn
+  name: ncn
+  type: string
+rcn_field: &rcn
+  key: rcn
+  name: rcn
+  type: string
+lcn_field: &lcn
+  key: lcn
+  name: lcn
+  type: string
+icn_ref_field: &icn_ref
+  key: icn_ref
+  name: icn_ref
+  type: string
+ncn_ref_field: &ncn_ref
+  key: ncn_ref
+  name: ncn_ref
+  type: string
+rcn_ref_field: &rcn_ref
+  key: rcn_ref
+  name: rcn_ref
+  type: string
+lcn_ref_field: &lcn_ref
+  key: lcn_ref
+  name: lcn_ref
+  type: string
+cycleway_field: &cycleway
+  key: cycleway
+  name: cycleway
+  type: string
+cycleway_right_field: &cycleway_right
+  key: cycleway:right
+  name: cycleway_right
+  type: string
+cycleway_left_field: &cycleway_left
+  key: cycleway:left
+  name: cycleway_left
+  type: string
+cycleway_both_field: &cycleway_both
+  key: cycleway:both
+  name: cycleway_both
+  type: string
+bicycle_field: &bicycle
+  key: bicycle
+  name: bicycle
+  type: string
+footway_field: &footway
+  key: footway
+  name: footway
+  type: string
+hiking_field: &hiking
+  key: hiking
+  name: hiking
+  type: string
+maxspeed_field: &maxspeed
+  key: maxspeed
+  name: maxspeed
+  type: string
+width_field: &width
+  key: width
+  name: width
+  type: string
+width_carriageway_field: &width_carriageway
+  key: width:carriageway
+  name: width_carriageway
+  type: string
+lanes_field: &lanes
+  key: lanes
+  name: lanes
+  type: string
 ref_field: &ref
   key: ref
   name: ref
@@ -135,10 +230,6 @@ man_made_field: &man_made
 z_order_field: &z_order
   name: z_order
   type: wayzorder
-bicycle_field: &bicycle
-  key: bicycle
-  name: bicycle
-  type: string
 foot_field: &foot
   key: foot
   name: foot
@@ -147,9 +238,17 @@ horse_field: &horse
   key: horse
   name: horse
   type: string
+mtb_type_field: &mtb_type
+  key: mtb:type
+  name: mtb_type
+  type: string
 mtb_scale_field: &mtb_scale
   key: mtb:scale
   name: mtb_scale
+  type: string
+mtb_scale_imba_field: &mtb_scale_imba
+  key: mtb:scale:imba
+  name: mtb_scale_imba
   type: string
 sac_scale_field: &sac_scale
   key: sac_scale
@@ -189,6 +288,24 @@ tables:
     - *name
     - *name_en
     - *name_de
+    - *icn
+    - *ncn
+    - *rcn
+    - *lcn
+    - *icn_ref
+    - *ncn_ref
+    - *rcn_ref
+    - *lcn_ref
+    - *cycleway
+    - *cycleway_right
+    - *cycleway_left
+    - *cycleway_both
+    - *footway
+    - *hiking
+    - *maxspeed
+    - *width
+    - *width_carriageway
+    - *lanes
     - name: tags
       type: hstore_tags
     - *short_name
@@ -207,7 +324,9 @@ tables:
     - *bicycle
     - *foot
     - *horse
+    - *mtb_type
     - *mtb_scale
+    - *mtb_scale_imba
     - *sac_scale
     - *surface
     - *expressway
