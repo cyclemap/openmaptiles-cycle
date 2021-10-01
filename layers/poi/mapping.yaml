@@ -108,6 +108,7 @@ def_poi_mapping_leisure: &poi_mapping_leisure
   - hackerspace
   - marina
   - miniature_golf
+  - nature_reserve
   - park
   - pitch
   - playground
