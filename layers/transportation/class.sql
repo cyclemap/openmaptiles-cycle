@@ -40,6 +40,37 @@ $$ LANGUAGE SQL IMMUTABLE
                 PARALLEL SAFE;
 
 
+CREATE OR REPLACE FUNCTION is_speed_low(tags HSTORE) RETURNS boolean AS
+$$
+SELECT CASE
+        WHEN (tags->'maxspeed' ~ E'^[\\d.]+ mph$' AND replace(tags->'maxspeed', ' mph', '')::float <= 35) THEN true
+        WHEN (tags->'maxspeed' ~ E'^[\\d.]+$' AND (tags->'maxspeed')::float <= 60) THEN true
+        WHEN (tags->'maxspeed' ~ E'^[\\d.]+ km/h$' AND replace(tags->'maxspeed', ' km/h', '')::float <= 60) THEN true
+        WHEN (tags->'maxspeed' ~ E'^[\\d.]+ kph$' AND replace(tags->'maxspeed', ' kph', '')::float <= 60) THEN true
+        ELSE false
+END;
+$$ LANGUAGE SQL IMMUTABLE
+                PARALLEL SAFE;
+
+
+CREATE OR REPLACE FUNCTION is_wide_or_unknown(tags HSTORE) RETURNS boolean AS
+$$
+SELECT CASE
+        WHEN tags->'lanes' IS NULL OR tags->'lanes' !~ E'^[\\d]+$' THEN true
+        WHEN (tags->'lanes')::integer >= 3 THEN true
+        WHEN tags->'oneway' = 'yes' AND (tags->'lanes')::integer >= 2 THEN true
+        -- 3.75m is 12.3 feet
+        WHEN (tags->'width' IS NULL OR tags->'width' !~ E'^[\\d.]+$') AND (tags->'width:carriageway' IS NULL OR tags->'width:carriageway' !~ E'^[\\d.]+$') THEN true
+        WHEN (tags->'lanes')::integer = 2 AND tags->'width:carriageway' ~ E'^[\\d.]+$' AND (tags->'width:carriageway')::float >= 7.5 THEN true
+        WHEN (tags->'lanes')::integer = 2 AND tags->'width' ~ E'^[\\d.]+$' AND (tags->'width')::float >= 7.5 THEN true
+        WHEN (tags->'lanes')::integer = 1 AND tags->'width:carriageway' ~ E'^[\\d.]+$' AND (tags->'width:carriageway')::float >= 3.75 THEN true
+        WHEN (tags->'lanes')::integer = 1 AND tags->'width' ~ E'^[\\d.]+$' AND (tags->'width')::float >= 3.75 THEN true
+        ELSE false
+END;
+$$ LANGUAGE SQL IMMUTABLE
+                PARALLEL SAFE;
+
+
 CREATE OR REPLACE FUNCTION is_cyclefriendly(highway TEXT, tags HSTORE) RETURNS boolean AS
 $$
 SELECT CASE
@@ -52,22 +83,8 @@ SELECT CASE
             tags->'cycleway:both' IN ('shared_lane') THEN true
 
         WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (
-                highway IN ('residential', 'service', 'unclassified') OR (
-                    (
-                        (tags->'maxspeed' ~ E'^[\\d.]+ mph$' AND replace(tags->'maxspeed', ' mph', '')::float <= 35) OR
-                        (tags->'maxspeed' ~ E'^[\\d.]+$' AND (tags->'maxspeed')::float <= 60) OR
-                        (tags->'maxspeed' ~ E'^[\\d.]+ km/h$' AND replace(tags->'maxspeed', ' km/h', '')::float <= 60) OR
-                        (tags->'maxspeed' ~ E'^[\\d.]+ kph$' AND replace(tags->'maxspeed', ' kph', '')::float <= 60)
-                    ) AND (
-                        tags->'lanes' IS NULL OR tags->'lanes' !~ E'^[\\d]+$' OR (tags->'lanes')::integer >= 3 OR
-                        tags->'oneway' = 'yes' AND (tags->'lanes')::integer >= 2 OR
-                        -- 3.75m is 12.3 feet
-                        ((tags->'lanes')::integer = 2 AND tags->'width:carriageway' ~ E'^[\\d.]+$' AND (tags->'width:carriageway')::float >= 7.5) OR
-                        ((tags->'lanes')::integer = 2 AND tags->'width' ~ E'^[\\d.]+$' AND (tags->'width')::float >= 7.5) OR
-                        ((tags->'lanes')::integer = 1 AND tags->'width:carriageway' ~ E'^[\\d.]+$' AND (tags->'width:carriageway')::float >= 3.75) OR
-                        ((tags->'lanes')::integer = 1 AND tags->'width' ~ E'^[\\d.]+$' AND (tags->'width')::float >= 3.75)
-                    )
-                )
+                highway IN ('residential', 'service', 'unclassified') OR
+                is_speed_low(tags) AND is_wide_or_unknown(tags)
             )
             THEN true
         
