@@ -41,7 +41,7 @@ SELECT osm_id_hash AS osm_id,
        "level",
        CASE WHEN indoor = TRUE THEN 1 END AS indoor,
        row_number() OVER (
-           PARTITION BY LabelGrid(geometry, 100 * pixel_width)
+           PARTITION BY LabelGrid(geometry, 50 * pixel_width)
            ORDER BY CASE WHEN name = '' THEN 2000 ELSE poi_class_rank(poi_class(subclass, mapping_key)) END ASC
            )::int AS "rank"
 FROM (
@@ -53,7 +53,7 @@ FROM (
          WHERE geometry && bbox
            AND zoom_level BETWEEN 12 AND 13
            AND ((subclass = 'station' AND mapping_key = 'railway')
-             OR subclass IN ('halt', 'ferry_terminal', 'bicycle', 'bicycle_parking', 'bicycle_rental', 'bicycle_repair_station', 'compressed_air'))
+             OR subclass IN ('halt', 'ferry_terminal', 'bicycle', 'bicycle_parking', 'bicycle_rental', 'bicycle_repair_station', 'compressed_air', 'park', 'nature_reserve'))
 
          UNION ALL
 
