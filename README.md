@@ -3,6 +3,8 @@
 
 Please see [OpenMapTiles](https://github.com/openmaptiles/openmaptiles/) for more information on how to use this software or read below.
 
+You can see cyclemap specific notes here:  [README-cyclemap](README-cyclemap.md)
+
 ---
 
 ## OpenMapTiles [![Build Status](https://github.com/openmaptiles/openmaptiles/workflows/OMT_CI/badge.svg?branch=master)](https://github.com/openmaptiles/openmaptiles/actions)
