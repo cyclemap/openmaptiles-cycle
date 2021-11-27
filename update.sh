@@ -11,7 +11,13 @@ newFile=$locationName-new.osm.pbf
 
 set -e #exit on failure
 
-exec &> >(tee --append "update.log")
+exec &> >(tee >(\
+	grep \
+	--text \
+	--invert-match \
+	'^[]' \
+	>>"update.log"
+))
 
 #rm --force $pbfFile
 #wget --progress=bar:force:noscroll --output-document $pbfFile https://download.geofabrik.de/$locationName-latest.osm.pbf
