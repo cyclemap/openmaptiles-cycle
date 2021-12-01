@@ -192,6 +192,10 @@ oneway_bicycle_field: &oneway_bicycle
   key: oneway:bicycle
   name: oneway_bicycle
   type: string
+ramp_bicycle_field: &ramp_bicycle
+  key: ramp:bicycle
+  name: ramp_bicycle
+  type: string
 maxspeed_field: &maxspeed
   key: maxspeed
   name: maxspeed
@@ -308,6 +312,7 @@ tables:
     - *footway
     - *hiking
     - *oneway_bicycle
+    - *ramp_bicycle
     - *maxspeed
     - *width
     - *width_carriageway

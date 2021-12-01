@@ -41,6 +41,7 @@ SELECT CASE
         
         WHEN highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') AND
             (tags->'bicycle' IN ('yes', 'permissive', 'dismount', 'designated') OR
+            tags->'ramp:bicycle' NOT IN ('no') OR
             tags->'icn' = 'yes' OR tags->'icn_ref' IS NOT NULL OR
             tags->'ncn' = 'yes' OR tags->'ncn_ref' IS NOT NULL OR
             tags->'rcn' = 'yes' OR tags->'rcn_ref' IS NOT NULL OR
