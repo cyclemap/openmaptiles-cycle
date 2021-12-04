@@ -9,6 +9,19 @@ $$ LANGUAGE SQL IMMUTABLE
                 STRICT
                 PARALLEL SAFE;
 
+-- direction mapping type doesn't allow us to pass "unset"
+CREATE OR REPLACE FUNCTION oneway(is_oneway INT, oneway_bicycle TEXT) RETURNS INT AS
+$$
+SELECT CASE
+           WHEN oneway_bicycle = 'yes' THEN 1
+           WHEN oneway_bicycle = 'no' THEN 0
+           WHEN oneway_bicycle = '-1' THEN -1
+           ELSE is_oneway
+           END;
+$$ LANGUAGE SQL IMMUTABLE
+                STRICT
+                PARALLEL SAFE;
+
 CREATE OR REPLACE FUNCTION is_cycleway(highway TEXT, tags HSTORE) RETURNS boolean AS
 $$
 SELECT CASE
