@@ -187,6 +187,11 @@ hiking_field: &hiking
   key: hiking
   name: hiking
   type: string
+# direction mapping type doesn't allow us to pass "unset"
+oneway_bicycle_field: &oneway_bicycle
+  key: oneway:bicycle
+  name: oneway_bicycle
+  type: string
 maxspeed_field: &maxspeed
   key: maxspeed
   name: maxspeed
@@ -302,6 +307,7 @@ tables:
     - *cycleway_both
     - *footway
     - *hiking
+    - *oneway_bicycle
     - *maxspeed
     - *width
     - *width_carriageway

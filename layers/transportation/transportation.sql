@@ -369,7 +369,7 @@ FROM (
                 is_ford,
                 expressway,
                 is_ramp,
-                is_oneway,
+                oneway(is_oneway, oneway_bicycle) AS is_oneway,
                 man_made,
                 hl.layer,
                 CASE WHEN hl.highway IN ('footway', 'steps') THEN hl.level END AS level,
