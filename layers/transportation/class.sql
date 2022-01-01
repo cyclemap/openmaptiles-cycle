@@ -25,6 +25,8 @@ $$ LANGUAGE SQL IMMUTABLE
 CREATE OR REPLACE FUNCTION is_cycleway(highway TEXT, tags HSTORE) RETURNS boolean AS
 $$
 SELECT CASE
+        WHEN highway IN ('construction') THEN false
+
         WHEN tags->'bicycle' IN ('no', 'private', 'permit') THEN false
 
         WHEN tags->'mtb:scale' NOT IN ('6') OR
@@ -88,6 +90,8 @@ $$ LANGUAGE SQL IMMUTABLE
 CREATE OR REPLACE FUNCTION is_cyclefriendly(highway TEXT, tags HSTORE) RETURNS boolean AS
 $$
 SELECT CASE
+        WHEN highway IN ('construction') THEN false
+
         WHEN tags->'bicycle' IN ('no', 'private', 'permit') THEN false
 
         WHEN tags->'bicycle' IN ('designated') OR
