@@ -129,6 +129,7 @@ SELECT ST_Simplify(geometry, ZRes(12)) AS geometry,
 FROM osm_transportation_merge_linestring_gen_z11
 WHERE highway NOT IN ('tertiary', 'tertiary_link', 'busway')
       AND construction NOT IN ('tertiary', 'tertiary_link', 'busway')
+      OR is_cycleway(highway, tags) OR is_cyclefriendly(highway, tags)
     ) /* DELAY_MATERIALIZED_VIEW_CREATION */;
 CREATE INDEX IF NOT EXISTS osm_transportation_merge_linestring_gen_z10_geometry_idx
     ON osm_transportation_merge_linestring_gen_z10 USING gist (geometry);
@@ -180,7 +181,7 @@ SELECT ST_Simplify(ST_LineMerge(ST_Collect(geometry)), ZRes(10)) AS geometry,
 FROM osm_transportation_merge_linestring_gen_z9
 WHERE (highway IN ('motorway', 'trunk', 'primary') OR
        construction IN ('motorway', 'trunk', 'primary') OR
-       highway_class(highway, NULL, construction, tags) = 'cycleway')
+       is_cycleway(highway, tags) OR is_cyclefriendly(highway, tags) AND surface = 'unpaved')
        AND ST_IsValid(geometry)
        AND access IS NULL
 GROUP BY highway, network, construction, is_bridge, is_tunnel, is_ford, expressway, tags, surface
