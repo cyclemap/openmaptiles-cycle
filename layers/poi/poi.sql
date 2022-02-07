@@ -52,8 +52,7 @@ FROM (
          FROM osm_poi_point
          WHERE geometry && bbox
            AND zoom_level BETWEEN 12 AND 13
-           AND ((subclass = 'station' AND mapping_key = 'railway')
-             OR subclass IN ('halt', 'ferry_terminal', 'bicycle', 'bicycle_parking', 'bicycle_rental', 'bicycle_repair_station', 'compressed_air', 'park', 'nature_reserve'))
+           AND subclass IN ('park', 'nature_reserve', 'bicycle', 'bicycle_rental', 'bicycle_repair_station')
 
          UNION ALL
 
@@ -63,6 +62,7 @@ FROM (
          FROM osm_poi_point
          WHERE geometry && bbox
            AND zoom_level >= 14
+           AND subclass IN ('park', 'nature_reserve', 'bicycle', 'bicycle_rental', 'bicycle_repair_station', 'bicycle_parking', 'drinking_water', 'toilets', 'ford', 'compressed_air', 'shelter')
 
          UNION ALL
 
@@ -77,8 +77,7 @@ FROM (
          FROM osm_poi_polygon
          WHERE geometry && bbox
            AND zoom_level BETWEEN 12 AND 13
-           AND ((subclass = 'station' AND mapping_key = 'railway')
-             OR subclass IN ('halt', 'ferry_terminal', 'bicycle', 'bicycle_parking', 'bicycle_rental', 'bicycle_repair_station', 'compressed_air', 'park', 'nature_reserve'))
+           AND subclass IN ('park', 'nature_reserve', 'bicycle', 'bicycle_rental', 'bicycle_repair_station')
 
          UNION ALL
 
@@ -92,6 +91,7 @@ FROM (
          FROM osm_poi_polygon
          WHERE geometry && bbox
            AND zoom_level >= 14
+           AND subclass IN ('park', 'nature_reserve', 'bicycle', 'bicycle_rental', 'bicycle_repair_station', 'bicycle_parking', 'drinking_water', 'toilets', 'ford', 'compressed_air', 'shelter')
      ) AS poi_union
 ORDER BY "rank"
 $$ LANGUAGE SQL STABLE
