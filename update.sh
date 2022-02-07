@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source .env
+
 #these won't do what we want because docker is doing all of the real work
 #renice +20 -p $$ >/dev/null
 #ionice -c3 -p $$
@@ -52,7 +54,7 @@ echo quickstart:  done at $(date)
 echo "====================================================================="
 
 date=$(date +%Y-%m-%d)
-file="tiles-$date-$locationName-14.mbtiles"
+file="tiles-$date-$locationName-$MAX_ZOOM.mbtiles"
 mv data/tiles.mbtiles data-tileserver/$file && ln -sf $file data-tileserver/tiles.mbtiles &&
 	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver &&
 	docker restart tileserver-gl

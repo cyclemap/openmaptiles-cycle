@@ -135,7 +135,7 @@ services:
     restart: always
     command:
       - --port
-      - "${TPORT:-8080}"
+      - "80"
       - --mbtiles
       - "${MBTILES_FILE}"
       - --verbose
@@ -146,13 +146,10 @@ services:
       - --log_format=combined
     environment:
       VIRTUAL_HOST: tileserver.cyclemap.us
-      VIRTUAL_PORT: $(TPORT)
       LETSENCRYPT_HOST: tileserver.cyclemap.us
       LETSENCRYPT_EMAIL: adrian-1f-fz@aporter.org
       HTTPS_METHOD: redirect
       ENABLE_IPV6: "false"
-    ports:
-      - "${TPORT:-8080}:${TPORT:-8080}"
     volumes:
       - ./data-tileserver:/data
       - ./data-tileserver/viewer:/app/public/resources/viewer

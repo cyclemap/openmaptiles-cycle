@@ -19,9 +19,6 @@ USE_PRELOADED_IMAGE ?=
 # Local port to use with postserve
 PPORT ?= 8090
 export PPORT
-# Local port to use with tileserver
-TPORT ?= 8082
-export TPORT
 
 # Allow a custom docker-compose project name
 DC_PROJECT := $(or $(DC_PROJECT),$(shell (. .env; echo $${DC_PROJECT})))
@@ -175,7 +172,7 @@ Hints for designers:
   make stop-maputnik                   # stop Maputnik Editor + dynamic tile server
   make start-postserve                 # start dynamic tile server                   [ see $(OMT_HOST):$(PPORT) ]
   make stop-postserve                  # stop dynamic tile server
-  make start-tileserver                # start maptiler/tileserver-gl                [ see $(OMT_HOST):$(TPORT) ]
+  make start-tileserver                # start maptiler/tileserver-gl                [ see $(OMT_HOST) ]
   make stop-tileserver                 # stop maptiler/tileserver-gl
 
 Hints for developers:
@@ -455,7 +452,7 @@ start-tileserver: init-dirs
 	@echo "***********************************************************"
 	@echo "* "
 	@echo "* Start maptiler/tileserver-gl "
-	@echo "*       ----------------------------> check $(OMT_HOST):$(TPORT) "
+	@echo "*       ----------------------------> check $(OMT_HOST) "
 	@echo "* "
 	@echo "*       ----------------------------> this will restart on boot "
 	@echo "*       ----------------------------> to see logs run:  docker logs -f tileserver-gl "
