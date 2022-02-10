@@ -13,6 +13,11 @@ newFile=$locationName-new.osm.pbf
 
 set -e #exit on failure
 
+#notify an external script that processing has started
+if [ -e process.sh ]; then
+	./process.sh
+fi
+
 exec &> >(tee >(\
 	grep \
 	--text \
