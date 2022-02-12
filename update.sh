@@ -23,7 +23,7 @@ exec &> >(tee >(\
 	--text \
 	--invert-match \
 	'^[]' \
-	>>"update.log"
+	>>"logs/update.log"
 ))
 
 #rm --force $pbfFile
