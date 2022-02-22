@@ -7,9 +7,13 @@ source .env
 #ionice -c3 -p $$
 
 minimumSize=9500000000
+#redownload=yes
 locationName=north-america
+#locationName=planet
+downloadFile=$locationName-download.osm.pbf
 pbfFile=$locationName.osm.pbf
 newFile=$locationName-new.osm.pbf
+oldFile=$locationName-old.osm.pbf
 
 set -e #exit on failure
 
@@ -19,26 +23,31 @@ if [ -e process.sh ]; then
 fi
 
 exec &> >(tee >(\
+	sed \
+		-e 's/$//g' \
+		-e 's//\n/g' |
 	grep \
-	--text \
-	--invert-match \
-	'^[]' \
+		--text \
+		--invert-match \
+		'^' \
 	>>"logs/update.log"
 ))
 
-#rm --force $pbfFile
-#wget --progress=bar:force:noscroll --output-document $pbfFile https://download.geofabrik.de/$locationName-latest.osm.pbf
-#mv --force $pbfFile data/$pbfFile
-
-#THE NEXT STEP:
-#see here:  https://wiki.openstreetmap.org/wiki/Osmupdate#Assembling_an_OSM_Change_file
-#you can create a "change file" (osc file) and use Osmosis or osm2pgsql to get that change file into postgres.
-#we have to stop using quickstart.sh for that to work.
+if [[ $redownload == "yes" || ! -e data/$pbfFile ]]; then
+	rm --force $downloadFile
+	if [[ $locationName == "planet" ]]; then
+		url=https://ftpmirror.your.org/pub/openstreetmap/pbf/planet-latest.osm.pbf
+	else
+		url=https://download.geofabrik.de/$locationName-latest.osm.pbf
+	fi
+	wget --progress=bar:force:noscroll --output-document $downloadFile $url
+	mv --force $downloadFile data/$pbfFile
+fi
 
 echo updating:  started at $(date)
 rm --force data/$newFile
 docker-compose run --rm openmaptiles-tools nice osmupdate --verbose /import/$pbfFile /import/$newFile
-mv --force data/$pbfFile{,.old}
+mv --force data/$pbfFile data/$oldFile
 mv --force data/$newFile data/$pbfFile
 
 if [ $(stat --format=%s data/$pbfFile) -lt $minimumSize ]; then
@@ -46,8 +55,13 @@ if [ $(stat --format=%s data/$pbfFile) -lt $minimumSize ]; then
 	echo $pbfFile file size too small.  expected minimum size of $minimumSize bytes.
 	false
 fi
-
 echo updating:  done at $(date)
+
+#THE NEXT STEP:
+#see here:  https://wiki.openstreetmap.org/wiki/Osmupdate#Assembling_an_OSM_Change_file
+#you can create a "change file" (osc file) and use Osmosis or osm2pgsql to get that change file into postgres.
+#we have to stop using quickstart.sh for that to work.
+
 
 echo "====================================================================="
 
