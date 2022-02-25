@@ -14,6 +14,7 @@ data-tileserver/*
 /.update.exclusivelock
 /logs/
 /process.sh
+/git/
 
 # generated source files
 build/*
