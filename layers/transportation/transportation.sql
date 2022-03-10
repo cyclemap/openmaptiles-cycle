@@ -37,7 +37,7 @@ $$
 SELECT osm_id,
        geometry,
        CASE
-           WHEN highway <> '' OR public_transport <> ''
+           WHEN highway <> '' OR public_transport <> '' OR tags->'leisure' IN ('track')
                THEN highway_class(highway, public_transport, construction, tags)
            WHEN railway <> '' THEN railway_class(railway)
            WHEN aerialway <> '' THEN 'aerialway'

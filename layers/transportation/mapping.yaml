@@ -61,6 +61,7 @@ generalized_tables:
       tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
       tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
       tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
+      tags->'sport' ~ E'(;|^)cycling(;|$)' OR
       surface ~ E'(;|^)(unpaved|artificial_turf|clay|compacted|crushed_limestone|dirt|earth|fine_gravel|grass|grass_paver|gravel|gravel_turf|ground|ice|mud|pebblestone|rock|rocky|salt|sand|snow|soil|stone|woodchips)(;|$)'
       ) AND
       NOT is_area AND
@@ -376,6 +377,10 @@ tables:
       service:
       - driveway
       - parking_aisle
+      leisure:
+      - track
+      sport:
+      - cycling
 
 # etldoc: imposm3 -> osm_railway_linestring
   railway_linestring:
