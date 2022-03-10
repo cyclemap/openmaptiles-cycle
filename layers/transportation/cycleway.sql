@@ -19,6 +19,8 @@ SELECT CASE
 
         WHEN tags->'bicycle' IN ('no', 'private', 'permit') THEN false
 
+        WHEN highway IN ('cycleway') THEN true
+        
         WHEN tags->'mtb:scale' NOT IN ('6') OR
             tags->'mtb:scale:imba' IS NOT NULL OR
             tags->'mtb:type' IS NOT NULL OR
@@ -29,8 +31,6 @@ SELECT CASE
             tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
             tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN true
         
-        WHEN highway IN ('cycleway') THEN true
-        
         WHEN highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') AND (
                 tags->'bicycle' IN ('yes', 'permissive', 'dismount', 'designated') OR
                 tags->'ramp:bicycle' NOT IN ('no') OR
@@ -40,6 +40,8 @@ SELECT CASE
                 tags->'lcn' = 'yes' OR tags->'lcn_ref' IS NOT NULL
             )
             THEN true
+
+        WHEN tags->'sport' ~ E'(;|^)cycling(;|$)' THEN true
 
         ELSE false
 END;
