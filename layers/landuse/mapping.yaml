@@ -67,6 +67,9 @@ tables:
     - name: waterway
       key: waterway
       type: string
+    - name: sport
+      key: sport
+      type: string
     - name: area
       type: area
     mapping:
@@ -103,3 +106,5 @@ tables:
       - neighbourhood
       waterway:
       - dam
+      sport:
+      - cycling
