@@ -52,7 +52,7 @@ $$
 SELECT CASE
            WHEN surface ~ E'(;|:|^)(unpaved|artificial_turf|clay|compacted|crushed_limestone|dirt|dirt/sand|earth|fine_gravel|grass|grass_paver|gravel|gravel_turf|ground|ice|mud|pebblestone|rock|rocky|salt|sand|shells|snow|soil|stone|woodchips)(;|:|$)' THEN 'unpaved'
            WHEN surface ~ E'(;|:|^)(paved|acrylic|asphalt|brick|bricks|cement|chipseal|cobblestone|concrete|granite|interlock|metal|metal_grid|paving_stones|plastic|rubber|sett|tartan|unhewn_cobblestone|wood)(;|:|$)' THEN 'paved'
-           WHEN tags->'footway' IN ('crossing') THEN 'paved'
+           WHEN tags->'footway' IN ('crossing', 'access_aisle') THEN 'paved'
            WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'
            WHEN tags->'mtb:scale' IS NOT NULL THEN 'unpaved'
            WHEN tags->'mtb:scale:imba' IS NOT NULL THEN 'unpaved'
