@@ -16,6 +16,7 @@ CREATE OR REPLACE FUNCTION layer_poi(bbox geometry, zoom_level integer, pixel_wi
                 layer    integer,
                 level    integer,
                 indoor   integer,
+                drinking_water_seasonal integer,
                 "rank"   int
             )
 AS
@@ -40,6 +41,13 @@ SELECT osm_id_hash AS osm_id,
        NULLIF(layer, 0) AS layer,
        "level",
        CASE WHEN indoor = TRUE THEN 1 END AS indoor,
+       CASE
+           WHEN drinking_water_seasonal = 'yes' THEN 1
+           WHEN (
+               drinking_water_seasonal = 'no' OR
+               subclass = 'drinking_water' AND indoor = TRUE
+           ) THEN 0
+           END AS drinking_water_seasonal,
        row_number() OVER (
            PARTITION BY LabelGrid(geometry, 50 * pixel_width)
            ORDER BY CASE WHEN name = '' THEN 2000 ELSE poi_class_rank(poi_class(subclass, mapping_key)) END ASC
