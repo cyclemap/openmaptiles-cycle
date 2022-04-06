@@ -45,6 +45,9 @@ layer:
       - quarter
       - neighbourhood
       - dam
+      - camp_site
+      - park
+      - nature_reserve
   datasource:
     geometry_field: geometry
     query: (SELECT geometry, class FROM layer_landuse(!bbox!, z(!scale_denominator!))) AS t

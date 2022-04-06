@@ -98,6 +98,7 @@ tables:
       - playground
       - track
       tourism:
+      - camp_site
       - theme_park
       - zoo
       place:
