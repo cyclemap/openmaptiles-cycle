@@ -461,11 +461,11 @@ start-tileserver: init-dirs
 	@echo "***********************************************************"
 	@echo " "
 	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver
-	$(DOCKER_COMPOSE) up -d tileserver-gl
+	$(DOCKER_COMPOSE) --file docker-compose-tileserver.yml --project-name openmaptiles-tileserver up -d tileserver-gl
 
 .PHONY: stop-tileserver
 stop-tileserver:
-	$(DOCKER_COMPOSE) stop tileserver-gl
+	$(DOCKER_COMPOSE) --file docker-compose-tileserver.yml --project-name openmaptiles-tileserver stop tileserver-gl
 
 .PHONY: start-postserve
 start-postserve: start-db

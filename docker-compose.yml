@@ -128,29 +128,3 @@ services:
     image: "maputnik/editor"
     ports:
       - "8088:8888"
-
-  tileserver-gl:
-    image: "maptiler/tileserver-gl"
-    container_name: tileserver-gl
-    restart: always
-    command:
-      - --port
-      - "80"
-      - --mbtiles
-      - "${MBTILES_FILE}"
-      - --verbose
-      - -c
-      - /data/tileserver-gl.json
-      - --public_url=https://tileserver.cyclemap.us/
-      - --log_file /var/log/access.log
-      - --log_format=combined
-    environment:
-      VIRTUAL_HOST: tileserver.cyclemap.us
-      LETSENCRYPT_HOST: tileserver.cyclemap.us
-      LETSENCRYPT_EMAIL: adrian-1f-fz@aporter.org
-      HTTPS_METHOD: redirect
-      ENABLE_IPV6: "false"
-    volumes:
-      - ./data-tileserver:/data
-      - ./data-tileserver/viewer:/app/public/resources/viewer
-      - ./logs:/var/log
