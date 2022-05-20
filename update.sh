@@ -8,8 +8,8 @@ source .env
 
 minimumSize=9500000000
 #redownload=yes
-locationName=north-america
-#locationName=planet
+#locationName=north-america
+locationName=planet
 downloadFile=$locationName-download.osm.pbf
 pbfFile=$locationName.osm.pbf
 newFile=$locationName-new.osm.pbf
