@@ -15,6 +15,7 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - bbq
   - bicycle_parking
   - bicycle_rental
+  - bicycle_repair_station
   - biergarten
   - bus_station
   - cafe
@@ -22,6 +23,7 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - clinic
   - college
   - community_centre
+  - compressed_air
   - courthouse
   - dentist
   - doctors
@@ -107,6 +109,7 @@ def_poi_mapping_leisure: &poi_mapping_leisure
   - hackerspace
   - marina
   - miniature_golf
+  - nature_reserve
   - park
   - pitch
   - playground
@@ -382,6 +385,9 @@ def_poi_fields: &poi_fields
     type: string
   - name: brand
     key: brand
+    type: string
+  - name: drinking_water_seasonal
+    key: drinking_water:seasonal
     type: string
 
 def_poi_mapping: &poi_mapping

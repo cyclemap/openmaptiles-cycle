@@ -14,6 +14,8 @@ services:
     image: "${POSTGIS_IMAGE:-openmaptiles/postgis}:${TOOLS_VERSION}"
     # Use "command: postgres -c jit=off" for PostgreSQL 11+ because of slow large MVT query processing
     # Use "shm_size: 512m" if you want to prevent a possible 'No space left on device' during 'make generate-tiles-pg'
+    entrypoint: /bin/bash
+    command: "-c 'nice /docker-entrypoint.sh postgres'"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -69,7 +71,8 @@ services:
 
   update-osm:
     <<: *openmaptiles-tools
-    command: import-update
+    entrypoint: /bin/bash
+    command: "-c 'nice import-update'"
 
   generate-changed-vectortiles:
     image: "openmaptiles/generate-vectortiles:${TOOLS_VERSION}"
@@ -127,17 +130,3 @@ services:
     image: "maputnik/editor"
     ports:
       - "8088:8888"
-
-  tileserver-gl:
-    image: "maptiler/tileserver-gl:latest"
-    command:
-      - --port
-      - "${TPORT:-8080}"
-      - --config
-      - "/style/config.json"
-    ports:
-      - "${TPORT:-8080}:${TPORT:-8080}"
-    volumes:
-      - ./data:/data
-      - ./style:/style
-      - ./build:/build

@@ -67,6 +67,9 @@ tables:
     - name: waterway
       key: waterway
       type: string
+    - name: sport
+      key: sport
+      type: string
     - name: area
       type: area
     mapping:
@@ -96,6 +99,7 @@ tables:
       - playground
       - track
       tourism:
+      - camp_site
       - theme_park
       - zoo
       place:
@@ -104,3 +108,5 @@ tables:
       - neighbourhood
       waterway:
       - dam
+      sport:
+      - cycling

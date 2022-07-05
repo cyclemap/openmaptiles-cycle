@@ -10,6 +10,11 @@ quickstart.log
 
 # imput / output data
 data/*
+data-tileserver/*
+/.update.exclusivelock
+/logs/
+/process.sh
+/git/
 
 # generated source files
 build/*

@@ -2,6 +2,13 @@ CREATE OR REPLACE FUNCTION poi_class_rank(class text)
     RETURNS int AS
 $$
 SELECT CASE class
+           WHEN 'bicycle' THEN 5
+           WHEN 'park' THEN 10
+           WHEN 'nature_reserve' THEN 11
+           WHEN 'bicycle_repair_station' THEN 12
+           WHEN 'compressed_air' THEN 13
+           WHEN 'bicycle_rental' THEN 14
+           WHEN 'bicycle_parking' THEN 15
            WHEN 'hospital' THEN 20
            WHEN 'railway' THEN 40
            WHEN 'bus' THEN 50

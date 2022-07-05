@@ -1,0 +1,36 @@
+version: "3.3"
+
+networks:
+  nginx:
+    external:
+      name: nginx
+
+services:
+
+  tileserver-gl:
+    image: "maptiler/tileserver-gl:latest"
+    container_name: tileserver-gl
+    restart: always
+    command:
+      - --port
+      - "80"
+      - --mbtiles
+      - "${MBTILES_FILE}"
+      - --verbose
+      - --config
+      - /style/config.json
+      - --public_url=https://tileserver.cyclemap.us/
+      - --log_file=/var/log/access.log
+      - --log_format=combined
+    environment:
+      VIRTUAL_HOST: tileserver.cyclemap.us
+      LETSENCRYPT_HOST: tileserver.cyclemap.us
+      HTTPS_METHOD: redirect
+      ENABLE_IPV6: "false"
+    networks:
+      - nginx
+    volumes:
+      - ./data-tileserver:/data
+      - ./logs:/var/log
+      - ./style:/style
+      - ./build:/build

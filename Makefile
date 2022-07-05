@@ -19,9 +19,6 @@ USE_PRELOADED_IMAGE ?=
 # Local port to use with postserve
 PPORT ?= 8090
 export PPORT
-# Local port to use with tileserver
-TPORT ?= 8080
-export TPORT
 STYLE_FILE := build/style/style.json
 STYLE_HEADER_FILE := style/style-header.json
 
@@ -177,7 +174,7 @@ Hints for designers:
   make stop-maputnik                   # stop Maputnik Editor + dynamic tile server
   make start-postserve                 # start dynamic tile server                   [ see $(OMT_HOST):$(PPORT) ]
   make stop-postserve                  # stop dynamic tile server
-  make start-tileserver                # start maptiler/tileserver-gl                [ see $(OMT_HOST):$(TPORT) ]
+  make start-tileserver                # start maptiler/tileserver-gl                [ see $(OMT_HOST) ]
   make stop-tileserver                 # stop maptiler/tileserver-gl
 
 Hints for developers:
@@ -418,7 +415,7 @@ endif
 .PHONY: import-osm
 import-osm: all start-db-nowait
 	@$(assert_area_is_given)
-	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools sh -c 'pgwait && import-osm $(PBF_FILE)'
+	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools nice sh -c 'pgwait && import-osm $(PBF_FILE)'
 
 .PHONY: start-update-osm
 start-update-osm: start-db
@@ -432,7 +429,7 @@ stop-update-osm:
 .PHONY: import-diff
 import-diff: start-db-nowait
 	@$(assert_area_is_given)
-	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools sh -c 'pgwait && import-diff'
+	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools nice sh -c 'pgwait && import-diff'
 
 .PHONY: import-data
 import-data: start-db
@@ -449,7 +446,7 @@ generate-tiles: all start-db
 	@echo "WARNING: This Mapnik-based method of tile generation is obsolete. Use generate-tiles-pg instead."
 	@echo "Generating tiles into $(MBTILES_LOCAL_FILE) (will delete if already exists)..."
 	@rm -rf "$(MBTILES_LOCAL_FILE)"
-	$(DOCKER_COMPOSE) run $(DC_OPTS) generate-vectortiles
+	$(DOCKER_COMPOSE) run $(DC_OPTS) generate-vectortiles nice /usr/src/app/export-local.sh
 	@echo "Updating generated tile metadata ..."
 	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools \
 			mbtiles-tools meta-generate "$(MBTILES_LOCAL_FILE)" $(TILESET_FILE) --auto-minmax --show-ranges
@@ -494,15 +491,19 @@ start-tileserver: init-dirs build-style download-fonts
 	@echo "***********************************************************"
 	@echo "* "
 	@echo "* Start maptiler/tileserver-gl "
-	@echo "*       ----------------------------> check $(OMT_HOST):$(TPORT) "
+	@echo "*       ----------------------------> check $(OMT_HOST) "
+	@echo "* "
+	@echo "*       ----------------------------> this will restart on boot "
+	@echo "*       ----------------------------> to see logs run:  docker logs -f tileserver-gl "
+	@echo "*       ----------------------------> to restart:  docker-compose restart tileserver-gl "
 	@echo "* "
 	@echo "***********************************************************"
 	@echo " "
-	$(DOCKER_COMPOSE) up -d tileserver-gl
+	$(DOCKER_COMPOSE) --file docker-compose-tileserver.yml --project-name openmaptiles-tileserver up -d tileserver-gl
 
 .PHONY: stop-tileserver
 stop-tileserver:
-	$(DOCKER_COMPOSE) stop tileserver-gl
+	$(DOCKER_COMPOSE) --file docker-compose-tileserver.yml --project-name openmaptiles-tileserver stop tileserver-gl
 
 .PHONY: start-postserve
 start-postserve: start-db

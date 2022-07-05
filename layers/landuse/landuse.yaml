@@ -35,6 +35,7 @@ layer:
       - library
       - hospital
       - stadium
+      - cycling
       - pitch
       - playground
       - track
@@ -45,6 +46,9 @@ layer:
       - neighbourhood
       - dam
       - quarry
+      - camp_site
+      - park
+      - nature_reserve
   datasource:
     geometry_field: geometry
     query: (SELECT geometry, class FROM layer_landuse(!bbox!, z(!scale_denominator!))) AS t

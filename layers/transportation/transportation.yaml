@@ -210,6 +210,7 @@ layer:
     query: (SELECT geometry, class, subclass, network, oneway, ramp, brunnel, service, access, toll, expressway, layer, level, indoor, bicycle, foot, horse, mtb_scale, surface FROM layer_transportation(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./network_type.sql
+  - ./cycleway.sql
   - ./class.sql
   - ./highway_name.sql
   - ./update_route_member.sql

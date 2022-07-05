@@ -32,7 +32,7 @@ layer:
         fast_food:
           subclass: ['fast_food', 'food_court']
         park:
-          subclass: ['park', 'bbq']
+          subclass: ['park', 'bbq', 'nature_reserve']
         bus:
           subclass: ['bus_stop', 'bus_station']
         railway:
@@ -141,12 +141,20 @@ layer:
           Original value of [`indoor`](http://wiki.openstreetmap.org/wiki/Key:indoor) tag.
       values:
       - 1
+    drinking_water_seasonal:
+      description: |
+          Whether this drinking water is seasonal, based on
+          `drinking water:seasonal` as discussed in
+          [`drinking water`](https://wiki.openstreetmap.org/wiki/Key:drinking_water)
+          (an [`indoor`](http://wiki.openstreetmap.org/wiki/Key:indoor)
+          drinking water will get marked as 0).
+      values: [0, 1]
   datasource:
     geometry_field: geometry
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id, geometry, name, name_en, name_de, {name_languages}, class, subclass, agg_stop, layer, level, indoor, rank FROM layer_poi(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
+    query: (SELECT osm_id, geometry, name, name_en, name_de, {name_languages}, class, subclass, agg_stop, layer, level, indoor, rank, drinking_water_seasonal FROM layer_poi(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
 schema:
   - ./public_transport_stop_type.sql
   - ./class.sql
