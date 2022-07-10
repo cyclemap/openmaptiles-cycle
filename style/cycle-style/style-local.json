@@ -653,6 +653,20 @@
 			}
 		},
 		{
+			"id": "satellite-anchor",
+			"type": "line",
+			"source": "openmaptiles",
+			"source-layer": "transportation",
+			"filter": ["in", "class", "dummy"]
+		},
+		{
+			"id": "heatmap-anchor",
+			"type": "line",
+			"source": "openmaptiles",
+			"source-layer": "transportation",
+			"filter": ["in", "class", "dummy"]
+		},
+		{
 			"filter": ["all", ["==", "$type", "LineString"],
 				["in", "class", "cyclefriendly"],
 				["!in", "surface", "unpaved"]
