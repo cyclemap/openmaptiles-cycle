@@ -24,11 +24,13 @@ fi
 
 exec &> >(tee >(\
 	sed \
+		--unbuffered \
 		-e 's/$//g' \
 		-e 's//\n/g' |
 	grep \
 		--text \
 		--invert-match \
+		--line-buffered \
 		'^' \
 	>>"logs/update.log"
 ))
