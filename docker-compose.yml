@@ -15,7 +15,7 @@ services:
     # Use "command: postgres -c jit=off" for PostgreSQL 11+ because of slow large MVT query processing
     # Use "shm_size: 512m" if you want to prevent a possible 'No space left on device' during 'make generate-tiles-pg'
     entrypoint: /bin/bash
-    command: "-c 'nice /docker-entrypoint.sh postgres'"
+    command: "-c 'nice docker-entrypoint.sh postgres'"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
