@@ -8,8 +8,8 @@ source .env
 
 minimumSize=9500000000
 #redownload=yes
-#locationName=north-america
-locationName=planet
+locationName=north-america
+#locationName=planet
 downloadFile=$locationName-download.osm.pbf
 pbfFile=$locationName.osm.pbf
 newFile=$locationName-new.osm.pbf
@@ -44,6 +44,12 @@ if [[ $redownload == "yes" || ! -e data/$pbfFile ]]; then
 	fi
 	wget --progress=bar:force:noscroll --output-document $downloadFile $url
 	mv --force $downloadFile data/$pbfFile
+fi
+
+if [[ "$locationName" != "planet" ]]; then
+	grep -q 180 data/$locationName.bbox && { echo failure, we calculated a bad bounding box vaule.  probably because min zoom is zero?  delete the bbox file, it confuses systems; exit 1; }
+else
+	echo "====> : Skipping bbox calculation when generating the entire planet"
 fi
 
 echo updating:  started at $(date)
