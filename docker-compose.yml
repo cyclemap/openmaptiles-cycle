@@ -23,6 +23,7 @@ services:
     ports:
       - "${PGPORT:-5432}:${PGPORT:-5432}"
     env_file: .env
+    shm_size: '512mb'
     environment:
       # postgress container uses old variable names
       POSTGRES_DB: ${PGDATABASE:-openmaptiles}
