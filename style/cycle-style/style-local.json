@@ -868,7 +868,7 @@
 			"filter": ["==", "$type", "LineString"],
 			"layout": {
 				"symbol-placement": "line",
-				"text-field": "{name:latin} {name:nonlatin}",
+				"text-field": ["coalesce", ["get", "name:latin"], ["get", "name:nonlatin"], ["get", "ref"]],
 				"text-font": ["Noto Sans Regular"],
 				"text-letter-spacing": 0.1,
 				"text-rotation-alignment": "map",
