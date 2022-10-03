@@ -4,8 +4,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>cyclemap</title>
-	<link rel="stylesheet" type="text/css" href="{{public_url}}mapbox-gl.css" />
-	<script src="{{public_url}}mapbox-gl.js"></script>
+	<link rel="stylesheet" type="text/css" href="{{public_url}}maplibre-gl.css" />
+	<script src="{{public_url}}maplibre-gl.js"></script>
 	<style>
 		body {
 			margin: 0;
@@ -17,7 +17,7 @@
 			bottom: 0;
 			width: 100%;
 		}
-		.mapboxgl-ctrl-scale {
+		.maplibregl-ctrl-scale {
 			pointer-events: none;
 		}
 		.about {
@@ -40,7 +40,7 @@
 var map = setupMap();
 
 function setupMap() {
-	//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
+	//maplibregl.setRTLTextPlugin('{{public_url}}maplibre-gl-rtl-text.js');
 	var defaultLatitude = 40;
 	var defaultLongitude = -96;
 	var defaultZoom = 5;
@@ -49,17 +49,17 @@ function setupMap() {
 	var longitude = defaultLongitude;
 	var zoom = defaultZoom;
 
-	var map = new mapboxgl.Map({
+	var map = new maplibregl.Map({
 		container: 'map',
 		style: '{{public_url}}styles/maptiler-cyclemap/style.json',
-		center: new mapboxgl.LngLat(longitude, latitude),
+		center: new maplibregl.LngLat(longitude, latitude),
 		zoom: zoom,
 		hash: true,
 		dragRotate: false
 	});
-	map.addControl(new mapboxgl.NavigationControl());
-	map.addControl(new mapboxgl.ScaleControl());
-	map.addControl(new mapboxgl.GeolocateControl({
+	map.addControl(new maplibregl.NavigationControl());
+	map.addControl(new maplibregl.ScaleControl());
+	map.addControl(new maplibregl.GeolocateControl({
 		positionOptions: {enableHighAccuracy: true},
 		trackUserLocation: true
 	}));
