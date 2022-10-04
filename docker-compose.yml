@@ -65,6 +65,7 @@ services:
       - .:/tileset
       - ./data:/import
       - ./data:/export
+      - ./data:/data
       - ./build/sql:/sql
       - ./build:/mapping
       - ./cache:/cache

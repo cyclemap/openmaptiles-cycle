@@ -8,12 +8,13 @@ source .env
 
 minimumSize=9500000000
 #redownload=yes
-locationName=north-america
-#locationName=planet
-downloadFile=$locationName-download.osm.pbf
-pbfFile=$locationName.osm.pbf
-newFile=$locationName-new.osm.pbf
-oldFile=$locationName-old.osm.pbf
+#locationName=north-america
+locationName=cyclemap
+temporaryDownloadLocation=data/download-temporary.osm.pbf
+temporaryDownloadLocation2=data/download-temporary2.osm.pbf
+pbfFile=data/$locationName.osm.pbf
+newFile=data/$locationName-new.osm.pbf
+oldFile=data/$locationName-old.osm.pbf
 
 set -e #exit on failure
 
@@ -35,15 +36,32 @@ exec &> >(tee >(\
 	>>"logs/update.log"
 ))
 
-if [[ $redownload == "yes" || ! -e data/$pbfFile ]]; then
-	rm --force $downloadFile
+function getFile() {
+	url=$1
+	rm --force $temporaryDownloadLocation
+	wget --progress=bar:force:noscroll --output-document $temporaryDownloadLocation $url
+}
+
+function tools() {
+	docker-compose run --rm openmaptiles-tools nice "$@"
+}
+
+if [[ $redownload == "yes" || ! -e $pbfFile ]]; then
 	if [[ $locationName == "planet" ]]; then
-		url=https://ftpmirror.your.org/pub/openstreetmap/pbf/planet-latest.osm.pbf
+		getFile https://ftpmirror.your.org/pub/openstreetmap/pbf/planet-latest.osm.pbf
+		mv --force $temporaryDownloadLocation $pbfFile
+	elif [[ $locationName == "cyclemap" ]]; then
+		getFile https://download.geofabrik.de/north-america-latest.osm.pbf
+		mv --force $temporaryDownloadLocation $temporaryDownloadLocation2
+		getFile https://download.geofabrik.de/central-america-latest.osm.pbf
+		rm --force $newFile
+		tools osmosis --rb /$temporaryDownloadLocation2 --rb /$temporaryDownloadLocation --merge --wb /$newFile
+		rm --force $temporaryDownloadLocation $temporaryDownloadLocation2
+		mv --force $newFile $pbfFile
 	else
-		url=https://download.geofabrik.de/$locationName-latest.osm.pbf
+		getFile https://download.geofabrik.de/$locationName-latest.osm.pbf
+		mv --force $temporaryDownloadLocation $pbfFile
 	fi
-	wget --progress=bar:force:noscroll --output-document $downloadFile $url
-	mv --force $downloadFile data/$pbfFile
 fi
 
 if [[ "$locationName" != "planet" ]]; then
@@ -53,12 +71,12 @@ else
 fi
 
 echo updating:  started at $(date)
-rm --force data/$newFile
-docker-compose run --rm openmaptiles-tools nice osmupdate --verbose /import/$pbfFile /import/$newFile
-mv --force data/$pbfFile data/$oldFile
-mv --force data/$newFile data/$pbfFile
+rm --force $newFile
+tools osmupdate --verbose /$pbfFile /$newFile
+mv --force $pbfFile $oldFile
+mv --force $newFile $pbfFile
 
-if [ $(stat --format=%s data/$pbfFile) -lt $minimumSize ]; then
+if [ $(stat --format=%s $pbfFile) -lt $minimumSize ]; then
 	#sometimes the file is too small because something failed.  let's stop here because this needs fixing.
 	echo $pbfFile file size too small.  expected minimum size of $minimumSize bytes.
 	false
