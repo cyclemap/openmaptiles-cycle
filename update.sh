@@ -10,8 +10,8 @@ minimumSize=9500000000
 #redownload=yes
 #locationName=north-america
 locationName=cyclemap
-temporaryDownloadLocation=data/download-temporary.osm.pbf
-temporaryDownloadLocation2=data/download-temporary2.osm.pbf
+temporaryDownloadFile=data/temporary-download.osm.pbf
+temporaryDownloadSummationFile=data/temporary-download-summation.osm.pbf
 pbfFile=data/$locationName.osm.pbf
 newFile=data/$locationName-new.osm.pbf
 oldFile=data/$locationName-old.osm.pbf
@@ -38,8 +38,16 @@ exec &> >(tee >(\
 
 function getFile() {
 	url=$1
-	rm --force $temporaryDownloadLocation
-	wget --progress=bar:force:noscroll --output-document $temporaryDownloadLocation $url
+	rm --force $temporaryDownloadFile
+	wget --progress=bar:force:noscroll --output-document $temporaryDownloadFile "$url"
+}
+function addFile() {
+	url=$1
+	getFile "$url"
+	rm --force $newFile
+	tools osmosis --rb /$temporaryDownloadSummationFile --rb /$temporaryDownloadFile --merge --wb /$newFile
+	rm --force $temporaryDownloadFile $temporaryDownloadSummationFile
+	mv --force $newFile $temporaryDownloadSummationFile
 }
 
 function tools() {
@@ -49,18 +57,19 @@ function tools() {
 if [[ $redownload == "yes" || ! -e $pbfFile ]]; then
 	if [[ $locationName == "planet" ]]; then
 		getFile https://ftpmirror.your.org/pub/openstreetmap/pbf/planet-latest.osm.pbf
-		mv --force $temporaryDownloadLocation $pbfFile
+		mv --force $temporaryDownloadFile $pbfFile
 	elif [[ $locationName == "cyclemap" ]]; then
 		getFile https://download.geofabrik.de/north-america-latest.osm.pbf
-		mv --force $temporaryDownloadLocation $temporaryDownloadLocation2
-		getFile https://download.geofabrik.de/central-america-latest.osm.pbf
-		rm --force $newFile
-		tools osmosis --rb /$temporaryDownloadLocation2 --rb /$temporaryDownloadLocation --merge --wb /$newFile
-		rm --force $temporaryDownloadLocation $temporaryDownloadLocation2
-		mv --force $newFile $pbfFile
+		mv --force $temporaryDownloadFile $temporaryDownloadSummationFile
+
+		for location in central-america south-america; do
+			addFile https://download.geofabrik.de/$location-latest.osm.pbf
+		done
+
+		mv --force $temporaryDownloadSummationFile $pbfFile
 	else
 		getFile https://download.geofabrik.de/$locationName-latest.osm.pbf
-		mv --force $temporaryDownloadLocation $pbfFile
+		mv --force $temporaryDownloadFile $pbfFile
 	fi
 fi
 

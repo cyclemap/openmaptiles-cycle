@@ -9,7 +9,7 @@
 
 last=$(date +%s)
 <logs/update.log \
-	egrep --text --no-filename 'Generating zoom .*\.\.\.$|Tile generation complete!$|^(updating|quickstart): (done|started) at' |
+	egrep --text --no-filename 'Generating zoom .*\.\.\.$|Tile generation complete!$|^(updating|quickstart): (done|started) at|^real	' |
 	tail -n100 |
 	while read line; do
 		<<<$line egrep --text -q 'Generating zoom .*\.\.\.$|Tile generation complete!$' && {
@@ -26,7 +26,7 @@ last=$(date +%s)
 				comment='finished importing'
 			}
 			
-			echo "$(($difference/3600)) $comment"
+			echo "$(date --iso-8601 --date="@$time") $(($difference/3600)) $comment"
 		}
 		<<<$line egrep -q '^(updating|quickstart): (done|started) at' && {
 			time=$(<<<$line sed 's/.* at //')
@@ -34,6 +34,10 @@ last=$(date +%s)
 			last=$time
 			
 			<<<$line egrep -q '^updating: started at' && echo
+		}
+		<<<$line egrep -q '^real	' && {
+			runtime=$(($(<<<$line sed 's/real	\(.*\)m.*/\1/')/60))
+			echo "$(date --iso-8601 --date="@$time") $runtime total"
 		}
 done
 

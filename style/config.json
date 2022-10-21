@@ -10,10 +10,7 @@
 	},
 	"styles": {
 		"maptiler-cyclemap": {
-			"style": "/style/cycle-style/style-local.json",
-			"tilejson": {
-				"bounds": [-140,10,-50,55]
-			}
+			"style": "/style/cycle-style/style-local.json"
 		}
 	},
 	"data": {
