@@ -2,9 +2,8 @@
 	"options": {
 		"frontPage": "/style/viewer/viewer.tmpl",
 		"paths": {
-			"root": "/app/node_modules/tileserver-gl-styles",
+			"root": "/usr/src/app/node_modules/tileserver-gl-styles",
 			"fonts": "fonts",
-			"styles": "styles",
 			"mbtiles": "/data"
 		}
 	},
