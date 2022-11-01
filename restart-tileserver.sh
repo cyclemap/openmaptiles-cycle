@@ -2,9 +2,7 @@
 
 set -e #exit on failure
 
-docker rm -f tileserver-gl || true
-
-make start-tileserver #this does the copy
+docker restart tileserver-gl
 
 sleep 2
 

@@ -14,8 +14,6 @@ services:
     command:
       - --port
       - "80"
-      - --mbtiles
-      - "${MBTILES_FILE}"
       - --verbose
       - --config
       - /style/config.json
