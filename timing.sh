@@ -14,6 +14,7 @@ function printLog() {
 }
 
 last=$(date +%s)
+time=$last
 <logs/update.log \
 	egrep --text --no-filename 'Generating zoom .*\.\.\.$|Tile generation complete!$|^(updating|quickstart|combining): (done|started) at|^real	' |
 	tail -n100 |
