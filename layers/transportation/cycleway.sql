@@ -24,7 +24,8 @@ SELECT CASE
         WHEN tags->'mtb:scale' NOT IN ('6') OR
             tags->'mtb:scale:imba' IS NOT NULL OR
             tags->'mtb:type' IS NOT NULL OR
-            tags->'bicycle' IN ('mtb') THEN true
+            tags->'bicycle' IN ('mtb') OR
+            tags->'route' IN ('mtb') THEN true
         
         WHEN tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
             tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
@@ -37,7 +38,8 @@ SELECT CASE
                 tags->'icn' = 'yes' OR tags->'icn_ref' IS NOT NULL OR
                 tags->'ncn' = 'yes' OR tags->'ncn_ref' IS NOT NULL OR
                 tags->'rcn' = 'yes' OR tags->'rcn_ref' IS NOT NULL OR
-                tags->'lcn' = 'yes' OR tags->'lcn_ref' IS NOT NULL
+                tags->'lcn' = 'yes' OR tags->'lcn_ref' IS NOT NULL OR
+                tags->'route' IN ('bicycle')
             )
             THEN true
 
@@ -115,7 +117,8 @@ SELECT CASE
         WHEN tags->'icn' = 'yes' OR tags->'icn_ref' IS NOT NULL OR
             tags->'ncn' = 'yes' OR tags->'ncn_ref' IS NOT NULL OR
             tags->'rcn' = 'yes' OR tags->'rcn_ref' IS NOT NULL OR
-            tags->'lcn' = 'yes' OR tags->'lcn_ref' IS NOT NULL
+            tags->'lcn' = 'yes' OR tags->'lcn_ref' IS NOT NULL OR
+            tags->'route' IN ('bicycle')
             THEN true
         
         WHEN tags->'bicycle' IN ('yes', 'permissive', 'dismount') AND (

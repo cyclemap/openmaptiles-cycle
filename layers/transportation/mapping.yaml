@@ -50,6 +50,7 @@ generalized_tables:
       highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway', 'bus_guideway') OR
       highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway', 'bus_guideway') OR
       tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
+      tags->'route' IN ('bicycle', 'mtb') OR
       tags->'icn' IN ('yes') OR tags->'icn_ref' IS NOT NULL OR
       tags->'ncn' IN ('yes') OR tags->'ncn_ref' IS NOT NULL OR
       tags->'rcn' IN ('yes') OR tags->'rcn_ref' IS NOT NULL OR
@@ -382,6 +383,9 @@ tables:
       - track
       sport:
       - cycling
+      route:
+      - bicycle
+      - mtb
 
 # etldoc: imposm3 -> osm_railway_linestring
   railway_linestring:

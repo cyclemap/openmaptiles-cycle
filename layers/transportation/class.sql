@@ -57,6 +57,7 @@ SELECT CASE
            WHEN tags->'mtb:scale' IS NOT NULL THEN 'unpaved'
            WHEN tags->'mtb:scale:imba' IS NOT NULL THEN 'unpaved'
            WHEN tags->'mtb:type' IS NOT NULL THEN 'unpaved'
+           WHEN tags->'route' IN ('mtb') THEN 'unpaved'
            WHEN highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street', 'road', 'service', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'raceway', 'steps', 'cycleway') THEN 'paved'
            WHEN highway IN ('track') THEN 'unpaved'
            WHEN tags->'hiking' IN ('yes', 'designated', 'permissive') THEN 'unpaved'
