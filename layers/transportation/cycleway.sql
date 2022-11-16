@@ -134,11 +134,23 @@ $$ LANGUAGE SQL IMMUTABLE
                 PARALLEL SAFE;
 
 -- Determine which transportation features are shown at all zoom levels
-CREATE OR REPLACE FUNCTION transportation_filter_override(highway text, surface text, tags HSTORE) RETURNS boolean AS
+
+-- these are used to figure what the 50k cutoff should be by looking at the cutoff for ALL of the roads
+-- zoom level, geometry distance cutoff (meters) from update_transportation_merge.sql:  anything smaller is filtered, the meters * 2**zoom (# = where we are checking this method)
+-- 4   1000  16k   #
+-- 5   500   16k   why the big jump?
+-- 6   100   6k    #
+-- 7   50    6k
+-- 8   NA    NA    #
+
+CREATE OR REPLACE FUNCTION transportation_filter_override(highway text, surface text, tags HSTORE, geometry_length float, zoom_level integer) RETURNS boolean AS
 $$
 SELECT CASE
-           WHEN is_cycleway(highway, tags) THEN TRUE
-           WHEN is_cyclefriendly(highway, tags) AND surface = 'unpaved' THEN TRUE
+           WHEN geometry_length > 50000/(1<<zoom_level) AND
+               is_cycleway(highway, tags) THEN TRUE
+           WHEN geometry_length > 50000/(1<<zoom_level) AND
+               is_cyclefriendly(highway, tags) AND
+               surface = 'unpaved' THEN TRUE
            ELSE FALSE
        END
 $$ LANGUAGE SQL IMMUTABLE

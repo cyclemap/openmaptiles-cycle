@@ -253,7 +253,7 @@ SELECT ST_Simplify(ST_LineMerge(ST_Collect(geometry)), ZRes(10)) AS geometry,
 FROM osm_transportation_merge_linestring_gen_z9
 WHERE (highway IN ('motorway', 'trunk', 'primary') OR
        construction IN ('motorway', 'trunk', 'primary')
-       OR transportation_filter_override(highway, surface, tags))
+       OR transportation_filter_override(highway, surface, tags, ST_Length(geometry), 8))
        AND ST_IsValid(geometry)
        AND access IS NULL
 GROUP BY highway, network, construction, is_bridge, is_tunnel, is_ford, expressway, tags, surface
@@ -322,7 +322,7 @@ BEGIN
     FROM osm_transportation_merge_linestring_gen_z7
     WHERE
         (update_id IS NULL OR id = update_id) AND
-        (highway IN ('motorway', 'trunk') OR construction IN ('motorway', 'trunk') OR transportation_filter_override(highway, surface, tags)) AND
+        (highway IN ('motorway', 'trunk') OR construction IN ('motorway', 'trunk') OR transportation_filter_override(highway, surface, tags, ST_Length(geometry), 6)) AND
         ST_Length(geometry) > 100;
 
     DELETE FROM osm_transportation_merge_linestring_gen_z5
