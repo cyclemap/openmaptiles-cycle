@@ -1,12 +1,5 @@
 #!/bin/bash
 
-#egrep --text --no-filename '^quickstart: done at|^      : Git version|^Imposm took|Time: .*\([^()]*:[^()]*:[^()]*\)|^real' logs/update*.log |
-#	sed --regexp-extended -e 's/Time:.*\((.*)\..*\)/\1/' -e 's/.*Git version.*: (.*)/\1/' |
-#	sed --regexp-extended ':a;N;$!ba;s/\n/ /g;s/quickstart: done at .{32}/&\n/g;'
-
-#egrep --text --no-filename '^Time:.*( d |\(.*:.*:.*\))|Generating zoom .*\.\.\.$|Tile generation complete!$|^(updating|quickstart): (done|started) at' logs/update*.log
-
-
 function printLog() {
 	time=$1; shift
 	difference=$1; shift
@@ -16,7 +9,7 @@ function printLog() {
 last=$(date +%s)
 time=$last
 <logs/update.log \
-	egrep --text --no-filename 'Generating zoom .*\.\.\.$|Tile generation complete!$|^(updating|quickstart|combining): (done|started) at|^real	' |
+	egrep --text --no-filename 'Generating zoom .*\.\.\.$|Tile generation complete!$|^(updating|quickstart|generating tiles|combining): (done|started) at|^real	' |
 	tail -n100 |
 	while read line; do
 		<<<$line egrep --text -q 'Generating zoom .*\.\.\.$|Tile generation complete!$' && {
@@ -35,7 +28,7 @@ time=$last
 			
 			printLog $time $difference $comment
 		}
-		<<<$line egrep -q '^(updating|quickstart|combining): (done|started) at' && {
+		<<<$line egrep -q '^(updating|quickstart|generating tiles|combining): (done|started) at' && {
 			comment=$(<<<$line sed 's/at .*//')
 			time=$(<<<$line sed 's/.* at //')
 			time=$(date +%s --date="$time")
@@ -47,7 +40,7 @@ time=$last
 		}
 		<<<$line egrep -q '^real	' && {
 			difference=$(($(<<<$line sed 's/real	\(.*\)m.*/\1/')*60))
-			printLog $time $difference "quickstart total"
+			printLog $time $difference "main total"
 		}
 	done
 

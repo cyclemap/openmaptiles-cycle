@@ -26,6 +26,7 @@ temporaryDownloadFile=data/temporary-download.osm.pbf
 temporaryDownloadSummationFile=data/temporary-download-summation.osm.pbf
 pbfFile=data/$locationName.osm.pbf
 newFile=data/$locationName-new.osm.pbf
+changeFile=data/changes.osc.gz
 oldFile=data/$locationName-old.osm.pbf
 
 set -e #exit on failure
@@ -48,20 +49,20 @@ exec &> >(tee >(\
 	>>"logs/update.log"
 ))
 
-function getFile() {
+function getFile {
 	location=$1
 	rm --force $temporaryDownloadFile
 	wget --progress=bar:force:noscroll --output-document $temporaryDownloadFile "https://download.geofabrik.de/$location-latest.osm.pbf"
 }
-function addFile() {
+function addFile {
 	location=$1
 	getFile "$location"
 	rm --force $newFile
-	tools osmosis --rb /$temporaryDownloadSummationFile --rb /$temporaryDownloadFile --merge --wb /$newFile
+	tools osmosis --rb $temporaryDownloadSummationFile --rb $temporaryDownloadFile --merge --wb $newFile
 	rm --force $temporaryDownloadFile $temporaryDownloadSummationFile
 	mv --force $newFile $temporaryDownloadSummationFile
 }
-function getFileList() {
+function getFileList {
 	first=$1; shift
 	getFile $first
 	mv --force $temporaryDownloadFile $temporaryDownloadSummationFile
@@ -73,7 +74,8 @@ function getFileList() {
 	mv --force $temporaryDownloadSummationFile $pbfFile
 }
 
-function tools() {
+function tools {
+	#echo docker-compose run --rm --name=tools -e CENTER_ZOOM -e BBOX --volume $PWD/data-tileserver:/data-tileserver openmaptiles-tools nice "$@" >&2
 	docker-compose run --rm --name=tools -e CENTER_ZOOM -e BBOX --volume $PWD/data-tileserver:/data-tileserver openmaptiles-tools nice "$@"
 }
 
@@ -81,7 +83,7 @@ function link {
 	ln --symbolic --force --relative "$@"
 }
 
-if [[ $redownload == "yes" || ! -e $pbfFile ]]; then
+function downloadPbf {
 	if [[ $locationName == "cyclemap-small" ]]; then
 		getFile north-america/us
 		mv --force $temporaryDownloadFile $pbfFile
@@ -91,6 +93,39 @@ if [[ $redownload == "yes" || ! -e $pbfFile ]]; then
 		getFile $locationName
 		mv --force $temporaryDownloadFile $pbfFile
 	fi
+}
+
+function updatePbf {
+	echo updating:  started at $(date)
+	rm --force $newFile
+	tools osmupdate --verbose $pbfFile $changeFile
+
+	make start-db
+
+	echo volatile begin
+		make import-diff area=$locationName
+		tools osmconvert $pbfFile $changeFile --out-pbf >$newFile 
+		mv --force $pbfFile $oldFile
+		mv --force $newFile $pbfFile
+	echo volatile end
+
+
+	if [ $(stat --format=%s $pbfFile) -lt $minimumSize ]; then
+		#sometimes the file is too small because something failed.  let's stop here because this needs fixing.
+		echo $pbfFile file size too small.  expected minimum size of $minimumSize bytes.
+		false
+	fi
+	echo updating:  done at $(date)
+}
+
+if [[ ! -e $pbfFile ]]; then
+	redownload='yes'
+fi
+
+if [[ $redownload == "yes" ]]; then
+	downloadPbf
+else
+	updatePbf
 fi
 
 if [[ "$locationName" != "planet" ]]; then
@@ -99,35 +134,22 @@ else
 	echo "====> : Skipping bbox calculation when generating the entire planet"
 fi
 
-echo updating:  started at $(date)
-rm --force $newFile
-tools osmupdate --verbose /$pbfFile /$newFile
-mv --force $pbfFile $oldFile
-mv --force $newFile $pbfFile
-
-if [ $(stat --format=%s $pbfFile) -lt $minimumSize ]; then
-	#sometimes the file is too small because something failed.  let's stop here because this needs fixing.
-	echo $pbfFile file size too small.  expected minimum size of $minimumSize bytes.
-	false
-fi
-echo updating:  done at $(date)
-
-#THE NEXT STEP:
-#see here:  https://wiki.openstreetmap.org/wiki/Osmupdate#Assembling_an_OSM_Change_file
-#you can create a "change file" (osc file) and use Osmosis or osm2pgsql to get that change file into postgres.
-#we have to stop using quickstart.sh for that to work.
-
 #pick a bounding box
 #https://stackoverflow.com/a/50626221
 sed -i "/BBOX=.*/ {n; :a; /BBOX=.*/! {N; ba;}; s/BBOX=.*/BBOX=$bbox/; :b; n; \$! bb}" .env
 
 echo "====================================================================="
 
-echo quickstart:  started at $(date)
+echo $([[ $redownload == "yes" ]] && echo quickstart || echo generating tiles):  started at $(date)
 
-time ./quickstart.sh $locationName
+if [[ $redownload == "yes" ]]; then
+	time ./quickstart.sh $locationName
+else
+	time make generate-tiles-pg
+	make stop-db
+fi
 
-echo quickstart:  done at $(date)
+echo $([[ $redownload == "yes" ]] && echo quickstart || echo generating tiles):  done at $(date)
 echo "====================================================================="
 
 #revert bounding box change
@@ -150,9 +172,9 @@ if [[ $locationName == "cyclemap-small" ]]; then
 	#cyclemap-large
 	cp --dereference $largeFile $mainFile
 	#cyclemap-small updates
-	tools tilelive-copy /$file /$mainFile
+	tools tilelive-copy $file $mainFile
 	#overwrite bbox!
-	CENTER_ZOOM=8 BBOX=$largeBbox tools mbtiles-tools meta-copy /$largeFile /$mainFile
+	CENTER_ZOOM=8 BBOX=$largeBbox tools mbtiles-tools meta-copy $largeFile $mainFile
 	link $mainFile data-tileserver/tiles-main.mbtiles
 
 	echo combining:  done at $(date)
