@@ -22,6 +22,8 @@ outputLocationName=$locationName
 
 
 #redownload=yes
+#quickstart=yes
+
 temporaryDownloadFile=data/temporary-download.osm.pbf
 temporaryDownloadSummationFile=data/temporary-download-summation.osm.pbf
 pbfFile=data/$locationName.osm.pbf
@@ -98,16 +100,18 @@ function downloadPbf {
 function updatePbf {
 	echo updating:  started at $(date)
 	rm --force $newFile
-	tools osmupdate --verbose $pbfFile $changeFile
 
-	make start-db
 
-	echo volatile begin
+	if [[ $quickstart == "yes" ]]; then
+		tools osmupdate --verbose $pbfFile $newFile
+	else
+		tools osmupdate --verbose $pbfFile $changeFile
+		make start-db
 		make import-diff area=$locationName
 		tools osmconvert $pbfFile $changeFile --out-pbf >$newFile 
-		mv --force $pbfFile $oldFile
-		mv --force $newFile $pbfFile
-	echo volatile end
+	fi
+	mv --force $pbfFile $oldFile
+	mv --force $newFile $pbfFile
 
 
 	if [ $(stat --format=%s $pbfFile) -lt $minimumSize ]; then
@@ -122,8 +126,11 @@ if [[ ! -e $pbfFile ]]; then
 	redownload='yes'
 fi
 
+
 if [[ $redownload == "yes" ]]; then
+	quickstart=yes
 	downloadPbf
+	updatePbf
 else
 	updatePbf
 fi
@@ -140,16 +147,16 @@ sed -i "/BBOX=.*/ {n; :a; /BBOX=.*/! {N; ba;}; s/BBOX=.*/BBOX=$bbox/; :b; n; \$!
 
 echo "====================================================================="
 
-echo $([[ $redownload == "yes" ]] && echo quickstart || echo generating tiles):  started at $(date)
+echo $([[ $quickstart == "yes" ]] && echo quickstart || echo generating tiles):  started at $(date)
 
-if [[ $redownload == "yes" ]]; then
+if [[ $quickstart == "yes" ]]; then
 	time ./quickstart.sh $locationName
 else
 	time make generate-tiles-pg
 	make stop-db
 fi
 
-echo $([[ $redownload == "yes" ]] && echo quickstart || echo generating tiles):  done at $(date)
+echo $([[ $quickstart == "yes" ]] && echo quickstart || echo generating tiles):  done at $(date)
 echo "====================================================================="
 
 #revert bounding box change
