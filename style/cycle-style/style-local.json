@@ -955,16 +955,16 @@
 			}
 		},
 		{
-			"id": "poi-biking-class-no-text-16",
+			"id": "poi-biking-class-no-text-15",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
 			"source-layer": "poi",
-			"minzoom": 16,
+			"minzoom": 15,
 			"filter": [
 				"all",
 				[ "==", "$type", "Point" ],
-				[ "in", "class", "shelter" ]
+				[ "in", "class", "bicycle_parking", "shelter" ]
 			],
 			"layout": {
 				"icon-image": "{class}_11",
@@ -994,7 +994,7 @@
 			"filter": [
 				"all",
 				[ "==", "$type", "Point" ],
-				[ "in", "class", "bicycle_parking", "drinking_water", "toilets", "ford" ]
+				[ "in", "class", "bicycle_rental", "drinking_water", "toilets", "ford" ]
 			],
 			"layout": {
 				"icon-image": "{class}_11",
@@ -1054,7 +1054,7 @@
 			"filter": [
 				"all",
 				[ "==", "$type", "Point" ],
-				[ "in", "class", "bicycle_rental", "bicycle_repair_station"]
+				[ "in", "class", "bicycle_repair_station"]
 			],
 			"layout": {
 				"icon-image": "{class}_11",
