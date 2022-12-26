@@ -660,6 +660,13 @@
 			"filter": ["in", "class", "dummy"]
 		},
 		{
+			"id": "rain-anchor",
+			"type": "line",
+			"source": "openmaptiles",
+			"source-layer": "transportation",
+			"filter": ["in", "class", "dummy"]
+		},
+		{
 			"id": "heatmap-anchor",
 			"type": "line",
 			"source": "openmaptiles",
@@ -1128,6 +1135,13 @@
 				"text-halo-color": "hsla(0, 0%, 100%, 75%)",
 				"text-halo-width": 2
 			}
+		},
+		{
+			"id": "animation-anchor",
+			"type": "line",
+			"source": "openmaptiles",
+			"source-layer": "transportation",
+			"filter": ["in", "class", "dummy"]
 		}
 	],
 	"id": "maptiler-basic-cycle"
