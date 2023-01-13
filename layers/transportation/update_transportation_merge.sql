@@ -351,7 +351,7 @@ BEGIN
             OR construction = 'motorway'
             -- Allow trunk roads that are part of a nation's most important route network to show at z4
             OR (highway = 'trunk' AND osm_national_network(network))
-            OR transportation_filter_override(highway, surface, tags)
+            OR transportation_filter_override(highway, surface, tags, ST_Length(geometry), 4)
         ) AND
         ST_Length(geometry) > 500;
 
