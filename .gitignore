@@ -13,7 +13,7 @@ data/*
 data-tileserver/*
 /.update.exclusivelock
 /logs/
-/process.sh
+/process*.sh
 /git/
 
 # generated source files

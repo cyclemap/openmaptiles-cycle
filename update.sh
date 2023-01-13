@@ -6,12 +6,16 @@ source .env
 #renice +20 -p $$ >/dev/null
 #ionice -c3 -p $$
 
+#redownload=yes
+quickstart=yes
+
 locationName=$1; shift
 defaultBbox='-77.7,38.5,-76.7,39.5'
-largeBbox='-160,-10,-30,55'
+largeBbox='-160,-30,20,60'
 if [[ "$locationName" == "cyclemap-large" ]]; then
 	bbox=$largeBbox
 	minimumSize=15000000000
+	quickstart=yes
 else
 	bbox=$defaultBbox
 	locationName=cyclemap-small
@@ -20,9 +24,6 @@ fi
 
 outputLocationName=$locationName
 
-
-#redownload=yes
-#quickstart=yes
 
 temporaryDownloadFile=data/temporary-download.osm.pbf
 temporaryDownloadSummationFile=data/temporary-download-summation.osm.pbf
@@ -36,6 +37,9 @@ set -e #exit on failure
 #notify an external script that processing has started
 if [ -e process.sh ]; then
 	./process.sh
+	if [[ $locationName == "cyclemap-large" ]]; then
+		./process-large.sh
+	fi
 fi
 
 exec &> >(tee >(\
@@ -90,7 +94,7 @@ function downloadPbf {
 		getFile north-america/us
 		mv --force $temporaryDownloadFile $pbfFile
 	elif [[ $locationName == "cyclemap-large" ]]; then
-		getFileList north-america central-america south-america
+		getFileList north-america central-america south-america europe africa
 	else
 		getFile $locationName
 		mv --force $temporaryDownloadFile $pbfFile
@@ -105,6 +109,9 @@ function updatePbf {
 	if [[ $quickstart == "yes" ]]; then
 		tools osmupdate --verbose $pbfFile $newFile
 	else
+		#there is a bug here.  something about this does not work.  try:
+			#tools osmupdate --verbose $pbfFile $newFile
+			#now somehow diff pbfFile and newFile into changeFile
 		tools osmupdate --verbose $pbfFile $changeFile
 		make start-db
 		make import-diff area=$locationName
