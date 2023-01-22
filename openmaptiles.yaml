@@ -20,7 +20,7 @@ tileset:
   version: 3.14.0
   id: openmaptiles
   description: "north american tileset for https://cyclemap.us/ see https://github.com/cyclemap/openmaptiles-cycle/"
-  attribution: 'made with maptiler styles and tileserver gl, postgresql, postgis, natural earth, osmborder, omniscale, mapbox, and maputnik. <a href="https://www.openmaptiles.org/" target="_blank">&copy;openmaptiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy;openstreetmap contributors</a>'
+  attribution: 'made with maplibre, maptiler styles, tileserver gl, postgresql, postgis, natural earth, osmborder, omniscale, mapbox, maputnik, and <a href="https://www.openmaptiles.org/" target="_blank">openmaptiles</a>. <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy;openstreetmap contributors</a>'
   center: [-96, 40, 5]
   bounds: [-140,10,-50,55]
   maxzoom: 14
