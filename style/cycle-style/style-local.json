@@ -546,7 +546,7 @@
 			},
 			"paint": {
 				"line-color": "hsl(0, 0%, 50%)",
-				"line-width": {"base": 1.1, "stops": [[9, 0.25], [18, 4]]}
+				"line-width": {"base": 1.1, "stops": [[9, 0.25], [20, 4]]}
 			}
 		},
 		{
@@ -704,7 +704,7 @@
 			"paint": {
 				"line-color": "hsl(120, 60%, 30%)",
 				"line-dasharray": [2, 2],
-				"line-width": {"base": 1.1, "stops": [[9, 2], [18, 3]]}
+				"line-width": {"base": 1.1, "stops": [[5, 0.75], [20, 5]]}
 			},
 			"source": "openmaptiles",
 			"source-layer": "transportation",
@@ -722,7 +722,7 @@
 			},
 			"paint": {
 				"line-color": "hsl(25, 60%, 45%)",
-				"line-width": {"base": 1.1, "stops": [[9, 2], [18, 3]]}
+				"line-width": {"base": 1.1, "stops": [[5, 0.75], [20, 5]]}
 			},
 			"source": "openmaptiles",
 			"source-layer": "transportation",
@@ -741,7 +741,7 @@
 			},
 			"paint": {
 				"line-color": "hsl(25, 60%, 45%)",
-				"line-width": {"base": 1.1, "stops": [[9, 2], [18, 3]]}
+				"line-width": {"base": 1.1, "stops": [[5, 0.75], [20, 5]]}
 			},
 			"source": "openmaptiles",
 			"source-layer": "transportation",
@@ -759,7 +759,7 @@
 			},
 			"paint": {
 				"line-color": "hsl(120, 60%, 30%)",
-				"line-width": {"base": 1.1, "stops": [[9, 2], [18, 3]]}
+				"line-width": {"base": 1.1, "stops": [[5, 0.75], [20, 5]]}
 			},
 			"source": "openmaptiles",
 			"source-layer": "transportation",
@@ -962,16 +962,16 @@
 			}
 		},
 		{
-			"id": "poi-biking-class-no-text-15",
+			"id": "poi-biking-no-text-16",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
 			"source-layer": "poi",
-			"minzoom": 15,
+			"minzoom": 16,
 			"filter": [
 				"all",
 				[ "==", "$type", "Point" ],
-				[ "in", "class", "bicycle_parking", "shelter" ]
+				[ "in", "class", "bicycle_parking" ]
 			],
 			"layout": {
 				"icon-image": "{class}_11",
@@ -992,7 +992,7 @@
 			}
 		},
 		{
-			"id": "poi-biking-class-no-text-14",
+			"id": "poi-biking-no-text-14",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
@@ -1022,7 +1022,7 @@
 			}
 		},
 		{
-			"id": "poi-biking-class-text-14",
+			"id": "poi-biking-14",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
@@ -1052,12 +1052,12 @@
 			}
 		},
 		{
-			"id": "poi-biking-class-no-text-13",
+			"id": "poi-biking-no-text-12",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
 			"source-layer": "poi",
-			"minzoom": 13,
+			"minzoom": 12,
 			"filter": [
 				"all",
 				[ "==", "$type", "Point" ],
@@ -1082,7 +1082,7 @@
 			}
 		},
 		{
-			"id": "poi-biking",
+			"id": "poi-biking-12",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
