@@ -156,6 +156,7 @@ layer:
     srid: 900913
     query: (SELECT osm_id, geometry, name, name_en, name_de, {name_languages}, class, subclass, agg_stop, layer, level, indoor, rank, drinking_water_seasonal FROM layer_poi(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
 schema:
+  - ./cycle_area.sql
   - ./public_transport_stop_type.sql
   - ./class.sql
   - ./poi_stop_agg.sql

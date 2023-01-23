@@ -60,7 +60,9 @@ FROM (
          FROM osm_poi_point
          WHERE geometry && bbox
            AND zoom_level BETWEEN 12 AND 13
-           AND subclass IN ('park', 'nature_reserve', 'camp_site', 'bicycle', 'bicycle_rental', 'bicycle_repair_station')
+           AND ((subclass = 'station' AND mapping_key = 'railway')
+             OR subclass IN ('halt', 'ferry_terminal')
+             OR poi_filter_override(subclass, zoom_level))
 
          UNION ALL
 
@@ -70,7 +72,7 @@ FROM (
          FROM osm_poi_point
          WHERE geometry && bbox
            AND zoom_level >= 14
-           AND subclass IN ('park', 'nature_reserve', 'camp_site', 'bicycle', 'bicycle_rental', 'bicycle_repair_station', 'bicycle_parking', 'drinking_water', 'toilets', 'ford', 'compressed_air', 'shelter')
+           AND poi_filter_override(subclass, zoom_level)
 
          UNION ALL
 
@@ -86,9 +88,12 @@ FROM (
          FROM osm_poi_polygon
          WHERE geometry && bbox AND
            CASE
-               WHEN zoom_level >= 14 THEN TRUE
+               WHEN zoom_level >= 14
+                 AND poi_filter_override(subclass, zoom_level) THEN TRUE
                WHEN zoom_level >= 12 AND
-                 subclass IN ('park', 'nature_reserve', 'camp_site', 'bicycle', 'bicycle_rental', 'bicycle_repair_station', 'bicycle_parking', 'drinking_water', 'toilets', 'ford', 'compressed_air', 'shelter') THEN TRUE
+                 ((subclass = 'station' AND mapping_key = 'railway')
+                 OR subclass IN ('halt', 'ferry_terminal')
+                 OR poi_filter_override(subclass, zoom_level)) THEN TRUE
                WHEN zoom_level BETWEEN 10 AND 14 THEN
                  subclass IN ('university', 'college') AND
                  POWER(4,zoom_level)
