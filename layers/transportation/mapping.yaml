@@ -47,8 +47,8 @@ generalized_tables:
     source: highway_linestring
     sql_filter: 
       (
-      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR
-      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR
+      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway') OR
+      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway') OR
       tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
       tags->'icn' IN ('yes') OR tags->'icn_ref' IS NOT NULL OR
       tags->'ncn' IN ('yes') OR tags->'ncn_ref' IS NOT NULL OR
@@ -111,6 +111,14 @@ service_field: &service
   key: service
   name: service
   type: string
+access_field: &access
+  key: access
+  name: access
+  type: string
+toll_field: &toll
+  key: toll
+  name: toll
+  type: bool
 usage_field: &usage
   key: usage
   name: usage
@@ -242,10 +250,18 @@ mtb_scale_imba_field: &mtb_scale_imba
   key: mtb:scale:imba
   name: mtb_scale_imba
   type: string
+sac_scale_field: &sac_scale
+  key: sac_scale
+  name: sac_scale
+  type: string
 surface_field: &surface
   key: surface
   name: surface
   type: string
+expressway_field: &expressway
+  key: expressway
+  name: expressway
+  type: bool
 
 tables:
 # etldoc: imposm3 -> osm_highway_linestring
@@ -300,6 +316,8 @@ tables:
     - *oneway
     - *area
     - *service
+    - *access
+    - *toll
     - *usage
     - *public_transport
     - *man_made
@@ -309,7 +327,9 @@ tables:
     - *mtb_type
     - *mtb_scale
     - *mtb_scale_imba
+    - *sac_scale
     - *surface
+    - *expressway
     mapping:
       highway:
       - motorway
@@ -336,11 +356,15 @@ tables:
       - service
       - track
       - raceway
+      - busway
       - construction
       public_transport:
       - platform
       man_made:
       - pier
+      service:
+      - driveway
+      - parking_aisle
 
 # etldoc: imposm3 -> osm_railway_linestring
   railway_linestring:
@@ -415,8 +439,14 @@ tables:
     - *usage
     mapping:
       aerialway:
-      - cable_car
+      - chair_lift
+      - drag_lift
+      - platter
+      - t-bar
       - gondola
+      - cable_car
+      - j-bar
+      - mixed_lift
 
 # etldoc: imposm3 -> osm_shipway_linestring
   shipway_linestring:
@@ -471,6 +501,7 @@ tables:
       type: bool
     - *public_transport
     - *man_made
+    - *service
     mapping:
       highway:
       - path
@@ -485,6 +516,33 @@ tables:
       man_made:
       - bridge
       - pier
+
+  # etldoc: imposm3 -> highway_point
+  highway_point:
+    type: point
+    columns:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: highway
+      key: highway
+      type: string
+    - name: z_order
+      type: wayzorder
+    - *layer
+    - *level
+    - *name
+    - *name_en
+    - *name_de
+    - name: tags
+      type: hstore_tags
+    - name: ref
+      key: ref
+      type: string
+    mapping:
+      highway:
+      - motorway_junction
 
 # TODO: Future table for joining networks
 # etldoc: imposm3 -> osm_route_member
@@ -502,6 +560,13 @@ tables:
     - *ref
     - *network
     - *name
+    - name: osmc_symbol
+      key: osmc:symbol
+      type: string
+    - name: colour
+      key: colour
+      type: string
     mapping:
       route:
       - road
+      - hiking

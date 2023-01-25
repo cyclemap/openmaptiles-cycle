@@ -15,33 +15,60 @@ BEGIN
     WHERE funicular = 'yes'
       AND subclass = 'station';
 
+    -- ATM without name 
+    -- use either operator or network
+    -- (using name for ATM is discouraged, see osm wiki)
+    UPDATE osm_poi_point
+    SET (name, tags) = (
+        COALESCE(tags -> 'operator', tags -> 'network'),
+        tags || hstore('name', COALESCE(tags -> 'operator', tags -> 'network'))
+    )
+    WHERE subclass = 'atm'
+      AND name = ''
+      AND COALESCE(tags -> 'operator', tags -> 'network') IS NOT NULL;
+
     UPDATE osm_poi_point
     SET tags = update_tags(tags, geometry)
-    WHERE COALESCE(tags->'name:latin', tags->'name:nonlatin', tags->'name_int') IS NULL;
+    WHERE COALESCE(tags->'name:latin', tags->'name:nonlatin', tags->'name_int') IS NULL
+      AND tags != update_tags(tags, geometry);
 
 END;
 $$ LANGUAGE plpgsql;
 
 SELECT update_osm_poi_point();
 
+-- etldoc:  osm_poi_stop_rank ->  osm_poi_point
 CREATE OR REPLACE FUNCTION update_osm_poi_point_agg() RETURNS void AS
 $$
 BEGIN
     UPDATE osm_poi_point p
-    SET agg_stop = CASE
-                       WHEN p.subclass IN ('bus_stop', 'bus_station', 'tram_stop', 'subway')
-                           THEN 1
+    SET
+        agg_stop = CASE
+            WHEN p.subclass IN ('bus_stop', 'bus_station', 'tram_stop', 'subway')
+                THEN 1
+        END
+    WHERE
+        agg_stop != CASE
+            WHEN p.subclass IN ('bus_stop', 'bus_station', 'tram_stop', 'subway')
+                THEN 1
         END;
 
     UPDATE osm_poi_point p
-    SET agg_stop = (
+    SET
+        agg_stop = (
         CASE
             WHEN p.subclass IN ('bus_stop', 'bus_station', 'tram_stop', 'subway')
                      AND r.rk IS NULL OR r.rk = 1
                 THEN 1
-            END)
+        END)
     FROM osm_poi_stop_rank r
-    WHERE p.osm_id = r.osm_id;
+    WHERE p.osm_id = r.osm_id AND
+        agg_stop != (
+        CASE
+            WHEN p.subclass IN ('bus_stop', 'bus_station', 'tram_stop', 'subway')
+                     AND r.rk IS NULL OR r.rk = 1
+                THEN 1
+        END);
 
 END;
 $$ LANGUAGE plpgsql;

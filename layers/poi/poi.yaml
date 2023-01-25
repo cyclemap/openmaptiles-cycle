@@ -21,10 +21,10 @@ layer:
                      'coffee', 'computer', 'convenience', 'copyshop', 'cosmetics', 'garden_centre', 'doityourself',
                      'erotic', 'electronics', 'fabric', 'florist', 'frozen_food', 'furniture', 'video_games', 'video',
                      'general', 'gift', 'hardware', 'hearing_aids', 'hifi', 'ice_cream', 'interior_decoration',
-                     'jewelry', 'kiosk', 'lamps', 'mall', 'massage', 'motorcycle', 'mobile_phone', 'newsagent',
-                     'optician', 'outdoor', 'perfumery', 'perfume', 'pet', 'photo', 'second_hand', 'shoes', 'sports',
-                     'stationery', 'tailor', 'tattoo', 'ticket', 'tobacco', 'toys', 'travel_agency', 'watches',
-                     'weapons', 'wholesale']
+                     'jewelry', 'kiosk', 'locksmith', 'lamps', 'mall', 'massage', 'motorcycle', 'mobile_phone', 
+                     'newsagent', 'optician', 'outdoor', 'perfumery', 'perfume', 'pet', 'photo', 'second_hand', 
+                     'shoes', 'sports', 'stationery', 'tailor', 'tattoo', 'ticket', 'tobacco', 'toys', 'travel_agency', 
+                     'watches', 'weapons', 'wholesale']
         town_hall:
           subclass: ['townhall', 'public_building', 'courthouse', 'community_centre']
         golf:
@@ -94,6 +94,8 @@ layer:
           subclass: ['swimming_area', 'swimming']
         castle:
           subclass: ['castle', 'ruins']
+        atm:
+          subclass: ['atm']
     subclass:
       description: |
           Original value of either the
@@ -111,7 +113,8 @@ layer:
           [`tourism`](http://wiki.openstreetmap.org/wiki/Key:tourism),
           [`aerialway`](http://wiki.openstreetmap.org/wiki/Key:aerialway),
           [`building`](http://wiki.openstreetmap.org/wiki/Key:building),
-          [`highway`](http://wiki.openstreetmap.org/wiki/Key:highway)
+          [`highway`](http://wiki.openstreetmap.org/wiki/Key:highway),
+          [`office`](https://wiki.openstreetmap.org/wiki/Key:office)
           or [`waterway`](http://wiki.openstreetmap.org/wiki/Key:waterway)
           tag.  Use this to do more precise styling.
     rank: |

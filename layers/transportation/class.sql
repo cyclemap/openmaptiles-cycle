@@ -9,7 +9,7 @@ $$ LANGUAGE SQL IMMUTABLE
                 STRICT
                 PARALLEL SAFE;
 
-CREATE OR REPLACE FUNCTION is_cycleway(highway TEXT, tags HSTORE = null) RETURNS boolean AS
+CREATE OR REPLACE FUNCTION is_cycleway(highway TEXT, tags HSTORE) RETURNS boolean AS
 $$
 SELECT CASE
         WHEN tags->'bicycle' IN ('no', 'private', 'permit') THEN false
@@ -40,7 +40,7 @@ $$ LANGUAGE SQL IMMUTABLE
                 PARALLEL SAFE;
 
 
-CREATE OR REPLACE FUNCTION is_cyclefriendly(highway TEXT, tags HSTORE = null) RETURNS boolean AS
+CREATE OR REPLACE FUNCTION is_cyclefriendly(highway TEXT, tags HSTORE) RETURNS boolean AS
 $$
 SELECT CASE
         WHEN tags->'bicycle' IN ('no', 'private', 'permit') THEN false
@@ -157,6 +157,46 @@ SELECT CASE
            WHEN tags->'hiking' IN ('yes', 'designated', 'permissive') THEN 'unpaved'
            ELSE NULL
            END;
+$$ LANGUAGE SQL IMMUTABLE
+                STRICT
+                PARALLEL SAFE;
+
+-- Determine which transportation features are shown at zoom 12
+CREATE OR REPLACE FUNCTION transportation_filter_z12(highway text, construction text, surface text, tags HSTORE) RETURNS boolean AS
+$$
+SELECT CASE
+           WHEN is_cycleway(highway, tags) THEN TRUE
+           WHEN is_cyclefriendly(highway, tags) THEN TRUE
+           WHEN surface_value(surface, highway, tags) = 'unpaved' THEN TRUE
+           WHEN highway IN ('unclassified', 'residential') THEN TRUE
+           WHEN highway_class(highway, '', construction) IN
+               (
+                'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'raceway',
+                'motorway_construction', 'trunk_construction', 'primary_construction',
+                'secondary_construction', 'tertiary_construction', 'raceway_construction',
+                'busway'
+               ) THEN TRUE --includes ramps
+           ELSE FALSE
+       END
+$$ LANGUAGE SQL IMMUTABLE
+                STRICT
+                PARALLEL SAFE;
+
+-- Determine which transportation features are shown at zoom 13
+-- Assumes that piers have already been excluded
+CREATE OR REPLACE FUNCTION transportation_filter_z13(highway text,
+                                                     public_transport text,
+                                                     construction text,
+                                                     service text,
+                                                     surface text,
+                                                     tags HSTORE) RETURNS boolean AS
+$$
+SELECT CASE
+           WHEN transportation_filter_z12(highway, construction, surface, tags) THEN TRUE
+           WHEN highway = 'service' OR construction = 'service' THEN service NOT IN ('driveway', 'parking_aisle')
+           WHEN highway_class(highway, public_transport, construction) IN ('minor', 'minor_construction') THEN TRUE
+           ELSE FALSE
+       END
 $$ LANGUAGE SQL IMMUTABLE
                 STRICT
                 PARALLEL SAFE;

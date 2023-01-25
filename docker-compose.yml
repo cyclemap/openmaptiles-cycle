@@ -20,8 +20,14 @@ services:
     networks:
       - postgres
     ports:
-      - "5432"
-    env_file: .env-postgres
+      - "${PGPORT:-5432}:${PGPORT:-5432}"
+    env_file: .env
+    environment:
+      # postgress container uses old variable names
+      POSTGRES_DB: ${PGDATABASE:-openmaptiles}
+      POSTGRES_USER: ${PGUSER:-openmaptiles}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-openmaptiles}
+      PGPORT: ${PGPORT:-5432}
 
   import-data:
     image: "openmaptiles/import-data:${TOOLS_VERSION}"
@@ -29,7 +35,7 @@ services:
     networks:
       - postgres
 
-  openmaptiles-tools:
+  openmaptiles-tools: &openmaptiles-tools
     image: "openmaptiles/openmaptiles-tools:${TOOLS_VERSION}"
     env_file: .env
     environment:
@@ -44,12 +50,13 @@ services:
       BBOX: ${BBOX}
       # Imposm configuration file describes how to load updates when enabled
       IMPOSM_CONFIG_FILE: ${IMPOSM_CONFIG_FILE}
-      # Which files to use during import-borders processing
-      BORDERS_CLEANUP_FILE: ${BORDERS_CLEANUP_FILE}
-      BORDERS_PBF_FILE: ${BORDERS_PBF_FILE}
-      BORDERS_CSV_FILE: ${BORDERS_CSV_FILE}
       # Control import-sql processes
       MAX_PARALLEL_PSQL: ${MAX_PARALLEL_PSQL}
+      PGDATABASE: ${PGDATABASE:-openmaptiles}
+      PGUSER: ${PGUSER:-openmaptiles}
+      PGPASSWORD: ${PGPASSWORD:-openmaptiles}
+      PGPORT: ${PGPORT:-5432}
+      MBTILES_FILE: ${MBTILES_FILE}
     networks:
       - postgres
     volumes:
@@ -59,6 +66,11 @@ services:
       - ./build/sql:/sql
       - ./build:/mapping
       - ./cache:/cache
+
+  update-osm:
+    <<: *openmaptiles-tools
+    entrypoint: /bin/bash
+    command: "-c 'nice import-update'"
 
   generate-changed-vectortiles:
     image: "openmaptiles/generate-vectortiles:${TOOLS_VERSION}"
@@ -70,10 +82,13 @@ services:
       - postgres
     env_file: .env
     environment:
-      FILTER_MAPNIK_OUTPUT: ${FILTER_MAPNIK_OUTPUT}
       MBTILES_NAME: ${MBTILES_FILE}
       # Control tilelive-copy threads
       COPY_CONCURRENCY: ${COPY_CONCURRENCY}
+      PGDATABASE: ${PGDATABASE:-openmaptiles}
+      PGUSER: ${PGUSER:-openmaptiles}
+      PGPASSWORD: ${PGPASSWORD:-openmaptiles}
+      PGPORT: ${PGPORT:-5432}
 
   generate-vectortiles:
     image: "openmaptiles/generate-vectortiles:${TOOLS_VERSION}"
@@ -84,7 +99,6 @@ services:
       - postgres
     env_file: .env
     environment:
-      FILTER_MAPNIK_OUTPUT: ${FILTER_MAPNIK_OUTPUT}
       MBTILES_NAME: ${MBTILES_FILE}
       BBOX: ${BBOX}
       MIN_ZOOM: ${MIN_ZOOM}
@@ -92,6 +106,10 @@ services:
       # Control tilelive-copy threads
       COPY_CONCURRENCY: ${COPY_CONCURRENCY}
       #
+      PGDATABASE: ${PGDATABASE:-openmaptiles}
+      PGUSER: ${PGUSER:-openmaptiles}
+      PGPASSWORD: ${PGPASSWORD:-openmaptiles}
+      PGPORT: ${PGPORT:-5432}
 
   postserve:
     image: "openmaptiles/openmaptiles-tools:${TOOLS_VERSION}"
@@ -105,3 +123,37 @@ services:
       - "${PPORT:-8090}:${PPORT:-8090}"
     volumes:
       - .:/tileset
+
+  maputnik_editor:
+    image: "maputnik/editor"
+    ports:
+      - "8088:8888"
+
+  tileserver-gl:
+    image: "maptiler/tileserver-gl"
+    container_name: tileserver-gl
+    restart: always
+    command:
+      - --port
+      - "${TPORT:-8080}"
+      - --mbtiles
+      - "${MBTILES_FILE}"
+      - --verbose
+      - -c
+      - /data/tileserver-gl.json
+      - --public_url=https://tileserver.cyclemap.us/
+      - --log_file /var/log/access.log
+      - --log_format=combined
+    environment:
+      VIRTUAL_HOST: tileserver.cyclemap.us
+      VIRTUAL_PORT: $(TPORT)
+      LETSENCRYPT_HOST: tileserver.cyclemap.us
+      LETSENCRYPT_EMAIL: adrian-1f-fz@aporter.org
+      HTTPS_METHOD: redirect
+      ENABLE_IPV6: "false"
+    ports:
+      - "${TPORT:-8080}:${TPORT:-8080}"
+    volumes:
+      - ./data-tileserver:/data
+      - ./data-tileserver/viewer:/app/public/resources/viewer
+      - ./logs:/var/log

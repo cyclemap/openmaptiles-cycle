@@ -10,27 +10,10 @@ https://maputnik.github.io/editor
 to fix an incorrect max zoom level:  sqlite3 tiles.mbtiles 'update metadata set value="13" where name="maxzoom";'
 data about tiles:  sqlite3 tiles.mbtiles 'select value from metadata where name in ("maxzoom", "bounds"); select zoom_level, sum(length(tile_data)) from tiles group by zoom_level;'
 
-$ du -sm data/tiles.mbtiles
-338	bc63a22 level 14
-347	data/tiles.mbtiles
-
 
 TIMING
 	basically https is the real thing making stuff slow.  no need to make tile server cache yet.
-	exceptions:  (timing information isn't in logs anymore) grep ... logs/access.log
 
-BOTH
-	 14 dc only vanilla on p6:  1m5s in tiling, 13m16s total, 8.9mb file
-	 14 dc only master on p6:  1m6s in tiling, 13m22s total, 9.1mb file
-
-	 14 dc metro master on p6:  32m8s in tiling, 54m total, 355mb file
-
-NUMBER OF TILES
-	13
-		original north american bounds:  18m
-	14
-		original north american bounds:  75m
-		-125, 25, -66, 48:  5m.  wtf, why
 
 TIME
 	-140,10,-50,55
@@ -62,9 +45,11 @@ PSQL
 	beemah:
 		94gb (after all the sql has run)
 
+
 CURL
 	curl https://tileserver.cyclemap.us/data/v3/12/1112/1693.pbf |gunzip -c |vim -R -
-	
+
+
 combine change files
 	osmium cat -o all-changes.osc.gz changes/*.osc.gz
 look at a change file
