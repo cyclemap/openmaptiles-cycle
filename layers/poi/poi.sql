@@ -76,19 +76,6 @@ FROM (
 
          -- etldoc: osm_poi_polygon ->  layer_poi:z12
          -- etldoc: osm_poi_polygon ->  layer_poi:z13
-         SELECT *,
-                NULL::integer AS agg_stop,
-                CASE
-                    WHEN osm_id < 0 THEN -osm_id * 10 + 4
-                    ELSE osm_id * 10 + 1
-                    END AS osm_id_hash
-         FROM osm_poi_polygon
-         WHERE geometry && bbox
-           AND zoom_level BETWEEN 12 AND 13
-           AND subclass IN ('park', 'nature_reserve', 'camp_site', 'bicycle', 'bicycle_rental', 'bicycle_repair_station')
-
-         UNION ALL
-
          -- etldoc: osm_poi_polygon ->  layer_poi:z14_
          SELECT *,
                 NULL::integer AS agg_stop,
@@ -97,9 +84,20 @@ FROM (
                     ELSE osm_id * 10 + 1
                     END AS osm_id_hash
          FROM osm_poi_polygon
-         WHERE geometry && bbox
-           AND zoom_level >= 14
-           AND subclass IN ('park', 'nature_reserve', 'camp_site', 'bicycle', 'bicycle_rental', 'bicycle_repair_station', 'bicycle_parking', 'drinking_water', 'toilets', 'ford', 'compressed_air', 'shelter')
+         WHERE geometry && bbox AND
+           CASE
+               WHEN zoom_level >= 14 THEN TRUE
+               WHEN zoom_level >= 12 AND
+                 subclass IN ('park', 'nature_reserve', 'camp_site', 'bicycle', 'bicycle_rental', 'bicycle_repair_station', 'bicycle_parking', 'drinking_water', 'toilets', 'ford', 'compressed_air', 'shelter') THEN TRUE
+               WHEN zoom_level BETWEEN 10 AND 14 THEN
+                 subclass IN ('university', 'college') AND
+                 POWER(4,zoom_level)
+                 -- Compute percentage of the earth's surface covered by this feature (approximately)
+                 -- The constant below is 111,842^2 * 180 * 180, where 111,842 is the length of one degree of latitude at the equator in meters.
+                 * area / (405279708033600 * COS(ST_Y(ST_Transform(geometry,4326))*PI()/180))
+                 -- Match features that are at least 10% of a tile at this zoom
+                 > 0.10
+               ELSE FALSE END
      ) AS poi_union
 ORDER BY "rank"
 $$ LANGUAGE SQL STABLE

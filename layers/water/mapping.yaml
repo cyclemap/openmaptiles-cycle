@@ -66,6 +66,9 @@ tables:
       type: string
     - name: tags
       type: hstore_tags
+    - name: place
+      key: place
+      type: string
     - name: natural
       key: natural
       type: string
@@ -74,6 +77,9 @@ tables:
       type: string
     - name: waterway
       key: waterway
+      type: string
+    - name: leisure
+      key: leisure
       type: string
     - name: water
       key: water
@@ -98,8 +104,14 @@ tables:
       - bay
       - spring
       waterway:
-      - riverbank
       - dock
       water:
       - river
+      - stream
+      - canal
+      - ditch
+      - drain
+      - pond
+      - basin
+      - wastewater
     type: polygon

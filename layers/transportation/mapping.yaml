@@ -47,8 +47,8 @@ generalized_tables:
     source: highway_linestring
     sql_filter: 
       (
-      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway') OR
-      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway') OR
+      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway', 'bus_guideway') OR
+      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'busway', 'bus_guideway') OR
       tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
       tags->'icn' IN ('yes') OR tags->'icn_ref' IS NOT NULL OR
       tags->'ncn' IN ('yes') OR tags->'ncn_ref' IS NOT NULL OR
@@ -369,6 +369,7 @@ tables:
       - track
       - raceway
       - busway
+      - bus_guideway
       - construction
       public_transport:
       - platform

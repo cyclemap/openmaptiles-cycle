@@ -19,6 +19,8 @@ USE_PRELOADED_IMAGE ?=
 # Local port to use with postserve
 PPORT ?= 8090
 export PPORT
+STYLE_FILE := build/style/style.json
+STYLE_HEADER_FILE := style/style-header.json
 
 # Allow a custom docker-compose project name
 DC_PROJECT := $(or $(DC_PROJECT),$(shell (. .env; echo $${DC_PROJECT})))
@@ -183,6 +185,7 @@ Hints for developers:
   make generate-qa                     # statistics for a given layer's field
   make generate-tiles-pg               # generate vector tiles based on .env settings using PostGIS ST_MVT()
   make generate-tiles                  # generate vector tiles based on .env settings using Mapnik (obsolete)
+  make generate-changed-tiles          # Generate tiles changed by import-diff
   make test-sql                        # run unit tests on the OpenMapTiles SQL schema
   cat  .env                            # list PG database and MIN_ZOOM and MAX_ZOOM information
   cat  quickstart.log                  # transcript of the last ./quickstart.sh run
@@ -197,6 +200,7 @@ Hints for downloading & importing data:
   make download-bbbike area=Amsterdam  # download OSM data from bbbike.org       and create config file
   make import-data                     # Import data from OpenStreetMapData, Natural Earth and OSM Lake Labels.
   make import-osm                      # Import OSM data with the mapping rules from build/mapping.yaml
+  make import-diff                     # Import OSM updates from data/changes.osc.gz
   make import-wikidata                 # Import labels from Wikidata
   make import-sql                      # Import layers (run this after modifying layer SQL)
 
@@ -226,7 +230,7 @@ export HELP_MESSAGE
 #
 
 .PHONY: all
-all: init-dirs build/openmaptiles.tm2source/data.yml build/mapping.yaml build-sql
+all: init-dirs build/openmaptiles.tm2source/data.yml build/mapping.yaml build-sql build-style
 
 .PHONY: help
 help:
@@ -248,6 +252,7 @@ endef
 init-dirs:
 	@mkdir -p build/sql/parallel
 	@mkdir -p build/openmaptiles.tm2source
+	@mkdir -p build/style
 	@mkdir -p data
 	@mkdir -p cache
 	@ ! ($(DOCKER_COMPOSE) 2>/dev/null run $(DC_OPTS) openmaptiles-tools df --output=fstype /tileset| grep -q 9p) < /dev/null || ($(win_fs_error))
@@ -274,6 +279,25 @@ ifeq (,$(wildcard build/sql/run_last.sql))
 							 --key --gzip --postgis-ver 3.0.1 \
 							 --function --fname=getmvt >> ./build/sql/run_last.sql'
 endif
+
+.PHONY: build-sprite
+build-sprite: init-dirs
+	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools bash -c 'spritezero build/style/sprite /style/icons && \
+		spritezero --retina build/style/sprite@2x /style/icons'
+
+.PHONY: build-style
+build-style: init-dirs
+	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools bash -c 'style-tools recompose $(TILESET_FILE) $(STYLE_FILE) \
+		$(STYLE_HEADER_FILE) && \
+		spritezero build/style/sprite /style/icons && spritezero --retina build/style/sprite@2x /style/icons'
+
+.PHONY: download-fonts
+download-fonts:
+	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools bash -c '[ ! -d "/export/fonts" ] && mkdir /export/fonts && \
+		echo "Downloading fonts..." && wget -qO /export/noto-sans.zip --show-progress \
+		https://github.com/openmaptiles/fonts/releases/download/v2.0/noto-sans.zip && \
+		echo "Unzipping fonts..." && unzip -q /export/noto-sans.zip -d /export/fonts && rm /export/noto-sans.zip || \
+		echo "Fonts already exist."'
 
 .PHONY: clean
 clean: clean-test-data
@@ -394,7 +418,7 @@ import-osm: all start-db-nowait
 	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools nice sh -c 'pgwait && import-osm $(PBF_FILE)'
 
 .PHONY: start-update-osm
-start-update-osm: all start-db
+start-update-osm: start-db
 	@$(assert_area_is_given)
 	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) up -d update-osm
 
@@ -403,7 +427,7 @@ stop-update-osm:
 	$(DOCKER_COMPOSE) stop update-osm
 
 .PHONY: import-diff
-import-diff: all start-db-nowait
+import-diff: start-db-nowait
 	@$(assert_area_is_given)
 	$(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools nice sh -c 'pgwait && import-diff'
 
@@ -437,8 +461,23 @@ generate-tiles-pg: all start-db
 	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools \
 			mbtiles-tools meta-generate "$(MBTILES_LOCAL_FILE)" $(TILESET_FILE) --auto-minmax --show-ranges
 
+.PHONY: data/tiles.txt
+data/tiles.txt:
+	find ./data -name "*.tiles" -exec cat {} \; -exec rm {} \; | \
+	  $(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools \
+	    tile_multiplier $(MIN_ZOOM) $(MAX_ZOOM) >> data/tiles.txt
+
+.PHONY: generate-changed-tiles
+generate-changed-tiles: data/tiles.txt
+	# Re-generating updated tiles, if needed
+	if [ -s data/tiles.txt ] ; then \
+	  $(DOCKER_COMPOSE) $(DC_CONFIG_CACHE) run $(DC_OPTS_CACHE) openmaptiles-tools refresh-views; \
+	  $(DOCKER_COMPOSE) run $(DC_OPTS) -e LIST_FILE=data/tiles.txt openmaptiles-tools generate-tiles; \
+	  rm data/tiles.txt; \
+	fi
+
 .PHONY: start-tileserver
-start-tileserver: init-dirs
+start-tileserver: init-dirs build-style download-fonts
 	@echo " "
 	@echo "***********************************************************"
 	@echo "* "
@@ -460,7 +499,6 @@ start-tileserver: init-dirs
 	@echo "* "
 	@echo "***********************************************************"
 	@echo " "
-	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver
 	$(DOCKER_COMPOSE) --file docker-compose-tileserver.yml --project-name openmaptiles-tileserver up -d tileserver-gl
 
 .PHONY: stop-tileserver

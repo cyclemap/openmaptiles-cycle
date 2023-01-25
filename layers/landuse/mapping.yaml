@@ -77,6 +77,7 @@ tables:
       - railway
       - cemetery
       - military
+      - quarry
       # zoning
       - residential
       - commercial

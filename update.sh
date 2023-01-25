@@ -75,6 +75,5 @@ echo "====================================================================="
 date=$(date +%Y-%m-%d)
 file="tiles-$date-$locationName-$MAX_ZOOM.mbtiles"
 mv data/tiles.mbtiles data-tileserver/$file && ln -sf $file data-tileserver/tiles.mbtiles &&
-	cp --recursive conf/cycle-style conf/tileserver-gl.json conf/viewer data-tileserver &&
 	docker restart tileserver-gl
 

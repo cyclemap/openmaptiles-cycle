@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>cyclemap</title>
+	<link rel="stylesheet" type="text/css" href="{{public_url}}mapbox-gl.css" />
+	<script src="{{public_url}}mapbox-gl.js"></script>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		.map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+		.mapboxgl-ctrl-scale {
+			pointer-events: none;
+		}
+		.about {
+			position: absolute;
+			top: 0;
+			height: 20px;
+			padding: 1px;
+			background: hsla(0, 0%, 100%, 50%);
+			font-size: larger;
+			z-index: 2;
+		}
+	</style>
+</head>
+<body>
+	<div class="about">see main page https://cyclemap.us/</div>
+	<div id="map" class="map">
+	</div>
+	<script>
+
+var map = setupMap();
+
+function setupMap() {
+	//mapboxgl.setRTLTextPlugin('{{public_url}}mapbox-gl-rtl-text.js');
+	var defaultLatitude = 40;
+	var defaultLongitude = -96;
+	var defaultZoom = 5;
+
+	var latitude = defaultLatitude;
+	var longitude = defaultLongitude;
+	var zoom = defaultZoom;
+
+	var map = new mapboxgl.Map({
+		container: 'map',
+		style: '{{public_url}}styles/maptiler-cyclemap/style.json',
+		center: new mapboxgl.LngLat(longitude, latitude),
+		zoom: zoom,
+		hash: true,
+		dragRotate: false
+	});
+	map.addControl(new mapboxgl.NavigationControl());
+	map.addControl(new mapboxgl.ScaleControl());
+	map.addControl(new mapboxgl.GeolocateControl({
+		positionOptions: {enableHighAccuracy: true},
+		trackUserLocation: true
+	}));
+	map.on("contextmenu", e => {});
+	return map;
+}
+	</script>
+</body>
+</html>

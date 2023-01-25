@@ -8,7 +8,7 @@ networks:
 services:
 
   tileserver-gl:
-    image: "maptiler/tileserver-gl"
+    image: "maptiler/tileserver-gl:latest"
     container_name: tileserver-gl
     restart: always
     command:
@@ -17,8 +17,8 @@ services:
       - --mbtiles
       - "${MBTILES_FILE}"
       - --verbose
-      - -c
-      - /data/tileserver-gl.json
+      - --config
+      - /style/config.json
       - --public_url=https://tileserver.cyclemap.us/
       - --log_file=/var/log/access.log
       - --log_format=combined
@@ -31,6 +31,6 @@ services:
       - nginx
     volumes:
       - ./data-tileserver:/data
-      - ./data-tileserver/viewer:/app/public/resources/viewer
       - ./logs:/var/log
-
+      - ./style:/style
+      - ./build:/build
