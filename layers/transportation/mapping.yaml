@@ -42,56 +42,6 @@ generalized_tables:
     sql_filter: ST_IsValid(geometry)
     tolerance: ZRES13
 
-# etldoc: osm_highway_linestring_gen_z10 -> osm_highway_linestring_gen_z9
-  highway_linestring_gen_z9:
-    source: highway_linestring_gen_z10
-    sql_filter: 
-      (
-      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
-      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
-      tags->'icn' IN ('yes') OR tags->'icn_ref' IS NOT NULL OR
-      tags->'ncn' IN ('yes') OR tags->'ncn_ref' IS NOT NULL OR
-      tags->'rcn' IN ('yes') OR tags->'rcn_ref' IS NOT NULL OR
-      tags->'lcn' IN ('yes') OR tags->'lcn_ref' IS NOT NULL OR
-      tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
-      tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-      tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-      tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-      tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-      surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
-      'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
-      'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
-      'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
-      'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
-      ) AND
-      NOT is_area
-    tolerance: ZRES10
-
-# etldoc: osm_highway_linestring_gen_z11 -> osm_highway_linestring_gen_z10
-  highway_linestring_gen_z10:
-    source: highway_linestring_gen_z11
-    sql_filter: 
-      (
-      highway IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
-      highway = 'construction' AND construction IN ('cycleway', 'motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR
-      tags->'icn' IN ('yes') OR tags->'icn_ref' IS NOT NULL OR
-      tags->'ncn' IN ('yes') OR tags->'ncn_ref' IS NOT NULL OR
-      tags->'rcn' IN ('yes') OR tags->'rcn_ref' IS NOT NULL OR
-      tags->'lcn' IN ('yes') OR tags->'lcn_ref' IS NOT NULL OR
-      tags->'bicycle' IN ('designated', 'mtb', 'yes', 'permissive', 'dismount') OR
-      tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-      tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-      tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-      tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-      surface IN ('unpaved', 'compacted', 'dirt', 'earth', 'fine_gravel', 'grass', 'grass_paver', 'gravel',
-      'gravel_turf', 'ground', 'ice', 'mud', 'pebblestone', 'salt', 'sand', 'snow', 'woodchips',
-      'ground;grass', 'grass;earth', 'grass;ground', 'gravel;ground', 'gravel;grass',
-      'asphalt;sand', 'asphalt;unpaved', 'unpaved;asphalt', 'asphalt;ground', 'ground;asphalt', 'asphalt;gravel', 'gravel;asphalt',
-      'dirt;grass', 'ground;gravel', 'grass;dirt', 'gravel;earth', 'paved;unpaved', 'unpaved;paved', 'grass;gravel', 'rock')
-      ) AND
-      NOT is_area
-    tolerance: ZRES11
-
 # etldoc: osm_highway_linestring -> osm_highway_linestring_gen_z11
   highway_linestring_gen_z11:
     source: highway_linestring
