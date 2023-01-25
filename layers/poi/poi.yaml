@@ -73,7 +73,7 @@ layer:
         harbor:
           subclass: ['marina', 'dock']
         car:
-          subclass: ['car', 'car_repair', 'taxi']
+          subclass: ['car', 'car_repair', 'car_parts', 'taxi']
         hospital:
           subclass: ['hospital', 'nursing_home', 'clinic']
         cemetery:
@@ -146,11 +146,11 @@ layer:
     query: (SELECT osm_id, geometry, name, name_en, name_de, {name_languages}, class, subclass, agg_stop, layer, level, indoor, rank FROM layer_poi(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
 schema:
   - ./public_transport_stop_type.sql
-  - ./update_poi_polygon.sql
-  - ./update_poi_point.sql
   - ./class.sql
   - ./poi_stop_agg.sql
-  - ./layer.sql
+  - ./update_poi_polygon.sql
+  - ./update_poi_point.sql
+  - ./poi.sql
 datasources:
   - type: imposm3
     mapping_file: ./mapping.yaml

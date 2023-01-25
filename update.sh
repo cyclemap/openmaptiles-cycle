@@ -6,17 +6,16 @@
 
 minimumSize=9500000000
 locationName=north-america
-downloadFile=$locationName-latest.osm.pbf
-pbfFile=$locationName.osm.pbf
+pbfFile=$locationName-latest.osm.pbf
 #newFile=$locationName-new.osm.pbf
 
 set -e #exit on failure
 
 exec &> >(tee --append "update.log")
 
-rm -f $downloadFile
-wget https://download.geofabrik.de/$downloadFile
-cp -a $downloadFile data/$pbfFile
+rm -f $pbfFile
+wget https://download.geofabrik.de/$pbfFile
+mv $pbfFile data/$pbfFile
 
 #THE NEXT STEP:
 #see here:  https://wiki.openstreetmap.org/wiki/Osmupdate#Assembling_an_OSM_Change_file
