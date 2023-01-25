@@ -4,7 +4,7 @@
 
 # Ensure that errors don't hide inside pipes
 SHELL         = /bin/bash
-.SHELLFLAGS   = -o pipefail -c
+.SHELLFLAGS   = -o pipefail -c 
 
 # Make all .env variables available for make targets
 include .env
@@ -115,7 +115,7 @@ ifeq ($(strip $(area)),)
         $(warning ATTENTION: File data/$(area)-latest.osm.pbf was renamed to $(area).osm.pbf.)
         AREA_INFO := Detected area=$(area) based on finding a 'data/$(area)-latest.osm.pbf' file - renamed to '$(area).osm.pbf'. Use 'area' parameter or environment variable to override.
       else
-        AREA_INFO := Detected area=$(area) based on finding a 'data/$(area).pbf' file. Use 'area' parameter or environment variable to override.
+        AREA_INFO := Detected area=$(area) based on finding a 'data/$(area).osm.pbf' file. Use 'area' parameter or environment variable to override.
       endif
     endif
   endif
@@ -159,25 +159,6 @@ ifneq (,$(wildcard $(AREA_BBOX_FILE)))
   cat := $(if $(filter $(OS),Windows_NT),type,cat)
   BBOX := $(shell $(cat) ${AREA_BBOX_FILE})
   export BBOX
-endif
-
-ifeq ($(strip $(area)),)
-  define assert_area_is_given
-	@echo ""
-	@echo "ERROR: $(AREA_ERROR)"
-	@echo ""
-	@echo "  make $@ area=<area-id>"
-	@echo ""
-	@echo "To download an area, use   make download <area-id>"
-	@echo "To list downloadable areas, use   make list-geofabrik   and/or   make list-bbbike"
-	@exit 1
-  endef
-else
-  ifneq ($(strip $(AREA_INFO)),)
-    define assert_area_is_given
-	@echo "$(AREA_INFO)"
-    endef
-  endif
 endif
 
 #
@@ -230,12 +211,25 @@ help:
 	@echo "  make help                            # help about available commands"
 	@echo "=============================================================================="
 
+define win_fs_error
+	( \
+	echo "" ;\
+	echo "ERROR: Windows native filesystem" ;\
+	echo "" ;\
+	echo "Please avoid running OpenMapTiles in a Windows filesystem." ;\
+	echo "See https://github.com/openmaptiles/openmaptiles/issues/1095#issuecomment-817095465" ;\
+	echo "" ;\
+	exit 1 ;\
+	)
+endef
+
 .PHONY: init-dirs
 init-dirs:
 	@mkdir -p build/sql/parallel
 	@mkdir -p build/openmaptiles.tm2source
 	@mkdir -p data/borders
 	@mkdir -p cache
+	@ ! ($(DOCKER_COMPOSE) 2>/dev/null run $(DC_OPTS) openmaptiles-tools df --output=fstype /tileset| grep -q 9p) || ($(win_fs_error))
 
 build/openmaptiles.tm2source/data.yml: init-dirs
 ifeq (,$(wildcard build/openmaptiles.tm2source/data.yml))
@@ -351,7 +345,7 @@ generate-bbox-file:
 ifeq (,$(wildcard $(AREA_BBOX_FILE)))
 	@$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools download-osm bbox "$(PBF_FILE)" "$(AREA_BBOX_FILE)"
 else
-	@echo "Configuration file $(AREA_BBOX_FILE) already exists, no need to regenerate."
+	@echo "Configuration file $(AREA_BBOX_FILE) already exists, no need to regenerate.  BBOX=$(BBOX)"
 endif
 
 .PHONY: psql
@@ -403,6 +397,16 @@ generate-tiles: all start-db
 	@echo "Generating tiles into $(MBTILES_LOCAL_FILE) (will delete if already exists)..."
 	@rm -rf "$(MBTILES_LOCAL_FILE)"
 	$(DOCKER_COMPOSE) run $(DC_OPTS) generate-vectortiles
+	@echo "Updating generated tile metadata ..."
+	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools \
+			mbtiles-tools meta-generate "$(MBTILES_LOCAL_FILE)" $(TILESET_FILE) --auto-minmax --show-ranges
+
+.PHONY: generate-tiles-pg
+generate-tiles-pg: all start-db
+	@$(assert_area_is_given)
+	@echo "Generating tiles into $(MBTILES_LOCAL_FILE) (will delete if already exists)..."
+	@rm -rf "$(MBTILES_LOCAL_FILE)"
+	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools generate-tiles
 	@echo "Updating generated tile metadata ..."
 	$(DOCKER_COMPOSE) run $(DC_OPTS) openmaptiles-tools \
 			mbtiles-tools meta-generate "$(MBTILES_LOCAL_FILE)" $(TILESET_FILE) --auto-minmax --show-ranges
@@ -574,7 +578,7 @@ clean-unnecessary-docker:
 	@echo "Deleting unnecessary container(s)..."
 	@docker ps -a -q --filter "status=exited" | $(XARGS) docker rm
 	@echo "Deleting unnecessary image(s)..."
-	@docker images | grep \<none\> | awk -F" " '{print $$3}' | $(XARGS) docker rmi
+	@docker images | awk -F" " '/<none>/{print $$3}' | $(XARGS) docker rmi
 
 .PHONY: test-perf-null
 test-perf-null: init-dirs
