@@ -45,13 +45,13 @@ generalized_tables:
 # etldoc: imposm3 -> osm_highway_linestring_gen2
   highway_linestring_gen2:
     source: highway_linestring_gen1
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'cycleway') OR tags->'icn' is not null OR tags->'ncn' is not null OR tags->'rcn' is not null OR tags->'lcn' is not null OR tags->'bicycle' is not null OR tags->'cycleway' is not null OR tags->'cycleway:left' is not null OR tags->'cycleway:right' is not null OR tags->'cycleway:both' is not null) AND NOT is_area
+    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'cycleway') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR tags->'icn' is not null OR tags->'ncn' is not null OR tags->'rcn' is not null OR tags->'lcn' is not null OR tags->'bicycle' is not null OR tags->'cycleway' is not null OR tags->'cycleway:left' is not null OR tags->'cycleway:right' is not null OR tags->'cycleway:both' is not null) AND NOT is_area
     tolerance: ZRES11
 
 # etldoc: imposm3 -> osm_highway_linestring_gen1
   highway_linestring_gen1:
     source: highway_linestring
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'cycleway') OR tags->'icn' is not null OR tags->'ncn' is not null OR tags->'rcn' is not null OR tags->'lcn' is not null OR tags->'bicycle' is not null OR tags->'cycleway' is not null OR tags->'cycleway:left' is not null OR tags->'cycleway:right' is not null OR tags->'cycleway:both' is not null) AND NOT is_area AND ST_IsValid(geometry)
+    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link', 'cycleway') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR tags->'icn' is not null OR tags->'ncn' is not null OR tags->'rcn' is not null OR tags->'lcn' is not null OR tags->'bicycle' is not null OR tags->'cycleway' is not null OR tags->'cycleway:left' is not null OR tags->'cycleway:right' is not null OR tags->'cycleway:both' is not null) AND NOT is_area AND ST_IsValid(geometry)
     tolerance: ZRES12
 
 name_field: &name
@@ -177,6 +177,18 @@ man_made_field: &man_made
 z_order_field: &z_order
   name: z_order
   type: wayzorder
+foot_field: &foot
+  key: foot
+  name: foot
+  type: string
+horse_field: &horse
+  key: horse
+  name: horse
+  type: string
+mtb_scale_field: &mtb_scale
+  key: mtb:scale
+  name: mtb_scale
+  type: string
 surface_field: &surface
   key: surface
   name: surface
@@ -186,13 +198,17 @@ tables:
 # etldoc: imposm3 -> osm_highway_linestring
   highway_linestring:
     type: linestring
-    fields:
+    _resolve_wikidata: false
+    columns:
     - name: osm_id
       type: id
     - name: geometry
       type: geometry
     - name: highway
       key: highway
+      type: string
+    - name: construction
+      key: construction
       type: string
     - *ref
     - *network
@@ -211,7 +227,6 @@ tables:
     - *cycleway_right
     - *cycleway_left
     - *cycleway_both
-    - *bicycle
     - *footway
     - *hiking
     - name: tags
@@ -227,6 +242,10 @@ tables:
     - *usage
     - *public_transport
     - *man_made
+    - *bicycle
+    - *foot
+    - *horse
+    - *mtb_scale
     - *surface
     mapping:
       highway:
@@ -242,18 +261,19 @@ tables:
       - tertiary_link
       - unclassified
       - residential
-      - road
       - living_street
-      - raceway
-      - track
-      - service
-      - path
-      - cycleway
-      - bridleway
-      - footway
-      - corridor
+      - road
       - pedestrian
+      - path
+      - footway
+      - cycleway
       - steps
+      - bridleway
+      - corridor
+      - service
+      - track
+      - raceway
+      - construction
       public_transport:
       - platform
       man_made:
@@ -262,7 +282,8 @@ tables:
 # etldoc: imposm3 -> osm_railway_linestring
   railway_linestring:
     type: linestring
-    fields:
+    _resolve_wikidata: false
+    columns:
     - name: osm_id
       type: id
     - name: geometry
@@ -304,7 +325,8 @@ tables:
 # etldoc: imposm3 -> osm_aerialway_linestring
   aerialway_linestring:
     type: linestring
-    fields:
+    _resolve_wikidata: false
+    columns:
     - name: osm_id
       type: id
     - name: geometry
@@ -336,7 +358,8 @@ tables:
 # etldoc: imposm3 -> osm_shipway_linestring
   shipway_linestring:
     type: linestring
-    fields:
+    _resolve_wikidata: false
+    columns:
     - name: osm_id
       type: id
     - name: geometry
@@ -367,7 +390,7 @@ tables:
 # etldoc: imposm3 -> osm_highway_polygon
   highway_polygon:
     type: polygon
-    fields:
+    columns:
     - name: osm_id
       type: id
     - name: geometry

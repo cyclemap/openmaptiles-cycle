@@ -15,11 +15,11 @@ data-tileserver/*
 /.update.exclusivelock
 /logs/
 
-# input wikidata
-wikidata/*
-
 # generated source files
 build/*
+
+# Import cache
+cache/*
 
 # any IDE files
 .idea/

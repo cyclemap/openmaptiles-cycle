@@ -1,10 +1,10 @@
 ## OpenMapTiles [![Build Status](https://travis-ci.org/openmaptiles/openmaptiles.svg?branch=master)](https://travis-ci.org/openmaptiles/openmaptiles)
 
-OpenMapTiles is an extensible and open tile schema based on the OpenStreetMap. It is used to generate vector tiles for online zoomable maps. The project is about creating a beautiful basemaps with general layers that contain topographic information. More information [openmaptiles.org](https://openmaptiles.org/) and [openmaptiles.com](https://openmaptiles.com/).
+OpenMapTiles is an extensible and open tile schema based on the OpenStreetMap. This project is used to generate vector tiles for online zoomable maps. OpenMapTiles is about creating a beautiful basemaps with general layers containing topographic information. More information [openmaptiles.org](https://openmaptiles.org/) and [openmaptiles.com](https://openmaptiles.com/).
 
-We encourage you to collaborate, reuse and adapt existing layers and add your own layers or use our approach for your own vector tile project. Feel free to fork the repo and experiment. The repository is built on top of the [openmaptiles/openmaptiles-tools](https://github.com/openmaptiles/openmaptiles-tools) to simplify vector tile creation.
+We encourage you to collaborate, reuse and adapt existing layers, or add your own layers. You may use our approach for your own vector tile project. Feel free to fork the repo and experiment. The repository is built on top of the [openmaptiles/openmaptiles-tools](https://github.com/openmaptiles/openmaptiles-tools) to simplify vector tile creation.
 
-Please keep in mind that OpenMapTiles schema should stay displaying general topographic content. In case of creating a new layer or expanding an existing one with a specific theme, please create a fork and invite other community members to cooperate on your topic in this separate fork. OpenMapTiles schema is used in many projects all over the world and the size of the final vector tiles needs to be considered in any update.
+Please keep in mind that OpenMapTiles schema should display general topographic content. If creating a new layer or expanding an existing layer with a specific theme, please create a fork and invite other community members to cooperate on your topic. OpenMapTiles schema is used in many projects all over the world and the size of the final vector tiles needs to be considered in any update.
 
 - :link: Schema https://openmaptiles.org/schema
 - :link: Docs https://openmaptiles.org/docs
@@ -76,7 +76,7 @@ To work on OpenMapTiles you need Docker.
 Build the tileset.
 
 ```bash
-git clone git@github.com:openmaptiles/openmaptiles.git
+git clone https://github.com/openmaptiles/openmaptiles.git
 cd openmaptiles
 # Build the imposm mapping, the tm2source project and collect all SQL scripts
 make
@@ -94,26 +94,15 @@ or use the provided `quickstart.sh` script.
 Now start up the database container.
 
 ```bash
-docker-compose up -d postgres
+make db-start
 ```
 
 Import external data from [OpenStreetMapData](http://osmdata.openstreetmap.de/), [Natural Earth](http://www.naturalearthdata.com/) and [OpenStreetMap Lake Labels](https://github.com/lukasmartinelli/osm-lakelines).
 
 ```bash
-docker-compose run import-water
-docker-compose run import-natural-earth
-docker-compose run import-lakelines
-docker-compose run import-osmborder
-```
-
-**[Optional]**
-Import latest Wikidata. If an OSM feature has [Key:wikidata](https://wiki.openstreetmap.org/wiki/Key:wikidata), OpenMapTiles check corresponding item in Wikidata and use its [labels](https://www.wikidata.org/wiki/Help:Label) for languages listed in [openmaptiles.yaml](openmaptiles.yaml). So the generated vector tiles includes multi-languages in name field.
-
-Beware that current [Wikidata dump](https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.gz) is more than 55GB, it takes time to download and import it. If you just want to have a quickstart on OpenMapTiles, just skip this step.
-
-```bash
-make download-wikidata
-docker-compose run import-wikidata
+make import-water
+make import-natural-earth
+make import-lakelines
 ```
 
 [Download OpenStreetMap data extracts](http://download.geofabrik.de/) and store the PBF file in the `./data` directory.
@@ -123,11 +112,26 @@ cd data
 wget http://download.geofabrik.de/europe/albania-latest.osm.pbf
 ```
 
-[Import OpenStreetMap data](https://github.com/openmaptiles/import-osm) with the mapping rules from
-`build/mapping.yaml` (which has been created by `make`).
+OR
 
 ```bash
-docker-compose run import-osm
+make download-geofabrik area=albania
+```
+
+[Import OpenStreetMap data](https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/import-osm) with the mapping rules from
+`build/mapping.yaml` (which has been created by `make`). Run after any change in layers definiton.  Also create borders table using extra processing with [osmborder](https://github.com/pnorman/osmborder) tool.
+
+```bash
+make import-osm
+make import-borders
+```
+
+Import latest Wikidata. If an OSM feature has [Key:wikidata](https://wiki.openstreetmap.org/wiki/Key:wikidata), OpenMapTiles check corresponding item in Wikidata and use its [labels](https://www.wikidata.org/wiki/Help:Label) for languages listed in [openmaptiles.yaml](openmaptiles.yaml). So the generated vector tiles includes multi-languages in name field.
+
+This step uses [Wikidata Query Service](https://query.wikidata.org) to download just the Wikidata IDs that already exist in the database.
+
+```bash
+make import-wikidata
 ```
 
 ### Work on Layers
@@ -135,14 +139,16 @@ docker-compose run import-osm
 Each time you modify layer SQL code run `make` and `make import-sql`.
 
 ```
-make clean && make && make import-sql
+make clean
+make
+make import-sql
 ```
 
 Now you are ready to **generate the vector tiles**. Using environment variables
 you can limit the bounding box and zoom levels of what you want to generate (`docker-compose.yml`).
 
 ```
-docker-compose run generate-vectortiles
+make generate-tiles
 ```
 
 ## License
