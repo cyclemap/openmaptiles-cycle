@@ -17,7 +17,7 @@ layer:
         and `kindergarten`. Or use the class `shop` to style all shops.
       values:
         shop:
-          subclass: ['accessories', 'antiques', 'beauty', 'bed', 'boutique', 'camera', 'carpet', 'charity', 'chemist',
+          subclass: ['accessories', 'antiques', 'beauty', 'bed', 'bicycle', 'boutique', 'camera', 'carpet', 'charity', 'chemist',
                      'coffee', 'computer', 'convenience', 'copyshop', 'cosmetics', 'garden_centre', 'doityourself',
                      'erotic', 'electronics', 'fabric', 'florist', 'frozen_food', 'furniture', 'video_games', 'video',
                      'general', 'gift', 'hardware', 'hearing_aids', 'hifi', 'ice_cream', 'interior_decoration',
