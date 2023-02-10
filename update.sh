@@ -2,6 +2,8 @@
 
 source .env
 
+set -e #exit on failure
+
 #these won't do what we want because docker is doing all of the real work
 #renice +20 -p $$ >/dev/null
 #ionice -c3 -p $$
@@ -10,16 +12,20 @@ source .env
 quickstart=yes
 
 locationName=$1; shift
-defaultBbox='-77.7,38.5,-76.7,39.5'
-largeBbox='-160,-30,20,60'
+defaultBbox='-77.7,38.5,-76.7,39.5' #lon lat bottom left, lon lat upper right
+largeBbox='-160,-45,40,60'
 if [[ "$locationName" == "cyclemap-large" ]]; then
+	fileList=(north-america central-america south-america europe africa asia)
 	bbox=$largeBbox
-	minimumSize=15000000000
-	quickstart=yes
+	minimumSize=50000 #mb
+	./process-large.sh
 else
-	bbox=$defaultBbox
 	locationName=cyclemap-small
-	minimumSize=500000000
+	
+	fileList=(north-america/us)
+	bbox=$defaultBbox
+	minimumSize=500 #mb
+	./process.sh
 fi
 
 outputLocationName=$locationName
@@ -31,16 +37,6 @@ pbfFile=data/$locationName.osm.pbf
 newFile=data/$locationName-new.osm.pbf
 changeFile=data/changes.osc.gz
 oldFile=data/$locationName-old.osm.pbf
-
-set -e #exit on failure
-
-#notify an external script that processing has started
-if [ -e process.sh ]; then
-	./process.sh
-	if [[ $locationName == "cyclemap-large" ]]; then
-		./process-large.sh
-	fi
-fi
 
 exec &> >(tee >(\
 	sed \
@@ -89,18 +85,6 @@ function link {
 	ln --symbolic --force --relative "$@"
 }
 
-function downloadPbf {
-	if [[ $locationName == "cyclemap-small" ]]; then
-		getFile north-america/us
-		mv --force $temporaryDownloadFile $pbfFile
-	elif [[ $locationName == "cyclemap-large" ]]; then
-		getFileList north-america central-america south-america europe africa
-	else
-		getFile $locationName
-		mv --force $temporaryDownloadFile $pbfFile
-	fi
-}
-
 function updatePbf {
 	echo updating:  started at $(date)
 	rm --force $newFile
@@ -121,9 +105,9 @@ function updatePbf {
 	mv --force $newFile $pbfFile
 
 
-	if [ $(stat --format=%s $pbfFile) -lt $minimumSize ]; then
+	if [ $(stat --format=%s $pbfFile) -lt ${minimumSize}000000 ]; then
 		#sometimes the file is too small because something failed.  let's stop here because this needs fixing.
-		echo $pbfFile file size too small.  expected minimum size of $minimumSize bytes.
+		echo $pbfFile file size too small.  expected minimum size of $minimumSize mb.
 		false
 	fi
 	echo updating:  done at $(date)
@@ -136,7 +120,7 @@ fi
 
 if [[ $redownload == "yes" ]]; then
 	quickstart=yes
-	downloadPbf
+	getFileList ${fileList[@]}
 	updatePbf
 else
 	updatePbf
