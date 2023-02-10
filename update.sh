@@ -11,7 +11,7 @@ set -e #exit on failure
 #redownload=yes
 quickstart=yes
 
-locationName=$1; shift
+locationName=$1; shift || true
 defaultBbox='-77.7,38.5,-76.7,39.5' #lon lat bottom left, lon lat upper right
 largeBbox='-160,-45,40,60'
 if [[ "$locationName" == "cyclemap-large" ]]; then
