@@ -1090,10 +1090,10 @@
 			"minzoom": 12,
 			"filter": [ "all",
 					[ "==", "$type", "Point" ],
-					[ "in", "class", "bicycle" ]
+					[ "in", "subclass", "bicycle" ]
 			],
 			"layout": {
-				"icon-image": "{class}_11",
+				"icon-image": "{subclass}_11",
 				"text-anchor": "top",
 				"text-field": "{name}",
 				"text-font": ["Noto Sans Italic"],
