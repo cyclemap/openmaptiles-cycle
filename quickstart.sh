@@ -291,8 +291,8 @@ echo "--------------------------------------------------------------------------
 echo "====> : Inputs - Outputs md5sum for debugging "
 rm -f ./data/quickstart_checklist.chk
 {
-  find build -type f | sort | xargs md5sum
-  find data -type f | sort | xargs md5sum
+  find build -type f | sort | xargs -d$'\n' md5sum
+  find data -type f | sort | xargs -d$'\n' md5sum
 } >> ./data/quickstart_checklist.chk
 cat ./data/quickstart_checklist.chk
 
