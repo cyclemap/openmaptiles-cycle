@@ -28,7 +28,6 @@ else
 	./process.sh
 fi
 
-outputLocationName=$locationName
 
 
 temporaryDownloadFile=data/temporary-download.osm.pbf
@@ -154,9 +153,9 @@ echo "====================================================================="
 sed -i "/BBOX=.*/ {n; :a; /BBOX=.*/! {N; ba;}; s/BBOX=.*/BBOX=$defaultBbox/; :b; n; \$! bb}" .env
 
 date=$(date --iso-8601)
-file=data-tileserver/tiles-$date-$outputLocationName-$MAX_ZOOM.mbtiles
-mv data/tiles.mbtiles $file
-link $file data-tileserver/tiles-$outputLocationName.mbtiles
+file=data-tileserver/tiles-$date-$locationName-$MAX_ZOOM.mbtiles
+mv data/$locationName.mbtiles $file
+link $file data-tileserver/tiles-$locationName.mbtiles
 
 
 #combine all of the locations into one file
