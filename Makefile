@@ -496,7 +496,7 @@ start-tileserver: init-dirs build-style download-fonts
 	@echo "* "
 	@echo "***********************************************************"
 	@echo " "
-	docker pull maptiler/tileserver-gl
+	$(DOCKER_COMPOSE_COMMAND) --file docker-compose-tileserver.yml pull tileserver-gl
 	@echo " "
 	@echo "***********************************************************"
 	@echo "* "
