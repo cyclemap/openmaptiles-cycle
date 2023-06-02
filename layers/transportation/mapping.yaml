@@ -307,6 +307,10 @@ sac_scale_field: &sac_scale
   key: sac_scale
   name: sac_scale
   type: string
+smoothness_field: &smoothness
+  key: smoothness
+  name: smoothness
+  type: string
 surface_field: &surface
   key: surface
   name: surface
@@ -386,6 +390,7 @@ tables:
     - *mtb_scale
     - *mtb_scale_imba
     - *sac_scale
+    - *smoothness
     - *surface
     - *expressway
     mapping:
