@@ -50,7 +50,7 @@ $$ LANGUAGE SQL IMMUTABLE
 CREATE OR REPLACE FUNCTION surface_value(surface text, highway TEXT, tags HSTORE = null) RETURNS text AS
 $$
 SELECT CASE
-           WHEN surface ~ E'(;|:|^)(unpaved|artificial_turf|clay|compacted|crushed_limestone|dirt|dirt/sand|earth|fine_gravel|grass|grass_paver|gravel|gravel_turf|ground|ice|mud|pebblestone|rock|rocky|salt|sand|shells|snow|soil|stone|woodchips)(;|:|$)' THEN 'unpaved'
+           WHEN surface ~ E'(;|:|^)(unpaved|artificial_turf|clay|compacted|crushed_limestone|dirt|dirt/sand|earth|fine_gravel|grass|grass_paver|gravel|gravel_turf|ground|ice|mud|pebblestone|rock|rocky|salt|sand|shells|snow|soil|stepping_stones|stone|woodchips)(;|:|$)' THEN 'unpaved'
            WHEN surface ~ E'(;|:|^)(paved|acrylic|asphalt|brick|bricks|cement|chipseal|cobblestone|concrete|granite|interlock|metal|metal_grid|paving_stones|plastic|rubber|sett|tartan|unhewn_cobblestone|wood|grade1)(;|:|$)' THEN 'paved'
            WHEN tags->'footway' IN ('crossing', 'access_aisle') THEN 'paved'
            WHEN tags->'bicycle' IN ('mtb') THEN 'unpaved'

@@ -105,7 +105,7 @@ generalized_tables:
       tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
       tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
       tags->'sport' ~ E'(;|^)cycling(;|$)' OR
-      surface ~ E'(;|^)(unpaved|artificial_turf|clay|compacted|crushed_limestone|dirt|earth|fine_gravel|grass|grass_paver|gravel|gravel_turf|ground|ice|mud|pebblestone|rock|rocky|salt|sand|snow|soil|stone|woodchips)(;|$)'
+      surface ~ E'(;|^)(unpaved|artificial_turf|clay|compacted|crushed_limestone|dirt|earth|fine_gravel|grass|grass_paver|gravel|gravel_turf|ground|ice|mud|pebblestone|rock|rocky|salt|sand|snow|soil|stepping_stones|stone|woodchips)(;|$)'
       ) AND
       NOT is_area AND
       ST_IsValid(geometry)
