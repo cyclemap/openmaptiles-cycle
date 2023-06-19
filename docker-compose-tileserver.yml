@@ -17,13 +17,13 @@ services:
       - --verbose
       - --config
       - /style/config.json
-      - --public_url=https://tileserver.cyclemap.us/
+      - --public_url=https://tileserver.cyclemaps.org/
       - --log_file=/var/log/access.log
       - --log_format=combined
     environment:
-      VIRTUAL_HOST: tileserver.cyclemap.us
+      VIRTUAL_HOST: tileserver.cyclemaps.org
       VIRTUAL_PORT: 80
-      LETSENCRYPT_HOST: tileserver.cyclemap.us
+      LETSENCRYPT_HOST: tileserver.cyclemaps.org
       HTTPS_METHOD: redirect
       ENABLE_IPV6: "false"
     networks:

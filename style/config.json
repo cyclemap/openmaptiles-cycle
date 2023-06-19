@@ -8,7 +8,7 @@
 		}
 	},
 	"styles": {
-		"maptiler-cyclemap": {
+		"maptiler-cyclemaps": {
 			"style": "/style/cycle-style/style-local.json"
 		}
 	},

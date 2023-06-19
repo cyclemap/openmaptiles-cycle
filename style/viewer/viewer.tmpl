@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>cyclemap</title>
+	<title>cyclemaps</title>
 	<link rel="stylesheet" type="text/css" href="{{public_url}}maplibre-gl.css" />
 	<script src="{{public_url}}maplibre-gl.js"></script>
 	<style>
@@ -32,7 +32,7 @@
 	</style>
 </head>
 <body>
-	<div class="about">see main page https://cyclemap.us/</div>
+	<div class="about">see main page https://cyclemaps.org/</div>
 	<div id="map" class="map">
 	</div>
 	<script>
@@ -51,7 +51,7 @@ function setupMap() {
 
 	var map = new maplibregl.Map({
 		container: 'map',
-		style: '{{public_url}}styles/maptiler-cyclemap/style.json',
+		style: '{{public_url}}styles/maptiler-cyclemaps/style.json',
 		center: new maplibregl.LngLat(longitude, latitude),
 		zoom: zoom,
 		hash: true,
