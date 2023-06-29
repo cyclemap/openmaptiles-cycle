@@ -29,6 +29,9 @@ else
 fi
 
 
+#this is a really loose requirement because we have NO CLUE how much of the disk is full of things that we're about to delete or write over
+#66gb for the "main" file and 34gb at least a bit of padding.  if we just blew away everything, running out of disk space is still possible
+DISK_SPACE_REQUIRED=100 #gb
 
 temporaryDownloadFile=data/temporary-download.osm.pbf
 temporaryDownloadSummationFile=data/temporary-download-summation.osm.pbf
@@ -84,7 +87,19 @@ function link {
 	ln --symbolic --force --relative "$@"
 }
 
-function updatePbf {
+#either updates the input, or updates the input INTO the database
+
+function updateInput {
+	if [[ ! -e $pbfFile ]]; then
+		redownload='yes'
+	fi
+
+
+	if [[ $redownload == "yes" ]]; then
+		quickstart=yes
+		getFileList ${fileList[@]}
+	fi
+	
 	echo updating:  started at $(date)
 	rm --force $newFile
 
@@ -112,73 +127,76 @@ function updatePbf {
 	echo updating:  done at $(date)
 }
 
-if [[ ! -e $pbfFile ]]; then
-	redownload='yes'
-fi
+#imports into the database (IF that wasn't already done by the last step), and generates tiles
+#this step takes days for the whole planet
 
+function mainGeneration {
+	if [[ "$locationName" != "planet" ]]; then
+		grep -q 180 data/$locationName.bbox && { echo failure, we calculated a bad bounding box vaule.  probably because min zoom is zero?  delete the bbox file, it confuses systems; exit 1; }
+	else
+		echo "====> : Skipping bbox calculation when generating the entire planet"
+	fi
 
-if [[ $redownload == "yes" ]]; then
-	quickstart=yes
-	getFileList ${fileList[@]}
-	updatePbf
-else
-	updatePbf
-fi
+	#pick a bounding box
+	#https://stackoverflow.com/a/50626221
+	sed -i "/BBOX=.*/ {n; :a; /BBOX=.*/! {N; ba;}; s/BBOX=.*/BBOX=$bbox/; :b; n; \$! bb}" .env
 
-if [[ "$locationName" != "planet" ]]; then
-	grep -q 180 data/$locationName.bbox && { echo failure, we calculated a bad bounding box vaule.  probably because min zoom is zero?  delete the bbox file, it confuses systems; exit 1; }
-else
-	echo "====> : Skipping bbox calculation when generating the entire planet"
-fi
+	echo "====================================================================="
 
-#pick a bounding box
-#https://stackoverflow.com/a/50626221
-sed -i "/BBOX=.*/ {n; :a; /BBOX=.*/! {N; ba;}; s/BBOX=.*/BBOX=$bbox/; :b; n; \$! bb}" .env
+	echo $([[ $quickstart == "yes" ]] && echo quickstart || echo generating tiles):  started at $(date)
 
-echo "====================================================================="
+	if [[ $quickstart == "yes" ]]; then
+		time ./quickstart.sh $locationName
+	else
+		time make generate-tiles-pg
+		make stop-db
+	fi
 
-echo $([[ $quickstart == "yes" ]] && echo quickstart || echo generating tiles):  started at $(date)
+	echo $([[ $quickstart == "yes" ]] && echo quickstart || echo generating tiles):  done at $(date)
+	echo "====================================================================="
 
-if [[ $quickstart == "yes" ]]; then
-	time ./quickstart.sh $locationName
-else
-	time make generate-tiles-pg
-	make stop-db
-fi
+	#revert bounding box change
+	sed -i "/BBOX=.*/ {n; :a; /BBOX=.*/! {N; ba;}; s/BBOX=.*/BBOX=$defaultBbox/; :b; n; \$! bb}" .env
 
-echo $([[ $quickstart == "yes" ]] && echo quickstart || echo generating tiles):  done at $(date)
-echo "====================================================================="
-
-#revert bounding box change
-sed -i "/BBOX=.*/ {n; :a; /BBOX=.*/! {N; ba;}; s/BBOX=.*/BBOX=$defaultBbox/; :b; n; \$! bb}" .env
-
-date=$(date --iso-8601)
-file=data-tileserver/tiles-$date-$locationName-$MAX_ZOOM.mbtiles
-mv data/$locationName.mbtiles $file
-link $file data-tileserver/tiles-$locationName.mbtiles
-
+	date=$(date --iso-8601)
+	file=data-tileserver/tiles-$date-$locationName-$MAX_ZOOM.mbtiles
+	mv data/$locationName.mbtiles $file
+	link $file data-tileserver/tiles-$locationName.mbtiles
+}
 
 #combine all of the locations into one file
-if [[ $locationName == "cyclemap-small" ]]; then
-	
-	mainFile=data-tileserver/tiles-$date-cyclemap-main.mbtiles
-	largeFile=data-tileserver/tiles-cyclemap-large.mbtiles
-	
-	echo combining:  started at $(date)
-	
-	#cyclemap-large
-	cp --dereference $largeFile $mainFile
-	#cyclemap-small updates
-	tools tilelive-copy $file $mainFile
-	#overwrite bbox!
-	CENTER_ZOOM=8 BBOX=$largeBbox tools mbtiles-tools meta-copy $largeFile $mainFile
-	link $mainFile data-tileserver/tiles-main.mbtiles
 
-	echo combining:  done at $(date)
+function combineOutputs {
+	if [[ $locationName == "cyclemap-small" ]]; then
+		
+		mainFile=data-tileserver/tiles-$date-cyclemap-main.mbtiles
+		largeFile=data-tileserver/tiles-cyclemap-large.mbtiles
+		
+		echo combining:  started at $(date)
+		
+		#cyclemap-large
+		cp --dereference $largeFile $mainFile
+		#cyclemap-small updates
+		tools tilelive-copy $file $mainFile
+		#overwrite bbox!
+		CENTER_ZOOM=8 BBOX=$largeBbox tools mbtiles-tools meta-copy $largeFile $mainFile
+		link $mainFile data-tileserver/tiles-main.mbtiles
 
-elif [[ $locationName == "cyclemap-large" ]]; then
-	link $file data-tileserver/tiles-main.mbtiles
+		echo combining:  done at $(date)
+
+	elif [[ $locationName == "cyclemap-large" ]]; then
+		link $file data-tileserver/tiles-main.mbtiles
+	fi
+}
+
+fileSystemRemaining=$(df . | awk '{if ($1 != "Filesystem") print $4}')
+if [[ "$fileSystemRemaining" -lt $(($DISK_SPACE_REQUIRED*1024*1024)) ]]; then
+	echo not enough space left on device
+	exit 1
 fi
 
+updateInput
+mainGeneration
+combineOutputs
 ./restart-tileserver.sh
 
