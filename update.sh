@@ -14,13 +14,13 @@ quickstart=yes
 locationName=$1; shift || true
 defaultBbox='-77.7,38.5,-76.7,39.5' #lon lat bottom left, lon lat upper right
 largeBbox='-160,-45,40,60'
-if [[ "$locationName" == "cyclemap-large" ]]; then
+if [[ "$locationName" == "cyclemaps-large" ]]; then
 	fileList=(north-america central-america south-america europe africa asia)
 	bbox=$largeBbox
 	minimumSize=50000 #mb
 	./process-large.sh
 else
-	locationName=cyclemap-small
+	locationName=cyclemaps-small
 	
 	fileList=(north-america/us)
 	bbox=$defaultBbox
@@ -167,16 +167,16 @@ function mainGeneration {
 #combine all of the locations into one file
 
 function combineOutputs {
-	if [[ $locationName == "cyclemap-small" ]]; then
+	if [[ $locationName == "cyclemaps-small" ]]; then
 		
-		mainFile=data-tileserver/tiles-$date-cyclemap-main.mbtiles
-		largeFile=data-tileserver/tiles-cyclemap-large.mbtiles
+		mainFile=data-tileserver/tiles-$date-cyclemaps-main.mbtiles
+		largeFile=data-tileserver/tiles-cyclemaps-large.mbtiles
 		
 		echo combining:  started at $(date)
 		
-		#cyclemap-large
+		#cyclemaps-large
 		cp --dereference $largeFile $mainFile
-		#cyclemap-small updates
+		#cyclemaps-small updates
 		tools tilelive-copy $file $mainFile
 		#overwrite bbox!
 		CENTER_ZOOM=8 BBOX=$largeBbox tools mbtiles-tools meta-copy $largeFile $mainFile
@@ -184,7 +184,7 @@ function combineOutputs {
 
 		echo combining:  done at $(date)
 
-	elif [[ $locationName == "cyclemap-large" ]]; then
+	elif [[ $locationName == "cyclemaps-large" ]]; then
 		link $file data-tileserver/tiles-main.mbtiles
 	fi
 }

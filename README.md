@@ -3,7 +3,7 @@
 
 Please see [OpenMapTiles](https://github.com/openmaptiles/openmaptiles/) for more information on how to use this software or read below.
 
-You can see cyclemap specific notes here:  [README-cyclemap](README-cyclemap.md)
+You can see cyclemaps specific notes here:  [README-cyclemaps](README-cyclemaps.md)
 
 ---
 

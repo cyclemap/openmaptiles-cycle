@@ -40,7 +40,7 @@ function runAll() {
 }
 
 
-#sqlite3 tiles-2022-11-11-cyclemap-small-14.mbtiles 'select min(tile_row),max(tile_row),min(tile_column),max(tile_column) from map where zoom_level=5 limit 10;' >>sizes.sh
+#sqlite3 tiles-2022-11-11-cyclemaps-small-14.mbtiles 'select min(tile_row),max(tile_row),min(tile_column),max(tile_column) from map where zoom_level=5 limit 10;' >>sizes.sh
 #19|19|9|9
 row=19
 column=9
