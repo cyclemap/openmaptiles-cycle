@@ -10,7 +10,7 @@ last=$(date +%s)
 time=$last
 <logs/update.log \
 	egrep --text --no-filename 'Generating zoom .*\.\.\.$|Tile generation complete!$|^(updating|quickstart|generating tiles|combining): (done|started) at|^real	' |
-	tail -n100 |
+	tail -n300 |
 	while read line; do
 		<<<$line egrep --text -q 'Generating zoom .*\.\.\.$|Tile generation complete!$' && {
 			time=$(<<<$line cut -b1-19 |sed --regexp-extended 's/ (.{2})-(.{2})-(.{2})/ \1:\2:\3/')

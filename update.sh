@@ -13,12 +13,13 @@ quickstart=yes
 
 locationName=$1; shift || true
 defaultBbox='-77.7,38.5,-76.7,39.5' #lon lat bottom left, lon lat upper right
-largeBbox='-160,-45,40,60'
+largeBbox='-160,-45,130,60'
 if [[ "$locationName" == "cyclemaps-large" ]]; then
 	fileList=(north-america central-america south-america europe africa asia)
 	bbox=$largeBbox
 	minimumSize=50000 #mb
 	./process-large.sh
+	timeRequired=14 #days.  3 days importing, rest tiling
 else
 	locationName=cyclemaps-small
 	
@@ -28,10 +29,9 @@ else
 	./process.sh
 fi
 
-
 #this is a really loose requirement because we have NO CLUE how much of the disk is full of things that we're about to delete or write over
-#66gb for the "main" file and 34gb at least a bit of padding.  if we just blew away everything, running out of disk space is still possible
-DISK_SPACE_REQUIRED=100 #gb
+#90gb for the "main" or "large" file and 40gb for at least a bit of padding.  if we just blew away everything, running out of disk space can still happen
+diskSpaceRequired=130 #gb
 
 temporaryDownloadFile=data/temporary-download.osm.pbf
 temporaryDownloadSummationFile=data/temporary-download-summation.osm.pbf
@@ -190,7 +190,7 @@ function combineOutputs {
 }
 
 fileSystemRemaining=$(df . | awk '{if ($1 != "Filesystem") print $4}')
-if [[ "$fileSystemRemaining" -lt $(($DISK_SPACE_REQUIRED*1024*1024)) ]]; then
+if [[ "$fileSystemRemaining" -lt $(($diskSpaceRequired*1024*1024)) ]]; then
 	echo not enough space left on device
 	exit 1
 fi
