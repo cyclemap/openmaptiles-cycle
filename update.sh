@@ -13,13 +13,17 @@ quickstart=yes
 
 locationName=$1; shift || true
 defaultBbox='-77.7,38.5,-76.7,39.5' #lon lat bottom left, lon lat upper right
-largeBbox='-160,-45,130,60'
+largeBbox='-180,-45,180,60'
 if [[ "$locationName" == "cyclemaps-large" ]]; then
-	fileList=(north-america central-america south-america europe africa asia)
+	fileList=(planet)
 	bbox=$largeBbox
 	minimumSize=50000 #mb
 	./process-large.sh
-	timeRequired=14 #days.  3 days importing, rest tiling
+	#the unit is:  days.  zoom 0..14
+	#latitude and longitude			import	tiling	size gb
+	#-45 to 60 and -160 to 70		3		10		74
+	#-45 to 60 and -160 to 130		3		12		90
+	#-45 to 60 and -180 to 180		3		16?		120?
 else
 	locationName=cyclemaps-small
 	
@@ -30,8 +34,9 @@ else
 fi
 
 #this is a really loose requirement because we have NO CLUE how much of the disk is full of things that we're about to delete or write over
-#90gb for the "main" or "large" file and 40gb for at least a bit of padding.  if we just blew away everything, running out of disk space can still happen
-diskSpaceRequired=130 #gb
+#if we just blew away everything, running out of disk space can still happen!
+#first number is for the "main" or "large" file and 40gb for at least a bit of padding
+diskSpaceRequired=$((120+40)) #gb
 
 temporaryDownloadFile=data/temporary-download.osm.pbf
 temporaryDownloadSummationFile=data/temporary-download-summation.osm.pbf
