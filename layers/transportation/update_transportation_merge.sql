@@ -295,7 +295,8 @@ $$ LANGUAGE plpgsql;
 CREATE UNIQUE INDEX IF NOT EXISTS osm_transportation_merge_linestring_gen_z11_update_partial_idx
     ON osm_transportation_merge_linestring_gen_z11 (id)
     WHERE highway NOT IN ('tertiary', 'tertiary_link', 'busway') AND
-          construction NOT IN ('tertiary', 'tertiary_link', 'busway');
+          construction NOT IN ('tertiary', 'tertiary_link', 'busway')
+          OR transportation_filter_override(highway, surface, tags, ST_Length(geometry), 11);
 
 -- Analyze populated table with new indexes
 ANALYZE osm_transportation_merge_linestring_gen_z11;
@@ -378,6 +379,7 @@ BEGIN
         AND (
             highway NOT IN ('tertiary', 'tertiary_link', 'busway', 'bus_guideway')
             AND construction NOT IN ('tertiary', 'tertiary_link', 'busway', 'bus_guideway')
+            OR transportation_filter_override(highway, surface, tags, ST_Length(geometry), 10)
         )
     ON CONFLICT (id) DO UPDATE SET osm_id = excluded.osm_id, highway = excluded.highway, network = excluded.network,
                                    construction = excluded.construction, is_bridge = excluded.is_bridge,
