@@ -559,7 +559,8 @@
 			],
 			"layout": {
 				"line-cap": "round",
-				"line-join": "round"
+				"line-join": "round",
+				"visibility": "none"
 			},
 			"paint": {
 				"line-color": "hsl(0, 0%, 50%)",
@@ -716,7 +717,8 @@
 			"id": "cyclefriendly-paved",
 			"layout": {
 				"line-cap": "round",
-				"line-join": "round"
+				"line-join": "round",
+				"visibility": "none"
 			},
 			"paint": {
 				"line-color": "hsl(120, 60%, 30%)",
@@ -735,7 +737,8 @@
 			"id": "cycleway-unpaved",
 			"layout": {
 				"line-cap": "round",
-				"line-join": "round"
+				"line-join": "round",
+				"visibility": "none"
 			},
 			"paint": {
 				"line-color": "hsl(25, 60%, 45%)",
@@ -754,7 +757,8 @@
 			"id": "cycleway-unknown",
 			"layout": {
 				"line-cap": "round",
-				"line-join": "round"
+				"line-join": "round",
+				"visibility": "none"
 			},
 			"paint": {
 				"line-color": "hsl(25, 60%, 45%)",
@@ -772,7 +776,8 @@
 			"id": "cycleway-paved",
 			"layout": {
 				"line-cap": "round",
-				"line-join": "round"
+				"line-join": "round",
+				"visibility": "none"
 			},
 			"paint": {
 				"line-color": "hsl(120, 60%, 30%)",
