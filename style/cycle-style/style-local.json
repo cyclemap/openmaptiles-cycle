@@ -564,7 +564,7 @@
 			},
 			"paint": {
 				"line-color": "hsl(0, 0%, 50%)",
-				"line-width": {"base": 1.1, "stops": [[9, 0.25], [20, 4]]}
+				"line-width": {"base": 1.1, "stops": [[5, 0.75], [20, 5]]}
 			}
 		},
 		{
