@@ -979,7 +979,7 @@
 			}
 		},
 		{
-			"id": "poi-biking-no-text-16",
+			"id": "bicycle_parking",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
@@ -1009,7 +1009,7 @@
 			}
 		},
 		{
-			"id": "poi-biking-no-text-14",
+			"id": "bicycle_rental",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
@@ -1018,7 +1018,7 @@
 			"filter": [
 				"all",
 				[ "==", "$type", "Point" ],
-				[ "in", "class", "bicycle_rental", "drinking_water", "toilets", "ford" ]
+				[ "in", "class", "bicycle_rental" ]
 			],
 			"layout": {
 				"icon-image": "{class}_11",
@@ -1039,7 +1039,97 @@
 			}
 		},
 		{
-			"id": "poi-biking-14",
+			"id": "drinking_water",
+			"type": "symbol",
+			"metadata": {},
+			"source": "openmaptiles",
+			"source-layer": "poi",
+			"minzoom": 14,
+			"filter": [
+				"all",
+				[ "==", "$type", "Point" ],
+				[ "in", "class", "drinking_water" ]
+			],
+			"layout": {
+				"icon-image": "{class}_11",
+				"text-anchor": "top",
+				"text-field": "",
+				"text-font": ["Noto Sans Italic"],
+				"text-max-width": 9,
+				"text-offset": [0, 0.6],
+				"text-optional": true,
+				"text-padding": 0,
+				"text-size": 12
+			},
+			"paint": {
+				"text-color": "hsl(0, 0%, 40%)",
+				"text-halo-blur": 0.5,
+				"text-halo-color": "hsl(0, 0%, 100%)",
+				"text-halo-width": 1
+			}
+		},
+		{
+			"id": "toilets",
+			"type": "symbol",
+			"metadata": {},
+			"source": "openmaptiles",
+			"source-layer": "poi",
+			"minzoom": 14,
+			"filter": [
+				"all",
+				[ "==", "$type", "Point" ],
+				[ "in", "class", "toilets" ]
+			],
+			"layout": {
+				"icon-image": "{class}_11",
+				"text-anchor": "top",
+				"text-field": "",
+				"text-font": ["Noto Sans Italic"],
+				"text-max-width": 9,
+				"text-offset": [0, 0.6],
+				"text-optional": true,
+				"text-padding": 0,
+				"text-size": 12
+			},
+			"paint": {
+				"text-color": "hsl(0, 0%, 40%)",
+				"text-halo-blur": 0.5,
+				"text-halo-color": "hsl(0, 0%, 100%)",
+				"text-halo-width": 1
+			}
+		},
+		{
+			"id": "ford",
+			"type": "symbol",
+			"metadata": {},
+			"source": "openmaptiles",
+			"source-layer": "poi",
+			"minzoom": 14,
+			"filter": [
+				"all",
+				[ "==", "$type", "Point" ],
+				[ "in", "class", "ford" ]
+			],
+			"layout": {
+				"icon-image": "{class}_11",
+				"text-anchor": "top",
+				"text-field": "",
+				"text-font": ["Noto Sans Italic"],
+				"text-max-width": 9,
+				"text-offset": [0, 0.6],
+				"text-optional": true,
+				"text-padding": 0,
+				"text-size": 12
+			},
+			"paint": {
+				"text-color": "hsl(0, 0%, 40%)",
+				"text-halo-blur": 0.5,
+				"text-halo-color": "hsl(0, 0%, 100%)",
+				"text-halo-width": 1
+			}
+		},
+		{
+			"id": "compressed_air",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
@@ -1069,7 +1159,7 @@
 			}
 		},
 		{
-			"id": "poi-biking-no-text-12",
+			"id": "bicycle_repair_station",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
@@ -1099,7 +1189,7 @@
 			}
 		},
 		{
-			"id": "poi-biking-12",
+			"id": "bicycle",
 			"type": "symbol",
 			"metadata": {},
 			"source": "openmaptiles",
