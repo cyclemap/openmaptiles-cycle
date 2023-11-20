@@ -475,52 +475,6 @@
 			}
 		},
 		{
-			"id": "road_oneway_opposite",
-			"type": "symbol",
-			"source": "openmaptiles",
-			"source-layer": "transportation",
-			"filter": [
-				"all",
-				["==", "oneway", -1]
-			],
-			"layout": {
-				"icon-image": "oneway",
-				"icon-padding": 2,
-				"icon-rotate": -90,
-				"icon-rotation-alignment": "map",
-				"icon-size": {"stops": [[15, 0.25], [19, 0.5]]},
-				"symbol-placement": "line",
-				"symbol-spacing": 200
-			},
-			"minzoom": 15,
-			"paint": {
-				"icon-opacity": 0.5
-			}
-		},
-		{
-			"id": "road_oneway",
-			"type": "symbol",
-			"source": "openmaptiles",
-			"source-layer": "transportation",
-			"filter": [
-				"all",
-				["==", "oneway", 1]
-			],
-			"layout": {
-				"icon-image": "oneway",
-				"icon-padding": 2,
-				"icon-rotate": 90,
-				"icon-rotation-alignment": "map",
-				"icon-size": {"stops": [[15, 0.25], [19, 0.5]]},
-				"symbol-placement": "line",
-				"symbol-spacing": 200
-			},
-			"minzoom": 15,
-			"paint": {
-				"icon-opacity": 0.5
-			}
-		},
-		{
 			"id": "railway-transit",
 			"type": "line",
 			"source": "openmaptiles",
@@ -797,6 +751,52 @@
 			"paint": {"line-color": "hsla(0, 0%, 60%, .5)", "line-dasharray": [2, 1]}
 		},
 		{
+			"id": "road_oneway_opposite",
+			"type": "symbol",
+			"source": "openmaptiles",
+			"source-layer": "transportation",
+			"filter": [
+				"all",
+				["==", "oneway", -1]
+			],
+			"layout": {
+				"icon-image": "oneway",
+				"icon-padding": 2,
+				"icon-rotate": -90,
+				"icon-rotation-alignment": "map",
+				"icon-size": {"stops": [[15, 0.4], [19, 0.8]]},
+				"symbol-placement": "line",
+				"symbol-spacing": 200
+			},
+			"minzoom": 15,
+			"paint": {
+				"icon-opacity": 0.85
+			}
+		},
+		{
+			"id": "road_oneway",
+			"type": "symbol",
+			"source": "openmaptiles",
+			"source-layer": "transportation",
+			"filter": [
+				"all",
+				["==", "oneway", 1]
+			],
+			"layout": {
+				"icon-image": "oneway",
+				"icon-padding": 2,
+				"icon-rotate": 90,
+				"icon-rotation-alignment": "map",
+				"icon-size": {"stops": [[15, 0.4], [19, 0.8]]},
+				"symbol-placement": "line",
+				"symbol-spacing": 200
+			},
+			"minzoom": 15,
+			"paint": {
+				"icon-opacity": 0.85
+			}
+		},
+		{
 			"id": "admin_country_z0-4",
 			"type": "line",
 			"source": "openmaptiles",
@@ -999,7 +999,7 @@
 				"icon-image": "{class}_11",
 				"text-anchor": "top",
 				"text-field": "",
-				"text-font": ["Noto Sans Italic"],
+				"text-font": ["Noto Sans Regular"],
 				"text-max-width": 9,
 				"text-offset": [0, 0.6],
 				"text-optional": true,
@@ -1029,7 +1029,7 @@
 				"icon-image": "{class}_11",
 				"text-anchor": "top",
 				"text-field": "",
-				"text-font": ["Noto Sans Italic"],
+				"text-font": ["Noto Sans Regular"],
 				"text-max-width": 9,
 				"text-offset": [0, 0.6],
 				"text-optional": true,
@@ -1059,7 +1059,7 @@
 				"icon-image": "{class}_11",
 				"text-anchor": "top",
 				"text-field": "",
-				"text-font": ["Noto Sans Italic"],
+				"text-font": ["Noto Sans Regular"],
 				"text-max-width": 9,
 				"text-offset": [0, 0.6],
 				"text-optional": true,
@@ -1089,7 +1089,7 @@
 				"icon-image": "{class}_11",
 				"text-anchor": "top",
 				"text-field": "",
-				"text-font": ["Noto Sans Italic"],
+				"text-font": ["Noto Sans Regular"],
 				"text-max-width": 9,
 				"text-offset": [0, 0.6],
 				"text-optional": true,
@@ -1119,7 +1119,7 @@
 				"icon-image": "{class}_11",
 				"text-anchor": "top",
 				"text-field": "",
-				"text-font": ["Noto Sans Italic"],
+				"text-font": ["Noto Sans Regular"],
 				"text-max-width": 9,
 				"text-offset": [0, 0.6],
 				"text-optional": true,
@@ -1149,7 +1149,7 @@
 				"icon-image": "{class}_11",
 				"text-anchor": "top",
 				"text-field": "{class}",
-				"text-font": ["Noto Sans Italic"],
+				"text-font": ["Noto Sans Regular"],
 				"text-max-width": 9,
 				"text-offset": [0, 0.6],
 				"text-optional": true,
@@ -1179,7 +1179,7 @@
 				"icon-image": "{class}_11",
 				"text-anchor": "top",
 				"text-field": "",
-				"text-font": ["Noto Sans Italic"],
+				"text-font": ["Noto Sans Regular"],
 				"text-max-width": 9,
 				"text-offset": [0, 0.6],
 				"text-optional": true,
@@ -1208,7 +1208,7 @@
 				"icon-image": "{subclass}_11",
 				"text-anchor": "top",
 				"text-field": "{name}",
-				"text-font": ["Noto Sans Italic"],
+				"text-font": ["Noto Sans Regular"],
 				"text-max-width": 9,
 				"text-offset": [0, 0.6],
 				"text-optional": true,
