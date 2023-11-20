@@ -106,6 +106,11 @@ SELECT CASE
         WHEN highway IN ('construction') THEN false
 
         WHEN tags->'bicycle' IN ('no', 'private', 'permit') THEN false
+        
+        WHEN tags->'cycleway' IN ('separate') OR
+            tags->'cycleway:left' IN ('separate') OR
+            tags->'cycleway:right' IN ('separate') OR
+            tags->'cycleway:both' IN ('separate') THEN false
 
         WHEN tags->'bicycle' IN ('designated') THEN true
 
