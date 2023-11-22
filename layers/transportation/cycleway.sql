@@ -18,6 +18,11 @@ SELECT CASE
         WHEN highway IN ('construction') THEN false
 
         WHEN tags->'bicycle' IN ('no', 'private', 'permit') THEN false
+        
+		WHEN tags->'cycleway' IN ('separate') OR
+            tags->'cycleway:left' IN ('separate') OR
+            tags->'cycleway:right' IN ('separate') OR
+            tags->'cycleway:both' IN ('separate') THEN false
 
         WHEN highway IN ('cycleway') THEN true
         
@@ -27,10 +32,12 @@ SELECT CASE
             tags->'bicycle' IN ('mtb') OR
             tags->'route' IN ('mtb') THEN true
         
-        WHEN tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-            tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-            tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') OR
-            tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'shared', 'track', 'opposite_track') THEN true
+        WHEN tags->'cycleway' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'opposite_share_busway', 'shared', 'track', 'opposite_track') OR
+            tags->'cycleway:left' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'opposite_share_busway', 'shared', 'track', 'opposite_track') OR
+            tags->'cycleway:right' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'opposite_share_busway', 'shared', 'track', 'opposite_track') OR
+            tags->'cycleway:both' IN ('lane', 'opposite_lane', 'opposite', 'share_busway', 'opposite_share_busway', 'shared', 'track', 'opposite_track') THEN true
+        
+        WHEN tags->'oneway' = 'yes' and tags->'oneway:bicycle' = 'no' THEN true
         
         WHEN highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') AND (
                 tags->'bicycle' IN ('yes', 'permissive', 'dismount', 'designated') OR
