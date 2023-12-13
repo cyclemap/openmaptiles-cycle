@@ -61,7 +61,8 @@ exec &> >(tee >(\
 function getFile {
 	location=$1
 	rm --force $temporaryDownloadFile
-	wget --progress=bar:force:noscroll --output-document $temporaryDownloadFile "https://download.geofabrik.de/$location-latest.osm.pbf"
+	if [ $location == "planet" ]; then root='https://planet.openstreetmap.org/pbf/'; else root='https://download.geofabrik.de/'; fi
+	wget --progress=bar:force:noscroll --output-document $temporaryDownloadFile "$root$location-latest.osm.pbf"
 }
 function addFile {
 	location=$1
