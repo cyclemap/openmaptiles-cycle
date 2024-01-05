@@ -1,5 +1,5 @@
 
-This is the place to submit bugs to cylcemap.us!
+This is the place to submit bugs to cyclemaps.org!
 
 1.  If you can't fix a problem by editing OSM at https://openstreetmap.org/
 
