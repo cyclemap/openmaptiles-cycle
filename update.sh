@@ -23,7 +23,7 @@ if [[ "$locationName" == "cyclemaps-large" ]]; then
 	#latitude and longitude			import	tiling	size gb
 	#-45 to 60 and -160 to 70		3		10		74
 	#-45 to 60 and -160 to 130		3		12		90
-	#-45 to 60 and -180 to 180		3		16?		120?
+	#-45 to 60 and -180 to 180		3		20?		100
 else
 	locationName=cyclemaps-small
 	
@@ -113,7 +113,7 @@ function updateInput {
 	if [[ $quickstart == "yes" ]]; then
 		tools osmupdate --verbose $pbfFile $newFile
 	else
-		#there is a bug here.  something about this does not work.  try:
+		#there is a bug here when quickstart is off.  something about this does not work.  try:
 			#tools osmupdate --verbose $pbfFile $newFile
 			#now somehow diff pbfFile and newFile into changeFile
 		tools osmupdate --verbose $pbfFile $changeFile
@@ -137,12 +137,6 @@ function updateInput {
 #this step takes days for the whole planet
 
 function mainGeneration {
-	if [[ "$locationName" != "planet" ]]; then
-		grep -q 180 data/$locationName.bbox && { echo failure, we calculated a bad bounding box vaule.  probably because min zoom is zero?  delete the bbox file, it confuses systems; exit 1; }
-	else
-		echo "====> : Skipping bbox calculation when generating the entire planet"
-	fi
-
 	#pick a bounding box
 	#https://stackoverflow.com/a/50626221
 	sed -i "/BBOX=.*/ {n; :a; /BBOX=.*/! {N; ba;}; s/BBOX=.*/BBOX=$bbox/; :b; n; \$! bb}" .env
@@ -191,6 +185,8 @@ function combineOutputs {
 		echo combining:  done at $(date)
 
 	elif [[ $locationName == "cyclemaps-large" ]]; then
+		#there is a bug here.  sometimes it doesn't correctly set the bounding box.
+		#use this to fix it:  sqlite3 data-tileserver/tiles-2024-01-09-cyclemaps-large-14.mbtiles 'update metadata set value = "-180,-45,180,60" where name="bounds";' && ./restart-tileserver.sh
 		link $file data-tileserver/tiles-main.mbtiles
 	fi
 }
