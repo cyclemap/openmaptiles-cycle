@@ -42,6 +42,23 @@ SELECT
 $$ LANGUAGE SQL IMMUTABLE
                 PARALLEL SAFE;
 
+-- Determine whether a segment is long enough to have an attribute
+CREATE OR REPLACE FUNCTION visible_text(g geometry, attr text, zoom_level integer)
+    RETURNS text AS
+$$
+SELECT
+    CASE WHEN
+    -- Width of a tile in meters (111,842 is the length of one degree of latitude at the equator in meters)
+    -- 111,842 * 180 / 2^zoom_level
+    --  = 20131560 / POW(2, zoom_level)
+    -- Drop brunnel if length of way < 2% of tile width (less than 3 pixels)
+    ST_Length(g) *
+        COS(RADIANS(ST_Y(ST_Centroid(ST_Transform(g, 4326))))) *
+        POW(2, zoom_level) / 20131560 > 0.02
+    THEN attr END
+$$ LANGUAGE SQL IMMUTABLE
+                PARALLEL SAFE;
+
 -- Instead of using relations to find out the road names we
 -- stitch together the touching ways with the same name
 -- to allow for nice label rendering
@@ -85,12 +102,12 @@ FROM (
         CASE WHEN highway IN ('footway', 'steps') THEN layer END AS layer,
         CASE WHEN highway IN ('footway', 'steps') THEN level END AS level,
         CASE WHEN highway IN ('footway', 'steps') THEN indoor END AS indoor,
-        NULLIF(rm1.network, '') || '=' || COALESCE(rm1.ref, '') AS route_1,
-        NULLIF(rm2.network, '') || '=' || COALESCE(rm2.ref, '') AS route_2,
-        NULLIF(rm3.network, '') || '=' || COALESCE(rm3.ref, '') AS route_3,
-        NULLIF(rm4.network, '') || '=' || COALESCE(rm4.ref, '') AS route_4,
-        NULLIF(rm5.network, '') || '=' || COALESCE(rm5.ref, '') AS route_5,
-        NULLIF(rm6.network, '') || '=' || COALESCE(rm6.ref, '') AS route_6,
+        create_route_hstore(rm1.network, rm1.ref, rm1.name, rm1.colour, rm1.ref_colour) AS route_1,
+        create_route_hstore(rm2.network, rm2.ref, rm2.name, rm2.colour, rm2.ref_colour) AS route_2,
+        create_route_hstore(rm3.network, rm3.ref, rm3.name, rm3.colour, rm3.ref_colour) AS route_3,
+        create_route_hstore(rm4.network, rm4.ref, rm4.name, rm4.colour, rm4.ref_colour) AS route_4,
+        create_route_hstore(rm5.network, rm5.ref, rm5.name, rm5.colour, rm5.ref_colour) AS route_5,
+        create_route_hstore(rm6.network, rm6.ref, rm6.name, rm6.colour, rm6.ref_colour) AS route_6,
         hl.surface,
         hl.z_order,
         LEAST(rm1.rank, rm2.rank, rm3.rank, rm4.rank, rm5.rank, rm6.rank) AS route_rank
@@ -838,7 +855,8 @@ BEGIN
             WHERE transportation.changes_z4_z5_z6_z7.is_old IS FALSE AND
                   transportation.changes_z4_z5_z6_z7.id = osm_transportation_merge_linestring_gen_z5.id
         )) AND
-        osm_national_network(network) AND
+        (highway = 'motorway' AND osm_national_network(network)
+        ) AND
         -- Current view: national-importance motorways and trunks
         ST_Length(geometry) > 1000
     ON CONFLICT (id) DO UPDATE SET osm_id = excluded.osm_id, highway = excluded.highway, network = excluded.network,
