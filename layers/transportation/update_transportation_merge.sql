@@ -66,7 +66,8 @@ $$ LANGUAGE SQL IMMUTABLE
 
 -- etldoc: osm_highway_linestring ->  osm_transportation_name_network
 -- etldoc: transportation_route_member_coalesced ->  osm_transportation_name_network
-CREATE TABLE IF NOT EXISTS osm_transportation_name_network AS
+DROP TABLE IF EXISTS osm_transportation_name_network;
+CREATE TABLE osm_transportation_name_network AS
 SELECT
     geometry,
     osm_id,
@@ -855,7 +856,9 @@ BEGIN
             WHERE transportation.changes_z4_z5_z6_z7.is_old IS FALSE AND
                   transportation.changes_z4_z5_z6_z7.id = osm_transportation_merge_linestring_gen_z5.id
         )) AND
-        (highway = 'motorway' AND osm_national_network(network)
+        (highway = 'motorway' OR construction = 'motorway'
+        ) OR 
+        (osm_national_network(network) AND network != 'gb-trunk'
         ) AND
         -- Current view: national-importance motorways and trunks
         ST_Length(geometry) > 1000
