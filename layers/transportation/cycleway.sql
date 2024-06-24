@@ -40,7 +40,7 @@ SELECT CASE
         WHEN tags->'oneway' = 'yes' and tags->'oneway:bicycle' = 'no' THEN true
         
         WHEN highway IN ('pedestrian', 'living_street', 'path', 'footway', 'steps', 'bridleway', 'corridor', 'track') AND (
-                tags->'bicycle' IN ('yes', 'permissive', 'dismount', 'designated') OR
+                tags->'bicycle' IN ('yes', 'permissive', 'dismount', 'customers', 'designated') OR
                 tags->'ramp:bicycle' NOT IN ('no') OR
                 tags->'icn' = 'yes' OR tags->'icn_ref' IS NOT NULL OR
                 tags->'ncn' = 'yes' OR tags->'ncn_ref' IS NOT NULL OR
@@ -119,7 +119,7 @@ SELECT CASE
             tags->'cycleway:right' IN ('separate') OR
             tags->'cycleway:both' IN ('separate') THEN false
 
-        WHEN tags->'bicycle' IN ('designated') THEN true
+        WHEN tags->'bicycle' IN ('customers', 'designated') THEN true
 
         WHEN tags->'cycleway' IN ('shared_lane') OR
             tags->'cycleway:left' IN ('shared_lane') OR
