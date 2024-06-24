@@ -58,6 +58,23 @@ exec &> >(tee >(\
 	>>"logs/update.log"
 ))
 
+
+#from quickstart.sh
+if ! command -v docker-compose &> /dev/null; then
+  DOCKER_COMPOSE_HYPHEN=false
+else
+  DOCKER_COMPOSE_HYPHEN=true
+fi
+
+#from quickstart.sh
+function dockerComposeCommand () {
+    if $DOCKER_COMPOSE_HYPHEN; then
+      docker-compose $@
+    else
+      docker compose $@
+    fi
+}
+
 function getFile {
 	location=$1
 	rm --force $temporaryDownloadFile
@@ -85,8 +102,8 @@ function getFileList {
 }
 
 function tools {
-	#echo docker-compose run --rm --name=tools -e CENTER_ZOOM -e BBOX --volume $PWD/data-tileserver:/data-tileserver openmaptiles-tools nice "$@" >&2
-	docker-compose run --rm --name=tools -e CENTER_ZOOM -e BBOX --volume $PWD/data-tileserver:/data-tileserver openmaptiles-tools nice "$@"
+	#echo docker compose run --rm --name=tools -e CENTER_ZOOM -e BBOX --volume $PWD/data-tileserver:/data-tileserver openmaptiles-tools nice "$@" >&2
+	dockerComposeCommand run --rm --name=tools -e CENTER_ZOOM -e BBOX --volume $PWD/data-tileserver:/data-tileserver openmaptiles-tools nice "$@"
 }
 
 function link {
