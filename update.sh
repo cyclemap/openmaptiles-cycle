@@ -177,7 +177,7 @@ function mainGeneration {
 
 	date=$(date --iso-8601)
 	file=data-tileserver/tiles-$date-$locationName-$MAX_ZOOM.mbtiles
-	mv data/$locationName.mbtiles $file
+	mv data/tiles.mbtiles $file
 	link $file data-tileserver/tiles-$locationName.mbtiles
 }
 

@@ -727,7 +727,7 @@ BEGIN
                 surface,
                 z_order
         FROM osm_transportation_merge_linestring_gen_z8
-        GROUP BY id, osm_id, highway, construction, network, is_bridge, is_tunnel, is_ford, expressway, z_order
+        GROUP BY id, osm_id, highway, construction, network, is_bridge, is_tunnel, is_ford, expressway, tags, surface, z_order
         ),
     roads_z8_merge AS (
         SELECT  id,
@@ -746,7 +746,7 @@ BEGIN
                 surface,
                 z_order
     FROM roads_z8
-    GROUP BY id, osm_id, highway, network, construction, is_bridge, is_tunnel, is_ford, expressway, z_order
+    GROUP BY id, osm_id, highway, network, construction, is_bridge, is_tunnel, is_ford, expressway, tags, surface, z_order
     )
 
     SELECT  CASE
@@ -763,9 +763,9 @@ BEGIN
             visible_brunnel(geometry, is_bridge, 8) AS is_bridge,
             visible_brunnel(geometry, is_tunnel, 8) AS is_tunnel,
             visible_brunnel(geometry, is_ford, 8) AS is_ford,
+            expressway,
             tags,
             surface,
-            expressway,
             z_order
     FROM roads_z8_merge
         -- Current view: motorway/trunk/primary
