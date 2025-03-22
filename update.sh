@@ -3,6 +3,7 @@
 source .env
 
 set -e #exit on failure
+set -x
 
 #these won't do what we want because docker is doing all of the real work
 #renice +20 -p $$ >/dev/null
@@ -175,7 +176,6 @@ function mainGeneration {
 	#revert bounding box change
 	sed -i "/BBOX=.*/ {n; :a; /BBOX=.*/! {N; ba;}; s/BBOX=.*/BBOX=$defaultBbox/; :b; n; \$! bb}" .env
 
-	date=$(date --iso-8601)
 	file=data-tileserver/tiles-$date-$locationName-$MAX_ZOOM.mbtiles
 	mv data/tiles.mbtiles $file
 	link $file data-tileserver/tiles-$locationName.mbtiles
@@ -214,6 +214,7 @@ if [[ "$fileSystemRemaining" -lt $(($diskSpaceRequired*1024*1024)) ]]; then
 	exit 1
 fi
 
+date=$(date --iso-8601)
 updateInput
 mainGeneration
 combineOutputs

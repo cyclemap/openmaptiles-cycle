@@ -1,5 +1,3 @@
-# This version must match the MAKE_DC_VERSION value below
-version: "3"
 
 volumes:
   pgdata:
