@@ -1,11 +1,7 @@
+# THIS REPOSITORY IS ARCHIVED
 
-* see [update.sh](update.sh) for info on how cyclemaps.org tiles are created.
+cyclemaps.org now uses tilemaker.
 
-* https://maputnik.github.io/editor
-  * data sources -> active sources -> tilejsonurl -> `https://tileserver.cyclemaps.org/data/v3.json`
-  * open -> load from url -> `https://cyclemaps.org/style.json`
-  * layers tree view on the left -> cycleway-unpaved -> click the "eye" visibility icon (show/hide)
-  * layers tree view on the left -> cycleway-unknown -> click the "eye" visibility icon (show/hide)
-  * layers tree view on the left -> cycleway-paved -> click the "eye" visibility icon (show/hide)
-  * (for debugging data:  view -> map dropdown.  change to inspect)
+* server side:  https://github.com/cyclemap/tilemaker-config
+* client side:  https://github.com/cyclemap/cyclemaps
 

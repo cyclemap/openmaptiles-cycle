@@ -190,6 +190,11 @@ function combineOutputs {
 		largeFile=data-tileserver/tiles-cyclemaps-large.mbtiles
 		
 		echo combining:  started at $(date)
+		#file=data-tileserver/tiles-cyclemaps-small.mbtiles
+		#echo custom combination
+		#echo $mainFile '=' $largeFile '+' $file
+		#ls -lh $largeFile $file
+
 		
 		#cyclemaps-large
 		cp --dereference $largeFile $mainFile

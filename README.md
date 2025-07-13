@@ -1,4 +1,6 @@
 
+# THIS REPOSITORY IS ARCHIVED
+
 ## cyclemaps.org changes to OpenMapTiles
 
 Please see [OpenMapTiles](https://github.com/openmaptiles/openmaptiles/) for more information on how to use this software or read below.
